@@ -135,15 +135,15 @@
 
 						<tbody>
 							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index">
-								<td>{{ disciplina.periodo }}</td>
-								<td>{{ disciplina.disciplina }}</td>
-								<td>{{ disciplina.codigo }}</td>
-								<td>{{ disciplina.inicio }}</td>
-								<td>{{ disciplina.termino }}</td>
-								<td>{{ disciplina.categoria }}</td>
-								<td>{{ disciplina.periodoCurricular }}</td>
-								<td>{{ disciplina.estado }}</td>
-								<td>{{ disciplina.campus }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.periodo, 'perido') }">{{ disciplina.periodo }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.disciplina, 'disciplina') }">{{ disciplina.disciplina }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.codigo, 'codigo') }">{{ disciplina.codigo }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.inicio, 'inicio') }">{{ disciplina.inicio }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.termino, 'termino') }">{{ disciplina.termino }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.categoria, 'categoria') }">{{ disciplina.categoria }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.periodoCurricular, 'peridoCurricular') }">{{ disciplina.periodoCurricular }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.estado, 'estado') }">{{ disciplina.estado }}</td>
+								<td :class="{ 'error-cell': isInvalid(disciplina.campus, 'campus') }">{{ disciplina.campus }}</td>
 								<td><span class="status" :class="disciplina.status.toLowerCase()">{{ disciplina.status }}</span></td>
 							</tr>
 						</tbody>
@@ -167,15 +167,15 @@
 
 						<tbody>
 							<tr v-for="(turma, index) in limiteDePagina(listaTurmas)" :key="index">
-								<td>{{ turma.turma }}</td>
-								<td>{{ turma.codigo }}</td>
-								<td>{{ turma.disciplina }}</td>
-								<td>{{ turma.turno }}</td>
-								<td>{{ turma.capacidade }}</td>
-								<td>{{ turma.inicio }}</td>
-								<td>{{ turma.termino }}</td>
-								<td>{{ turma.professor }}</td>
-								<td><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
+								<td :class="{ 'error-cell': isInvalid(turma.turma, 'turma') }">{{ turma.turma }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.codigo, 'codigo') }">{{ turma.codigo }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.disciplina, 'disciplina') }">{{ turma.disciplina }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.turno, 'turno') }">{{ turma.turno }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.capacidade, 'capacidade') }">{{ turma.capacidade }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.inicio, 'inicio') }">{{ turma.inicio }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.termino, 'termino') }">{{ turma.termino }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.professor, 'professor') }">{{ turma.professor }}</td>
+								<td ><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
 							</tr>
 						</tbody>
 					</table>
@@ -198,14 +198,14 @@
 
 						<tbody>
 							<tr v-for="(turma, index) in limiteDePagina(listaUsuarios)" :key="index">
-								<td>{{ turma.nome }}</td>
-								<td>{{ turma.matricula }}</td>
-								<td>{{ turma.email }}</td>
-								<td>{{ turma.tipo }}</td>
-								<td>{{ turma.curso }}</td>
-								<td>{{ turma.nascimento }}</td>
-								<td>{{ turma.cadastro }}</td>
-								<td>{{ turma.contato }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.nome, 'nome') }">{{ turma.nome }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.matricula, 'matricula') }">{{ turma.matricula }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.email, 'email') }">{{ turma.email }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.tipo, 'tipo') }">{{ turma.tipo }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.curso, 'curso') }">{{ turma.curso }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.nascimento, 'nascimento') }">{{ turma.nascimento }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.cadastro, 'cadastro') }">{{ turma.cadastro }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.contato, 'contato') }">{{ turma.contato }}</td>
 								<td><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
 							</tr>
 						</tbody>
@@ -229,14 +229,14 @@
 
 						<tbody>
 							<tr v-for="(turma, index) in limiteDePagina(listaVinculos)" :key="index">
-								<td>{{ turma.nome }}</td>
-								<td>{{ turma.matricula }}</td>
-								<td>{{ turma.turma }}</td>
-								<td>{{ turma.disciplina }}</td>
-								<td>{{ turma.papel }}</td>
-								<td>{{ turma.inicio }}</td>
-								<td>{{ turma.termino }}</td>
-								<td>{{ turma.obs }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.nome, 'nome') }">{{ turma.nome }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.matricula, 'matricula') }">{{ turma.matricula }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.turma, 'turma') }">{{ turma.turma }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.disciplina, 'disciplina') }">{{ turma.disciplina }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.papel, 'papel') }">{{ turma.papel }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.inicio, 'inicio') }">{{ turma.inicio }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.termino, 'termino') }">{{ turma.termino }}</td>
+								<td :class="{ 'error-cell': isInvalid(turma.obs, 'obs') }">{{ turma.obs }}</td>
 								<td><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
 							</tr>
 						</tbody>

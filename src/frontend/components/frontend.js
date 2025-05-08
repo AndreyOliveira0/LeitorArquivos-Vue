@@ -6,7 +6,7 @@ import "./styles.css";  // Importação do CSS externo
 export default {
 	data() {
 		return {
-			formatos: [".csv", ".xlsx", ".json"],
+			formatos: [".csv", ".xlsx", ".json",],
 			arquivoCarregado: null,
 			arquivoSelecionado: null,
 			mensagem: null,
@@ -290,8 +290,8 @@ export default {
 					matricula: "20251234",
 					email: "lucas.santos@email.com",
 					curso: "Arquitetura de Computadores",
-					tipo: "Aluno",
-					nascimento: "04/03/2025",
+					tipo: "Aluo",
+					nascimento: "04/08/2025",
 					cadastro: "28/06/2025",
 					contato: "(11) 91234-5678",
 					status: "Pendente"
@@ -569,6 +569,8 @@ export default {
 		uploadArquivo(event) {
 			const input = event.target;
 			const file = input.files[0];
+			const LIMITE_ARQUIVO_MB = 10;
+			const LIMITE_ARQUIVO_BYTES = LIMITE_ARQUIVO_MB * 1024 * 1024;
 		
 			if (!file) {
 				this.mensagem = "Nenhum arquivo selecionado.";
@@ -581,6 +583,15 @@ export default {
 		
 			if (!this.formatos.includes(fileExtension)) {
 				this.mensagem = `Formato inválido! Permitidos: ${this.formatos.join(", ")}`;
+				this.mensagemCor = "red";
+				this.arquivoSelecionado = null;
+				input.value = "";
+				return;
+			}
+
+			if (file.size > LIMITE_ARQUIVO_BYTES) {
+				const tamanhoMB = (file.size / (1024 * 1024)).toFixed(2);
+				this.mensagem = `Arquivo muito grande (${tamanhoMB} MB). O limite é ${LIMITE_ARQUIVO_MB} MB.`;
 				this.mensagemCor = "red";
 				this.arquivoSelecionado = null;
 				input.value = "";
@@ -790,7 +801,69 @@ export default {
 				? `Erro no upload 2: ${error.response.data.message || "Erro desconhecido"}`
 				: "Erro na conexão com o servidor.";
 			}
-		}
-		
+		},
+
+		//Validador de Conteudo Tabela
+		isInvalid(field, keym) {
+			const value = typeof field === 'string' ? field.trim() : field;
+		  
+			// Validadores básicos por tipo
+			const isOnlyLetters = v => !/^[A-Za-zÀ-ÿ\s]+$/.test(v);
+			const isValidDate = v => !/^\d{4}-\d{2}-\d{2}$/.test(v) || isNaN(Date.parse(v));
+			const isPositiveNumber = v => isNaN(Number(v)) || Number(v) <= 0;
+		  
+			// Validadores específicos
+			const validators = {
+			  // STRINGS puras (sem números ou símbolos)
+			  nome: isOnlyLetters,
+			  curso: isOnlyLetters,
+			  campus: isOnlyLetters,
+			  nomeTurma: isOnlyLetters,
+			  professorResponsavel: isOnlyLetters,
+			  nomeUsuario: isOnlyLetters,
+			  turma: isOnlyLetters,
+			  papel: isOnlyLetters,
+			  tipo: isOnlyLetters,
+			  categoria: isOnlyLetters,
+			  estado: isOnlyLetters,
+			  status: isOnlyLetters,
+			  turno: isOnlyLetters,
+		  
+			  // DATES
+			  dataInicio: isValidDate,
+			  dataTermino: isValidDate,
+			  dataNascimento: isValidDate,
+			  dataCadastro: isValidDate,
+			  inicioAulas: isValidDate,
+			  terminoAulas: isValidDate,
+			  dataInicioVinculo: isValidDate,
+			  dataTerminoVinculo: isValidDate,
+		  
+			  // NUMBERS
+			  capacidade: isPositiveNumber,
+			  cargaHoraria: isPositiveNumber,
+			  periodoCurricular: isPositiveNumber,
+			  observacoes: isPositiveNumber,
+		  
+			  // CAMPOS COM REGEX ESPECÍFICOS
+			  codigo: v => !/^[A-Za-z0-9]+$/.test(String(v).trim()),
+			  disciplina: v => !/^[A-Za-zÀ-ÿ0-9\s]+$/.test(v),
+			  email: v => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim()),
+			  telefone: v => !/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/.test(String(v).trim()),
+			  semestre: v => !/^\d{4}\.\d$/.test(String(v).trim()),
+			  matricula: v => {
+				const str = String(v).trim();
+				return !/^\d{6,12}$/.test(str); // Aceita 6 a 12 dígitos numéricos
+			  },			  
+			  contato: v => {
+				const str = String(v).trim();
+				const isTel = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/.test(str);
+				const isMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
+				return !(isTel || isMail);
+			  },
+			};
+		  
+			return validators[key] ? validators[key](value) : false;
+		  }		  													
 	}
 }
