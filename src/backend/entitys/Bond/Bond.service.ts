@@ -31,7 +31,7 @@ export class BondService {
     throw new NotFoundException(`Registro com matrícula ${matricula} não encontrado`);
   }
   return Bond;
-}
+  }
 
 
   async update(matricula: string, data: BondDto): Promise<Bond> {
@@ -49,7 +49,21 @@ export class BondService {
     return await existingBond.save();
   }
 
+  async updateBulk(data: Partial<Bond>[]): Promise<any> {
+    const operations = data.map(bond => {
+      if (!bond.matricula) return null;
 
+      return {
+        updateOne: {
+          filter: { matricula: bond.matricula },
+          update: { $set: bond },
+          upsert: true
+        }
+      };
+    }).filter(op => op !== null);
+
+    return this.BondModel.bulkWrite(operations);
+  }
 
   async delete(matricula: string): Promise<Bond> {
     // Busca e remove o usuário pelo atributo 'matricula'

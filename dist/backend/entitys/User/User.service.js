@@ -53,6 +53,20 @@ let UserService = class UserService {
         // Salva as alterações e retorna o documento atualizado
         return await existingUser.save();
     }
+    async updateBulk(data) {
+        const operations = data.map(User => {
+            if (!User.matricula)
+                return null;
+            return {
+                updateOne: {
+                    filter: { matricula: User.matricula },
+                    update: { $set: User },
+                    upsert: true
+                }
+            };
+        }).filter(op => op !== null);
+        return this.UserModel.bulkWrite(operations);
+    }
     async delete(matricula) {
         // Busca e remove o usuário pelo atributo 'matricula'
         const deletedUser = await this.UserModel.findOneAndDelete({ matricula }).exec();

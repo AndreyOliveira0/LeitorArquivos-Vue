@@ -32,6 +32,7 @@ export class ClassController {
   }
 
   @Put('Put/:codigo')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de uma única turma' })
   @ApiResponse({ status: 200, description: 'Turma atualizada com sucesso.' })
   async update(
@@ -39,6 +40,12 @@ export class ClassController {
     @Body() data: ClassDto
   ): Promise<Class> {
     return this.ClassService.update(codigo, data);
+  }
+
+  @Put('PutBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async updateBulk(@Body() data: Partial<Class>[]): Promise<any> {
+    return this.ClassService.updateBulk(data);
   }
 
   @Delete('Delete/:codigo')

@@ -23,21 +23,6 @@ export abstract class ProcessDto {
     @ApiProperty({ example: '2025-04-23T10:30:00.000Z' })
     termino: Date;
 
-    @IsString()
-    @ApiProperty({ example: '1597326' })
-    BondId: String;
-
-    @IsString()
-    @ApiProperty({ example: 'f1ds5fsg8sd5' })
-    ClassId: String;
-
-    @IsString()
-    @ApiProperty({ example: 'asd88a4a5e8f6d2' })
-    DisciplineId: String;
-
-    @IsString()
-    @ApiProperty({ example: '1597326' })
-    UserId: String;
 
     constructor(partial: Partial<ProcessDto> = {}) {
         this.id= partial.id ?? "";
@@ -49,14 +34,6 @@ export abstract class ProcessDto {
         this.inicio= partial.inicio ?? new Date()
     
         this.termino= partial.termino ?? new Date();
-
-        this.BondId= partial.BondId ?? "";
-
-        this.ClassId= partial.ClassId ?? "";
-
-        this.DisciplineId= partial.DisciplineId ?? "";
-
-        this.UserId= partial.UserId ?? "";
 
     }
 }

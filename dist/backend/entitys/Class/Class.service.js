@@ -53,6 +53,20 @@ let ClassService = class ClassService {
         // Salva as alterações e retorna o documento atualizado
         return await existingClass.save();
     }
+    async updateBulk(data) {
+        const operations = data.map(Class => {
+            if (!Class.codigo)
+                return null;
+            return {
+                updateOne: {
+                    filter: { codigo: Class.codigo },
+                    update: { $set: Class },
+                    upsert: true
+                }
+            };
+        }).filter(op => op !== null);
+        return this.ClassModel.bulkWrite(operations);
+    }
     async delete(codigo) {
         // Busca e remove o usuário pelo atributo 'codigo'
         const deletedClass = await this.ClassModel.findOneAndDelete({ codigo }).exec();

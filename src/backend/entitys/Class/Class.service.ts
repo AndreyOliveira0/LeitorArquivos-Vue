@@ -49,7 +49,21 @@ export class ClassService {
     return await existingClass.save();
   }
 
-
+  async updateBulk(data: Partial<Class>[]): Promise<any> {
+      const operations = data.map(Class => {
+        if (!Class.codigo) return null;
+  
+        return {
+          updateOne: {
+            filter: { codigo: Class.codigo },
+            update: { $set: Class },
+            upsert: true
+          }
+        };
+      }).filter(op => op !== null);
+  
+      return this.ClassModel.bulkWrite(operations);
+    }
 
   async delete(codigo: string): Promise<Class> {
     // Busca e remove o usuário pelo atributo 'codigo'

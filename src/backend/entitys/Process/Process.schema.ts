@@ -23,19 +23,8 @@ export class Process extends Document{
   @Prop({ type: Date})
   termino: Date;
 
-  @Prop({ type: String})
-  BondId: String;
 
-  @Prop({ type: String})
-  ClassId: String;
-
-  @Prop({ type: String})
-  DisciplineId: String;
-
-  @Prop({ type: String})
-  UserId: String;
-
-  constructor(id: String, periodoInicio:String, periodoTermino:String, inicio:Date, termino:Date, BondId: String, ClassId: String, DisciplineId: String, UserId: String){
+  constructor(id: String, periodoInicio:String, periodoTermino:String, inicio:Date, termino:Date){
     super();
 
     this.id= id;
@@ -47,14 +36,6 @@ export class Process extends Document{
     this.inicio= inicio;
 
     this.termino= termino;
-
-    this.BondId= BondId;
-
-    this.ClassId= ClassId;
-
-    this.DisciplineId= DisciplineId;
-
-    this.UserId= UserId;
   }
 }
 export const ProcessSchema = SchemaFactory.createForClass(Process);

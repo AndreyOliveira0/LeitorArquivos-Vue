@@ -33,6 +33,9 @@ let UserController = class UserController {
     async update(matricula, data) {
         return this.UserService.update(matricula, data);
     }
+    async updateBulk(data) {
+        return this.UserService.updateBulk(data);
+    }
     async delete(matricula) {
         return this.UserService.delete(matricula);
     }
@@ -67,6 +70,7 @@ __decorate([
 ], UserController.prototype, "findUnique", null);
 __decorate([
     (0, common_1.Put)('Put/:matricula'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de um único usuário' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuário atualizado com sucesso.' }),
     __param(0, (0, common_1.Param)('matricula')),
@@ -75,6 +79,14 @@ __decorate([
     __metadata("design:paramtypes", [String, User_Dto_1.UserDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "update", null);
+__decorate([
+    (0, common_1.Put)('PutBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateBulk", null);
 __decorate([
     (0, common_1.Delete)('Delete/:matricula'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta um único usuário' }),

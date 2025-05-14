@@ -49,7 +49,21 @@ export class DisciplineService {
     return await existingDiscipline.save();
   }
 
+  async updateBulk(data: Partial<Discipline>[]): Promise<any> {
+    const operations = data.map(Discipline => {
+      if (!Discipline.codigo) return null;
 
+      return {
+        updateOne: {
+          filter: { codigo: Discipline.codigo },
+          update: { $set: Discipline },
+          upsert: true
+        }
+      };
+    }).filter(op => op !== null);
+
+    return this.DisciplineModel.bulkWrite(operations);
+  }
 
   async delete(codigo: string): Promise<Discipline> {
     // Busca e remove o usuário pelo atributo 'codigo'

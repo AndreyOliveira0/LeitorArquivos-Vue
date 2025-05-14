@@ -53,6 +53,20 @@ let DisciplineService = class DisciplineService {
         // Salva as alterações e retorna o documento atualizado
         return await existingDiscipline.save();
     }
+    async updateBulk(data) {
+        const operations = data.map(Discipline => {
+            if (!Discipline.codigo)
+                return null;
+            return {
+                updateOne: {
+                    filter: { codigo: Discipline.codigo },
+                    update: { $set: Discipline },
+                    upsert: true
+                }
+            };
+        }).filter(op => op !== null);
+        return this.DisciplineModel.bulkWrite(operations);
+    }
     async delete(codigo) {
         // Busca e remove o usuário pelo atributo 'codigo'
         const deletedDiscipline = await this.DisciplineModel.findOneAndDelete({ codigo }).exec();

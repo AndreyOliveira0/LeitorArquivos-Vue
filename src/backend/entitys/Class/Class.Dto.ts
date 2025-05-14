@@ -40,6 +40,11 @@ export abstract class ClassDto {
     @ApiProperty({ example: 'Finalizada' })
     status: String;
 
+    @Matches(/^[A-Za-z0-9]+$/, { message: 'Id do processo deve conter apenas caracteres alfanuméricos.' })
+    @IsString()
+    @ApiProperty({ example: 'e3e03e39ie3jroefj484fd5gd84' })
+    processId: String;
+
     constructor(partial: Partial<ClassDto> = {}) {
         this.codigo= partial.codigo ?? "";
         
@@ -58,5 +63,7 @@ export abstract class ClassDto {
         this.professor= partial.professor ?? "";
     
         this.status= partial.status ?? "";
+
+        this.processId= partial.processId ?? "";
     }
 }

@@ -32,6 +32,7 @@ export class UserController {
   }
 
   @Put('Put/:matricula')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de um único usuário' })
   @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso.' })
   async update(
@@ -39,6 +40,12 @@ export class UserController {
     @Body() data: UserDto
   ): Promise<User> {
     return this.UserService.update(matricula, data);
+  }
+
+  @Put('PutBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async updateBulk(@Body() data: Partial<User>[]): Promise<any> {
+    return this.UserService.updateBulk(data);
   }
 
   @Delete('Delete/:matricula')

@@ -43,6 +43,20 @@ let ProcessService = class ProcessService {
         Object.assign(existingProcess, data); // Atualiza os campos do documento com os novos valores
         return await existingProcess.save(); // Persiste as alterações, validando os campos automaticamente
     }
+    async updateBulk(data) {
+        const operations = data.map(Process => {
+            if (!Process.id)
+                return null;
+            return {
+                updateOne: {
+                    filter: { id: Process.id },
+                    update: { $set: Process },
+                    upsert: true
+                }
+            };
+        }).filter(op => op !== null);
+        return this.ProcessModel.bulkWrite(operations);
+    }
     async delete(id) {
         const deletedProcess = await this.ProcessModel.findByIdAndDelete(id).exec();
         if (!deletedProcess) {

@@ -32,6 +32,7 @@ export class BondController {
   }
 
   @Put('Put/:matricula')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de um único vínculo' })
   @ApiResponse({ status: 200, description: 'Vínculo atualizado com sucesso.' })
   async update(
@@ -39,6 +40,12 @@ export class BondController {
     @Body() data: BondDto
   ): Promise<Bond> {
     return this.BondService.update(matricula, data);
+  }
+
+  @Put('PutBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async updateBulk(@Body() data: Partial<Bond>[]): Promise<any> {
+    return this.BondService.updateBulk(data);
   }
 
   @Delete('Delete/:matricula')

@@ -33,6 +33,9 @@ let ProcessController = class ProcessController {
     async update(id, data) {
         return this.ProcessService.update(id, data);
     }
+    async updateBulk(data) {
+        return this.ProcessService.updateBulk(data);
+    }
     async delete(id) {
         return this.ProcessService.delete(id);
     }
@@ -67,6 +70,7 @@ __decorate([
 ], ProcessController.prototype, "findUnique", null);
 __decorate([
     (0, common_1.Put)('Put/:id'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de um único processo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Processo atualizado com sucesso.' }),
     __param(0, (0, common_1.Param)('id')),
@@ -75,6 +79,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Process_Dto_1.ProcessDto]),
     __metadata("design:returntype", Promise)
 ], ProcessController.prototype, "update", null);
+__decorate([
+    (0, common_1.Put)('PutBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], ProcessController.prototype, "updateBulk", null);
 __decorate([
     (0, common_1.Delete)('Delete/:id'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta um único processo' }),

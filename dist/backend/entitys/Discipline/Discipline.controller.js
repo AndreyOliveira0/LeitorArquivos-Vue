@@ -33,6 +33,9 @@ let DisciplineController = class DisciplineController {
     async update(codigo, data) {
         return this.DisciplineService.update(codigo, data);
     }
+    async updateBulk(data) {
+        return this.DisciplineService.updateBulk(data);
+    }
     async delete(codigo) {
         return this.DisciplineService.delete(codigo);
     }
@@ -67,6 +70,7 @@ __decorate([
 ], DisciplineController.prototype, "findUnique", null);
 __decorate([
     (0, common_1.Put)('Put/:codigo'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de uma única disciplina' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplina atualizada com sucesso.' }),
     __param(0, (0, common_1.Param)('codigo')),
@@ -75,6 +79,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Discipline_Dto_1.DisciplineDto]),
     __metadata("design:returntype", Promise)
 ], DisciplineController.prototype, "update", null);
+__decorate([
+    (0, common_1.Put)('PutBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], DisciplineController.prototype, "updateBulk", null);
 __decorate([
     (0, common_1.Delete)('Delete/:codigo'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta uma única disciplina' }),

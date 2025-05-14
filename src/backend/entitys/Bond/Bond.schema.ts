@@ -36,7 +36,10 @@ export class Bond extends Document{
   @Prop({type:String})
   status: String;
 
-  constructor(nome: String, matricula: String, turma: String, disciplina: String, papel: String, inicio: Date, termino: Date, obs: Number, status: String){
+  @Prop({type:String})
+  processId: String;
+
+  constructor(nome: String, matricula: String, turma: String, disciplina: String, papel: String, inicio: Date, termino: Date, obs: Number, status: String, processId: String){
     super();
 
     this.nome= nome;
@@ -56,6 +59,8 @@ export class Bond extends Document{
     this.obs= obs;
 
     this.status= status;
+
+    this.processId= processId;
   }
 }
 export const BondSchema = SchemaFactory.createForClass(Bond);

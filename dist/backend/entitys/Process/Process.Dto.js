@@ -19,10 +19,6 @@ class ProcessDto {
         this.periodoTermino = partial.periodoTermino ?? "";
         this.inicio = partial.inicio ?? new Date();
         this.termino = partial.termino ?? new Date();
-        this.BondId = partial.BondId ?? "";
-        this.ClassId = partial.ClassId ?? "";
-        this.DisciplineId = partial.DisciplineId ?? "";
-        this.UserId = partial.UserId ?? "";
     }
 }
 exports.ProcessDto = ProcessDto;
@@ -52,23 +48,3 @@ __decorate([
     (0, swagger_1.ApiProperty)({ example: '2025-04-23T10:30:00.000Z' }),
     __metadata("design:type", Date)
 ], ProcessDto.prototype, "termino", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({ example: '1597326' }),
-    __metadata("design:type", String)
-], ProcessDto.prototype, "BondId", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({ example: 'f1ds5fsg8sd5' }),
-    __metadata("design:type", String)
-], ProcessDto.prototype, "ClassId", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({ example: 'asd88a4a5e8f6d2' }),
-    __metadata("design:type", String)
-], ProcessDto.prototype, "DisciplineId", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)({ example: '1597326' }),
-    __metadata("design:type", String)
-], ProcessDto.prototype, "UserId", void 0);

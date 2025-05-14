@@ -32,6 +32,7 @@ export class ProcessController {
   }
 
   @Put('Put/:id')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de um único processo' })
   @ApiResponse({ status: 200, description: 'Processo atualizado com sucesso.' })
   async update(
@@ -39,6 +40,12 @@ export class ProcessController {
     @Body() data: ProcessDto
   ): Promise<Process> {
     return this.ProcessService.update(id, data);
+  }
+
+  @Put('PutBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async updateBulk(@Body() data: Partial<Process>[]): Promise<any> {
+    return this.ProcessService.updateBulk(data);
   }
 
   @Delete('Delete/:id')

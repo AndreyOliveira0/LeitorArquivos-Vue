@@ -32,6 +32,7 @@ export class DisciplineController {
   }
 
   @Put('Put/:codigo')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de uma única disciplina' })
   @ApiResponse({ status: 200, description: 'Disciplina atualizada com sucesso.' })
   async update(
@@ -39,6 +40,12 @@ export class DisciplineController {
     @Body() data: DisciplineDto
   ): Promise<Discipline> {
     return this.DisciplineService.update(codigo, data);
+  }
+
+  @Put('PutBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async updateBulk(@Body() data: Partial<Discipline>[]): Promise<any> {
+    return this.DisciplineService.updateBulk(data);
   }
 
   @Delete('Delete/:codigo')

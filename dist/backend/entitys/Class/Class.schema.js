@@ -14,7 +14,7 @@ exports.ClassSchema = exports.Class = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let Class = class Class extends mongoose_2.Document {
-    constructor(turma, codigo, disciplina, turno, capacidade, inicio, termino, professor, status) {
+    constructor(turma, codigo, disciplina, turno, capacidade, inicio, termino, professor, status, processId) {
         super();
         this.turma = turma;
         this.codigo = codigo;
@@ -25,6 +25,7 @@ let Class = class Class extends mongoose_2.Document {
         this.termino = termino;
         this.professor = professor;
         this.status = status;
+        this.processId = processId;
     }
 };
 exports.Class = Class;
@@ -64,8 +65,12 @@ __decorate([
     (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
 ], Class.prototype, "status", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: String }),
+    __metadata("design:type", String)
+], Class.prototype, "processId", void 0);
 exports.Class = Class = __decorate([
     (0, mongoose_1.Schema)({ collection: 'Class' }),
-    __metadata("design:paramtypes", [String, String, String, String, Number, Date, Date, String, String])
+    __metadata("design:paramtypes", [String, String, String, String, Number, Date, Date, String, String, String])
 ], Class);
 exports.ClassSchema = mongoose_1.SchemaFactory.createForClass(Class);

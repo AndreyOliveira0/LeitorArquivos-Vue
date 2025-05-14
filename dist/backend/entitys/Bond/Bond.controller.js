@@ -33,6 +33,9 @@ let BondController = class BondController {
     async update(matricula, data) {
         return this.BondService.update(matricula, data);
     }
+    async updateBulk(data) {
+        return this.BondService.updateBulk(data);
+    }
     async delete(matricula) {
         return this.BondService.delete(matricula);
     }
@@ -67,6 +70,7 @@ __decorate([
 ], BondController.prototype, "findUnique", null);
 __decorate([
     (0, common_1.Put)('Put/:matricula'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de um único vínculo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Vínculo atualizado com sucesso.' }),
     __param(0, (0, common_1.Param)('matricula')),
@@ -75,6 +79,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Bond_Dto_1.BondDto]),
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "update", null);
+__decorate([
+    (0, common_1.Put)('PutBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], BondController.prototype, "updateBulk", null);
 __decorate([
     (0, common_1.Delete)('Delete/:matricula'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta um único vínculo' }),

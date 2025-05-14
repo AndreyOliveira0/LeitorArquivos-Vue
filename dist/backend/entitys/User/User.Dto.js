@@ -23,6 +23,7 @@ class UserDto {
         this.cadastro = partial.cadastro ?? new Date();
         this.contato = partial.contato ?? "";
         this.status = partial.status ?? "";
+        this.processId = partial.processId ?? "";
     }
 }
 exports.UserDto = UserDto;
@@ -74,3 +75,9 @@ __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Em Andamento' }),
     __metadata("design:type", String)
 ], UserDto.prototype, "status", void 0);
+__decorate([
+    (0, class_validator_1.Matches)(/^[A-Za-z0-9]+$/, { message: 'Id do processo deve conter apenas caracteres alfanuméricos.' }),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({ example: 'e3e03e39ie3jroefj484fd5gd84' }),
+    __metadata("design:type", String)
+], UserDto.prototype, "processId", void 0);

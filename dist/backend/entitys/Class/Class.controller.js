@@ -33,6 +33,9 @@ let ClassController = class ClassController {
     async update(codigo, data) {
         return this.ClassService.update(codigo, data);
     }
+    async updateBulk(data) {
+        return this.ClassService.updateBulk(data);
+    }
     async delete(codigo) {
         return this.ClassService.delete(codigo);
     }
@@ -67,6 +70,7 @@ __decorate([
 ], ClassController.prototype, "findUnique", null);
 __decorate([
     (0, common_1.Put)('Put/:codigo'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de uma única turma' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Turma atualizada com sucesso.' }),
     __param(0, (0, common_1.Param)('codigo')),
@@ -75,6 +79,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Class_Dto_1.ClassDto]),
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "update", null);
+__decorate([
+    (0, common_1.Put)('PutBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], ClassController.prototype, "updateBulk", null);
 __decorate([
     (0, common_1.Delete)('Delete/:codigo'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta uma única turma' }),

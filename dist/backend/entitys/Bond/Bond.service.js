@@ -53,6 +53,20 @@ let BondService = class BondService {
         // Salva as alterações e retorna o documento atualizado
         return await existingBond.save();
     }
+    async updateBulk(data) {
+        const operations = data.map(bond => {
+            if (!bond.matricula)
+                return null;
+            return {
+                updateOne: {
+                    filter: { matricula: bond.matricula },
+                    update: { $set: bond },
+                    upsert: true
+                }
+            };
+        }).filter(op => op !== null);
+        return this.BondModel.bulkWrite(operations);
+    }
     async delete(matricula) {
         // Busca e remove o usuário pelo atributo 'matricula'
         const deletedBond = await this.BondModel.findOneAndDelete({ matricula }).exec();

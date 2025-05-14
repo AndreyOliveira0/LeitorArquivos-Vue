@@ -39,7 +39,10 @@ export class Discipline extends Document{
   @Prop({type:String})
   status: String;
 
-  constructor(periodo: String, disciplina: String, codigo: String, inicio: Date, termino: Date, categoria: string, periodoCurricular: Number, estado: String, campus: string, status: String){
+  @Prop({type:String})
+  processId: String;
+
+  constructor(periodo: String, disciplina: String, codigo: String, inicio: Date, termino: Date, categoria: string, periodoCurricular: Number, estado: String, campus: string, status: String, processId: String){
     super();
 
     this.periodo= periodo;
@@ -61,6 +64,8 @@ export class Discipline extends Document{
     this.campus= campus;
 
     this.status= status;
+
+    this.processId= processId;
   }
 }
 export const DisciplineSchema = SchemaFactory.createForClass(Discipline);

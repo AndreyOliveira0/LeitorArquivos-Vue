@@ -49,7 +49,21 @@ export class UserService {
     return await existingUser.save();
   }
 
-
+  async updateBulk(data: Partial<User>[]): Promise<any> {
+      const operations = data.map(User => {
+        if (!User.matricula) return null;
+  
+        return {
+          updateOne: {
+            filter: { matricula: User.matricula },
+            update: { $set: User },
+            upsert: true
+          }
+        };
+      }).filter(op => op !== null);
+  
+      return this.UserModel.bulkWrite(operations);
+    }
 
   async delete(matricula: string): Promise<User> {
     // Busca e remove o usuário pelo atributo 'matricula'
