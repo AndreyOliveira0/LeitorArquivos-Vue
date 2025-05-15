@@ -17,18 +17,18 @@ export class ProcessService {
     return this.ProcessModel.find().exec();
   }
 
-  async findById(id: string): Promise<Process> {
-    const Process = await this.ProcessModel.findById(id).exec();
+  async findById(_id: string): Promise<Process> {
+    const Process = await this.ProcessModel.findById(_id).exec();
     if (!Process) {
-      throw new NotFoundException(`Registro com ID ${id} não encontrado`);
+      throw new NotFoundException(`Registro com ID ${_id} não encontrado`);
     }
     return Process;
   }
 
-  async update(id: string, data: ProcessDto): Promise<Process> {
-  const existingProcess = await this.ProcessModel.findById(id).exec();
+  async update(_id: string, data: ProcessDto): Promise<Process> {
+  const existingProcess = await this.ProcessModel.findById(_id).exec();
   if (!existingProcess) {
-    throw new NotFoundException('Registro com ID ${id} não encontrado');
+    throw new NotFoundException('Registro com ID ${_id} não encontrado');
   }
 
   Object.assign(existingProcess, data); // Atualiza os campos do documento com os novos valores
@@ -37,11 +37,11 @@ export class ProcessService {
 
   async updateBulk(data: Partial<Process>[]): Promise<any> {
       const operations = data.map(Process => {
-        if (!Process.id) return null;
+        if (!Process._id) return null;
   
         return {
           updateOne: {
-            filter: { id: Process.id },
+            filter: { _id: Process._id },
             update: { $set: Process },
             upsert: true
           }
@@ -51,10 +51,10 @@ export class ProcessService {
       return this.ProcessModel.bulkWrite(operations);
     }
 
-  async delete(id: string): Promise<Process> {
-    const deletedProcess = await this.ProcessModel.findByIdAndDelete(id).exec();
+  async delete(_id: string): Promise<Process> {
+    const deletedProcess = await this.ProcessModel.findByIdAndDelete(_id).exec();
     if (!deletedProcess) {
-      throw new NotFoundException('Registro com ID ${id} não encontrado');
+      throw new NotFoundException('Registro com ID ${_id} não encontrado');
     }
     return deletedProcess;
   }

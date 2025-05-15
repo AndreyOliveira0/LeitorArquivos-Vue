@@ -24,11 +24,14 @@ let DisciplineController = class DisciplineController {
     async create(data) {
         return this.DisciplineService.create(data);
     }
+    async insertMany(data) {
+        return this.DisciplineService.insertMany(data);
+    }
     async findAll() {
         return this.DisciplineService.findAll();
     }
-    async findUnique(codigo) {
-        return this.DisciplineService.findByCodigo(codigo);
+    async findByProcessId(processId) {
+        return this.DisciplineService.findByProcessId(processId);
     }
     async update(codigo, data) {
         return this.DisciplineService.update(codigo, data);
@@ -38,6 +41,9 @@ let DisciplineController = class DisciplineController {
     }
     async delete(codigo) {
         return this.DisciplineService.delete(codigo);
+    }
+    async deleteByProcessId(processId) {
+        return this.DisciplineService.deleteByProcessId(processId);
     }
 };
 exports.DisciplineController = DisciplineController;
@@ -52,6 +58,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DisciplineController.prototype, "create", null);
 __decorate([
+    (0, common_1.Post)('PostBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    (0, swagger_1.ApiOperation)({ summary: 'Envia várias disciplinas em um array' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplinas Enviadas com sucesso.' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], DisciplineController.prototype, "insertMany", null);
+__decorate([
     (0, common_1.Get)('Get'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todas as disciplinas' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de disciplinas retornada com sucesso.' }),
@@ -60,14 +76,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DisciplineController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('Get/:codigo'),
-    (0, swagger_1.ApiOperation)({ summary: 'Lista uma única disciplina' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplina retornada com sucesso.' }),
-    __param(0, (0, common_1.Param)('codigo')),
+    (0, common_1.Get)('GetByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Lista todas as disciplina relacionadas a um processo' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplinas retornadas com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], DisciplineController.prototype, "findUnique", null);
+], DisciplineController.prototype, "findByProcessId", null);
 __decorate([
     (0, common_1.Put)('Put/:codigo'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
@@ -96,6 +112,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], DisciplineController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Delete)('DeleteByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Deleta todas as disciplinas com o processId especificado' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplinas deletadas com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DisciplineController.prototype, "deleteByProcessId", null);
 exports.DisciplineController = DisciplineController = __decorate([
     (0, swagger_1.ApiTags)('Discipline'),
     (0, common_1.Controller)('Discipline'),

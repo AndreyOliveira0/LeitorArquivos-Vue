@@ -8,7 +8,7 @@
 			<div class="bg"></div>
 			<br>
 			<button @click="mudarTela('controleDados')">Controle de Importações</button>
-			<button @click="mudarTela('importarPeriodo')">Importação de Dados</button>
+			<button @click="iniciarProcesso">Importação de Dados</button>
 		</div>
 	</div>
 
@@ -21,7 +21,7 @@
 				<p class="descricaoDaTela" v-html="descricaoDaTela()"></p>
 			</div>
 
-			<button v-if="tela == 'controleDados'" @click="mudarTela('importarPeriodo')">+ Novo Processo</button>
+			<button v-if="tela == 'controleDados'" @click="iniciarProcesso">+ Novo Processo</button>
 			</div>
 
 		<div style="margin-top: 50px;">
@@ -41,25 +41,25 @@
 
 					<tbody>
 						<tr v-for="(processo, id) in processos" :key="id">
-							<td v-html="processo.id"></td>
+							<td v-html="processo._id"></td>
 							<td v-html="processo.periodoInicio + ' - ' + processo.periodoTermino"></td>
 							<td v-html="formatarDataHora(processo.inicio)"></td>
-							<td v-html="processo.termino > processo.inicio ? formatarDataHora(processo.termino) : '---'"></td>
+							<td v-html="processo.termino > processo.inicio ? formatarDataHora(processo.termino) : '-'"></td>
 							<td style="padding: 0;" v-if="processo.status">
 								<p v-html="processo.status" class="processoStatus" :class="{statusAndamento: processo.status.toLowerCase() == 'em andamento', statusConcluido: processo.status.toLowerCase() == 'concluído'}"></p>
 							</td>
-						
+
 							<!-- Botões para "Em andamento"-->
 							<td v-if="processo.status && processo.status.toLowerCase() == 'em andamento'" >
 								<div class="processoAcoes">
-									<button class="botaoAcao botaoCinza">Editar</button>
-									<button class="botaoAcao botaoVermelho">Cancelar</button>
+									<button class="botaoAcao botaoCinza" @click="abrirProcesso(processo._id)">Editar</button>
+									<button class="botaoAcao botaoVermelho" @click="cancelarProcesso(processo._id)">Cancelar</button>
 								</div>
 							</td>
 							<!-- Botões para "Concluído"-->
 							<td v-else-if="processo.status && processo.status.toLowerCase() == 'concluído'">
 								<div class="processoAcoes">
-									<button class="botaoAcao">Visualizar</button>
+									<button class="botaoAcao" style="width: 150px;" @click="abrirProcesso(processo._id)">Visualizar</button>
 								</div>
 							</td>
 						</tr>
@@ -77,7 +77,7 @@
 				</div>
 
 				<!-- Caixa de Upload com clique em toda a área -->
-				<label v-if="tela !== 'importarPeriodo'" class="upload-box" for="fileInput">
+				<label v-if="tela !== 'importarPeriodo' && !processoVisualizando" class="upload-box" for="fileInput">
 					<div class="icone-upload-circulo">
 						<img src="./images/upload.png" class="upload-icone" />
 					</div>
@@ -103,26 +103,18 @@
 						<p v-else>O Período do Começo não pode ser maior que do Término.</p>
 					</div>
 
-					<div class="container-parent">
-						<h2>Nome do Processo</h2>
-						<div class="inputs-container" style="flex-direction: column; gap: 0">
-							<input placeholder="ex. &quot;Ficha830&quot;" type="text" oninput="this.value = this.value.replace(/[^A-Za-z0-9]/g, '')" v-model="processoAtualNome" style="font-size: 16px;">
-						</div>
-					</div>
-
-					<hr width="100%">
-					<div style="display: flex; flex-direction: row; gap: 50px;">
+					<div style="display: flex; flex-direction: column;">
 						<div class="container-parent">
 							<h2 style="margin-left: 30px;">Início do Ano Letivo</h2>
 							<div class="inputs-container">
 								<div class="input-grupo">
 									<label for="anoLetivoInicio">Ano</label>
-									<input type="number" id="anoLetivoInicio" v-model="anoLetivoInicio" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
+									<input type="number" id="anoLetivoInicio" v-model="anoLetivoInicio" :disabled="processoVisualizando" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
 								</div>
 
 								<div class="input-grupo">
 									<label for="periodoInicio">Período</label>
-									<input type="number" id="periodoInicio" v-model="periodoInicio" min="1" max="99" /> <!-- Limites do Perido -->
+									<input type="number" id="periodoInicio" v-model="periodoInicio" :disabled="processoVisualizando" min="1" max="99" /> <!-- Limites do Perido -->
 								</div>
 							</div>
 						</div>
@@ -132,17 +124,17 @@
 							<div class="inputs-container">
 								<div class="input-grupo">
 									<label for="anoLetivoTermino">Ano</label>
-									<input type="number" id="anoLetivoTermino" v-model="anoLetivoTermino" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
+									<input type="number" id="anoLetivoTermino" v-model="anoLetivoTermino" :disabled="processoVisualizando" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
 								</div>
 
 								<div class="input-grupo">
 									<label for="periodoTermino">Período</label>
-									<input type="number" id="periodoTermino" v-model="periodoTermino" min="1" max="99" /> <!-- Limites do Perido -->
+									<input type="number" id="periodoTermino" v-model="periodoTermino" :disabled="processoVisualizando" min="1" max="99" /> <!-- Limites do Perido -->
 								</div>
 							</div>
 						</div>
 					</div>
-					<button class="botao-avancar" @click="proximaEtapa()" :disabled="!processoAtualNome.trim() || anoLetivoInicio > anoLetivoTermino || (anoLetivoInicio == anoLetivoTermino && periodoInicio > periodoTermino)">Avançar</button>
+					<button class="botao-avancar" @click="proximaEtapa()" :disabled="!processoVisualizando && (anoLetivoInicio > anoLetivoTermino || (anoLetivoInicio == anoLetivoTermino && periodoInicio > periodoTermino))">Avançar</button>
 				</div>
 				
 				<!-- Etapa 2 a 5 -->
@@ -290,8 +282,8 @@
 					
 					<!-- Botão Avançar -->
 					<div class="botao-direita">
-						<button class="botao-avancar" @click="proximaEtapa()" v-if="etapaAtual < telaEtapas.length - 1" :disabled="!arquivoSelecionado">Avançar</button>
-						<button class="botao-avancar" @click="finalizarProcesso()" :disabled="!arquivoSelecionado" v-else>Finalizar Processo</button>
+						<button class="botao-avancar" @click="proximaEtapa()" v-if="etapaAtual < telaEtapas.length - 1" :disabled="!processoVisualizando && !arquivoSelecionado">Avançar</button>
+						<button class="botao-avancar" @click="!processoVisualizando ? finalizarProcesso() : mudarTela('controleDados')" :disabled="!processoVisualizando && !arquivoSelecionado" v-else>Finalizar Processo</button>
 					</div>
 				</div>
 			</div>

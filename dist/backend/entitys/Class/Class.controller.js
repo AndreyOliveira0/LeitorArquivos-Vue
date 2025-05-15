@@ -24,11 +24,17 @@ let ClassController = class ClassController {
     async create(data) {
         return this.ClassService.create(data);
     }
+    async insertMany(data) {
+        return this.ClassService.insertMany(data);
+    }
     async findAll() {
         return this.ClassService.findAll();
     }
     async findUnique(codigo) {
         return this.ClassService.findByCodigo(codigo);
+    }
+    async findByProcessId(processId) {
+        return this.ClassService.findByProcessId(processId);
     }
     async update(codigo, data) {
         return this.ClassService.update(codigo, data);
@@ -38,6 +44,9 @@ let ClassController = class ClassController {
     }
     async delete(codigo) {
         return this.ClassService.delete(codigo);
+    }
+    async deleteByProcessId(processId) {
+        return this.ClassService.deleteByProcessId(processId);
     }
 };
 exports.ClassController = ClassController;
@@ -51,6 +60,16 @@ __decorate([
     __metadata("design:paramtypes", [Class_Dto_1.ClassDto]),
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('PostBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    (0, swagger_1.ApiOperation)({ summary: 'Envia várias turmas em um array' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Turmas Enviadas com sucesso.' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], ClassController.prototype, "insertMany", null);
 __decorate([
     (0, common_1.Get)('Get'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todas as turmas' }),
@@ -68,6 +87,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "findUnique", null);
+__decorate([
+    (0, common_1.Get)('GetByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Lista todas as turmas relacionadas a um processo' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Turmas retornadas com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ClassController.prototype, "findByProcessId", null);
 __decorate([
     (0, common_1.Put)('Put/:codigo'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
@@ -96,6 +124,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Delete)('DeleteByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Deleta todas as turmas com o processId especificado' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Turmas deletadas com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ClassController.prototype, "deleteByProcessId", null);
 exports.ClassController = ClassController = __decorate([
     (0, swagger_1.ApiTags)('Class'),
     (0, common_1.Controller)('Class'),

@@ -6,37 +6,16 @@ import "./sheets/styles.css";  // Importação do CSS externo
 export default {
 	data() {
 		return {
+			JSONHeaders: {'Content-Type': 'application/json'},
 			formatos: [".csv", ".xlsx", ".json"],
 			arquivoCarregado: null,
 			arquivoSelecionado: null,
 			tela: "inicio",
 			_historicoTelas: [], //Usado para o botão de voltar
 
-			// Informações de processos já carregados para o Controle de Importações
-			processos: [],
-			/*[
-				{
-					id: "arquivo-3.csv",
-					periodo: "2025/1",
-					inicio: "8/24/2025 - 16:59",
-					termino: "15/6/2025 - 22:30",
-					status: "Em andamento"
-				},
-				{
-					id: "arquivo-2.csv",
-					periodo: "2025/1",
-					inicio: "17/8/2024 - 19:09",
-					termino: "7/12/2024 - 22:30",
-					status: "Concluído"
-				},
-				{
-					id: "arquivo-1.csv",
-					periodo: "2024/2",
-					inicio: "9/2/2024 - 16:59",
-					termino: "11/6/2024 - 22:30",
-					status: "Concluído"
-				}
-			],*/
+			processos: [], // Informações de processos já carregados para o Controle de Importações
+			processoAtual: null, //Processo carregado para edição
+			processoVisualizando: false, //Evita edição do processo atual
 
 			// Para a importação de dados:
 			telaEtapas: ["importarPeriodo", "importarDisciplinas", "importarTurmas", "importarUsuarios", "importarVinculos"],
@@ -47,8 +26,6 @@ export default {
 			paginaAtual: 0, //Para a paginação
 
 			// Etapa 1 - Ano Letivo
-			processoAtualNome: "",
-
 			anoLetivoInicio: new Date().getFullYear(),
 			periodoInicio: 1,
 
@@ -81,6 +58,115 @@ export default {
 		}
 	},
 	methods: {
+		// Processos
+		async abrirProcesso(id) {
+			const JSONHeaders = this.JSONHeaders;
+			const url = `http://localhost:8080/Process/Get/${id}`;
+			await axios.get(url, JSONHeaders)
+			.then(async response => {
+				const processo = response.data;
+				if(processo) {
+					this.processoAtual = response.data;
+					const periodoInicio = this.processoAtual.periodoInicio?.trim() ?? "";
+					const periodoTermino = this.processoAtual.periodoTermino?.trim() ?? "";
+
+					// Início de Período detectado, carregando dado vindo do banco
+					if(periodoInicio) {
+						const split = periodoInicio.split("/");
+						if(split?.length == 2) {
+							this.anoLetivoInicio = parseInt(split[0])
+							this.periodoInicio = parseInt(split[1])
+						}
+					}
+					// Término de Período detectado, carregando dado vindo do banco
+					if(periodoTermino) {
+						const split = periodoTermino.split("/");
+						if(split?.length == 2) {
+							this.anoLetivoTermino = parseInt(split[0])
+							this.periodoTermino = parseInt(split[1])
+						}
+					}
+
+					this.processoVisualizando = (this.processoAtual.inicio <= this.processoAtual.termino);
+					if(this.processoVisualizando) {
+						const id = this.processoAtual._id;
+						async function pegarLista(schemaKey) {
+							try {
+								const response = await axios.get(`http://localhost:8080/${schemaKey}/GetByProcess/${id}`, JSONHeaders);
+								console.log(`Dados recebidos (schemaKey: ${schemaKey}): `, response.data?.length ?? 0);
+								return response.data ?? [];
+							} catch (error) {
+								console.error(`Erro ao receber dados (schemaKey: ${schemaKey}):`, error?.message ?? error);
+								return [];
+							}
+						}
+
+						this.listaDisciplinas = await pegarLista("Discipline");
+						this.listaTurmas = await pegarLista("Class");
+						this.listaUsuarios = await pegarLista("User");
+						this.listaVinculos = await pegarLista("Bond");
+					}
+					this.mudarTela("importarPeriodo");
+				}
+				else console.error(`Erro ao abrir processo (ID: ${id}): Dado vazio.`);
+			})
+			.catch(error => {
+				this.processos = [];
+				console.error(`Erro ao abrir processo (ID: ${id}): `, error?.message ?? error);
+			});
+		},
+		async iniciarProcesso() {
+			const response = await axios.post("http://localhost:8080/Process/Post", {
+				periodoInicio: "",
+				periodoTermino: "",
+				inicio: new Date(),
+				termino: new Date(0)
+			}, this.JSONHeaders)
+			.then(response => {
+				const processo = response.data;
+				processo.status = (processo.inicio >= processo.termino) ? "Em andamento" : "Concluído";
+				this.processoAtual = processo;
+				this.processos.push(processo);
+				this.mudarTela("importarPeriodo");
+			})
+			.catch(error => {
+				console.error(`Erro ao iniciar processo: `, error?.message ?? error);
+			});
+		},
+		async cancelarProcesso(id) {
+			let semErros = true;
+			const JSONHeaders = this.JSONHeaders;
+			async function deletarRelacionados(schemaKey) {
+				if(!semErros) return;
+
+				await axios.delete(`http://localhost:8080/${schemaKey}/DeleteByProcess/${id}`, JSONHeaders)
+				.then(response => {
+					console.log(`Foram deletados ${response.data.deletedCount} dados (schemaKey: ${schemaKey})`);
+				})
+				.catch(error => {
+					console.error(`Erro ao apagar dados do processo (ID: ${id}, schemaKey: ${schemaKey}): ` + error?.message ?? error);
+					semErros = false;
+				});
+			}
+
+			await deletarRelacionados("Discipline");
+			await deletarRelacionados("Class");
+			await deletarRelacionados("User");
+			await deletarRelacionados("Bond");
+
+			if(semErros) {
+				await axios.delete(`http://localhost:8080/Process/Delete/${id}`, this.JSONHeaders)
+				.then(response => {
+					this.processos = [];
+					this.atualizarProcessos();
+				})
+				.catch(error => {
+					this.processos = [];
+					console.error(`Erro ao apagar processo (ID: ${id}): `, error?.message ?? error);
+				});
+			}
+		},
+
 		// Telas
 		mudarTela(tela, historico = true) {
 			if(historico) {
@@ -115,6 +201,16 @@ export default {
 		},
 
 		proximaEtapa() {
+			if(this.etapaAtual == this.telaEtapas.indexOf("importarPeriodo")) {
+				this.processoAtual.periodoInicio = `${this.anoLetivoInicio}/${this.periodoInicio}`;
+				this.processoAtual.periodoTermino = `${this.anoLetivoTermino}/${this.periodoTermino}`;
+				axios.put(`http://localhost:8080/Process/Put/${this.processoAtual._id}`, {
+					periodoInicio: this.processoAtual.periodoInicio,
+					periodoTermino: this.processoAtual.periodoTermino,
+					inicio: this.processoAtual.inicio,
+					termino: this.processoAtual.termino
+				}, this.JSONHeaders);
+			}
 			this.mudarTela(this.telaEtapas[this.etapaAtual+1]);
 		},
 		async finalizarProcesso() {
@@ -166,33 +262,59 @@ export default {
 		async enviarBDPressionado() {
 			console.log("Enviando para o banco de dados...");
 			if (this.arquivoSelecionado) {
-				try {
-					await this.enviarDadosParaBD(this.listaDisciplinas, 'Discipline/PutBulk', true);
-					await this.enviarDadosParaBD(this.listaTurmas, 'Class/PutBulk', true);
-					await this.enviarDadosParaBD(this.listaUsuarios, 'User/PutBulk', true);
-					await this.enviarDadosParaBD(this.listaVinculos, 'Bond/PutBulk', true);
-					console.log(`Upload de dados realizado com sucesso, criando processo!`);
-					
-					const disciplinas = this.listaDisciplinas.map(disciplina => disciplina.codigo).join(';');
-					const turmas = this.listaTurmas.map(turma => turma.codigo).join(';');
-					const usuarios = this.listaUsuarios.map(usuario => usuario.matricula).join(';');
-					const vinculos = this.listaVinculos.map(vinculo => vinculo.matricula).join(';');
+				let semErros = true;
+				const JSONHeaders = this.JSONHeaders;
+				async function enviarBulk(data, schemaKey) {
+					if(!semErros) return;
 
-					const processo = await this.enviarDadosParaBD({
-						id: this.processoAtualNome,
-						periodoInicio: `${this.anoLetivoInicio}/${this.periodoInicio}`,
-						periodoTermino: `${this.anoLetivoTermino}/${this.periodoTermino}`,
-						inicio: new Date(),
-						termino: new Date(0),
-						DisciplineId: disciplinas,
-						ClassId: turmas,
-						UserId: usuarios,
-						BondId: vinculos
-					}, 'Process/Post', false);
-					console.log("Processo enviado! Voltando a tela de Controle de Importações...");
+					await axios.post(`http://localhost:8080/${schemaKey}/PostBulk`, data, JSONHeaders)
+					.then(response => {
+						console.log(`Enviado com sucesso (schemaKey: ${schemaKey})`);
+					})
+					.catch(error => {
+						console.error(`Erro no PostBulk (schemaKey: ${schemaKey}): `, error?.message ?? error);
+						semErros = false;
+					});
+				}
+
+				await enviarBulk(this.listaDisciplinas, "Discipline");
+				await enviarBulk(this.listaTurmas, "Class");
+				await enviarBulk(this.listaUsuarios, "User");
+				await enviarBulk(this.listaVinculos, "Bond");
+				console.log(`Upload de dados realizado com sucesso, criando processo!`);
+
+				if(semErros) {
+					const processo = await axios.put(`http://localhost:8080/Process/Put/${this.processoAtual._id}`, {
+						periodoInicio: this.processoAtual.periodoInicio,
+						periodoTermino: this.processoAtual.periodoTermino,
+						inicio: this.processoAtual.inicio,
+						termino: new Date()
+					})
+					.then(response => {
+						console.log("Processo enviado! Voltando a tela de Controle de Importações...");
+						this.processos = [];
+						this.mudarTela("controleDados");
+
+						this.processoAtual = null;
+						this.listaAtual = null;
+
+						this.arquivoDisciplinas = null;
+						this.listaDisciplinas = [];
+						this.arquivoTurmas = null;
+						this.listaTurmas = [];
+						this.arquivoUsuarios = null;
+						this.listaUsuarios = [];
+						this.arquivoVinculos = null;
+						this.listaVinculos = [];
+					})
+					.catch(error => {
+						console.error(`Erro ao atualizar processo (ID: ${id}): `, error?.message ?? error);
+					});
 					return true;
-				} catch (error) {
-					console.error("Erro ao enviar dados: " + error);
+				}
+				else {
+					//TO DO: Deleta os que já foram enviados para evitar dados duplicados
+					return true;
 				}
 			} else {
 				console.log("Nenhum dado para enviar.");
@@ -228,6 +350,7 @@ export default {
 
 				return planilha.map(obj => Object.fromEntries(Object.entries(obj).map(function([chave, valor]) {
 					//console.log(chave, valor);
+					if(chave == "processId") return [chave, valor];
 					chave = formatacao(chave);
 					return [renomear.get(chave) || chave, valor];
 				})));
@@ -238,13 +361,13 @@ export default {
 					const arrayBuffer = await file.arrayBuffer();
 					const workbook = XLSX.read(arrayBuffer, { type: "array", cellText: true, cellDates: true });
 					for (const planilhaNome of workbook.SheetNames) {
-						const planilha = XLSX.utils.sheet_to_json(workbook.Sheets[planilhaNome]);
+						const id = this.processoAtual._id;
+						const planilha = XLSX.utils.sheet_to_json(workbook.Sheets[planilhaNome]).map(item => ({ ...item, processId: id }));
 						switch(formatacao(planilhaNome).toLowerCase()) {
 							case "disciplinas":
 							case "disciplina":
 								this.arquivoDisciplinas = file;
 								this.listaDisciplinas = converter({"Periodo Letivo": "periodo", "Data de Inicio": "inicio", "Data de Termino": "termino", "Periodo Curricular": "periodoCurricular"}, planilha);
-
 								break;
 							case "turmas":
 							case "turma":
@@ -275,7 +398,7 @@ export default {
 
 		async atualizarProcessos() {
 			const url = `http://localhost:8080/Process/Get`;
-			axios.get(url)
+			axios.get(url, this.JSONHeaders)
 			.then(response => {
 				console.log("Processos recebidos:", response.data?.length ?? 0);
 				if (response.data && response.data.length > 0) {
@@ -344,31 +467,6 @@ export default {
 			const base = partes.join(".");
 			const truncado = base.slice(0, limite - extensao.length - 5); // "....ext"
 			return `${truncado}....${extensao}`;
-		},
-		
-	
-		// Função para validar e enviar arquivo para a API
-		async enviarDadosParaBD(files, schemaKey, doPut) {
-			if (!schemaKey) {
-				console.log("Nenhuma schemaKey fornecida.");
-				return null;
-			}
-
-			try {
-				console.log(JSON.stringify(files));
-				// Substitui ':schemaKey' na URL pelo valor real do schemaKey
-				const url = `http://localhost:8080/${schemaKey}`;
-				const headers = {headers: {'Content-Type': 'application/json'}};
-				const response = await (doPut ? axios.put(url, files, headers) : axios.post(url, files, headers));
-
-				// Verificar a resposta
-				//console.log(response);
-				//console.log(`Upload realizado com sucesso!`);
-				return response;
-			} catch (error) {
-				console.log(error.response ? `Erro no upload: ${error.response.data.message || "Erro desconhecido"}` : "Erro na conexão com o servidor.");
-			}
-			return null;
 		}
 	}
 }

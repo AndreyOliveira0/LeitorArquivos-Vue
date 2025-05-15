@@ -34,7 +34,7 @@ __decorate([
     __metadata("design:type", String)
 ], Bond.prototype, "nome", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, unique: true }),
+    (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
 ], Bond.prototype, "matricula", void 0);
 __decorate([

@@ -12,7 +12,7 @@ export class Class extends Document{
   @Prop({ type: String})
   turma: String;
 
-  @Prop({ type: String, unique: true})
+  @Prop({ type: String})
   codigo: String;
 
   @Prop({ type: String })

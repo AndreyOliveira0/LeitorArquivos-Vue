@@ -16,6 +16,14 @@ export class UserController {
   async create(@Body() data: UserDto): Promise<any> {
     return this.UserService.create(data);
   }
+    
+  @Post('PostBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @ApiOperation({ summary: 'Envia várias usuários em um array' })
+  @ApiResponse({ status: 200, description: 'Usuários Enviados com sucesso.' })
+  async insertMany(@Body() data: UserDto[]): Promise<any> {
+    return this.UserService.insertMany(data);
+  }
 
   @Get('Get')
   @ApiOperation({ summary: 'Lista todos os usuários' })
@@ -29,6 +37,13 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Usuário retornado com sucesso.' })
   async findUnique(@Param('matricula') matricula: string): Promise<User> {
     return this.UserService.findByMatricula(matricula);
+  }
+  
+  @Get('GetByProcess/:processId')
+  @ApiOperation({ summary: 'Lista todos os usuários relacionados a um processo' })
+  @ApiResponse({ status: 200, description: 'Usuários retornados com sucesso.' })
+  async findByProcessId(@Param('processId') processId: string): Promise<User[]> {
+    return this.UserService.findByProcessId(processId);
   }
 
   @Put('Put/:matricula')
@@ -53,5 +68,12 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Usuário deletado com sucesso.' })
   async delete(@Param('matricula') matricula: string): Promise<User> {
     return this.UserService.delete(matricula);
+  }
+
+  @Delete('DeleteByProcess/:processId')
+  @ApiOperation({ summary: 'Deleta todas os usuários com o processId especificado' })
+  @ApiResponse({ status: 200, description: 'Usuários deletados com sucesso.' })
+  async deleteByProcessId(@Param('processId') processId: string): Promise<{ deletedCount: number }> {
+    return this.UserService.deleteByProcessId(processId);
   }
 }

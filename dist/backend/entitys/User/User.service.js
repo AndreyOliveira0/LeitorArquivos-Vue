@@ -22,11 +22,16 @@ let UserService = class UserService {
         this.UserModel = UserModel;
     }
     async create(data) {
-        const newUser = new this.UserModel(data);
-        return await newUser.save();
+        return await this.UserModel.create(data);
+    }
+    async insertMany(data) {
+        return await this.UserModel.insertMany(data, { ordered: true });
     }
     async findAll() {
         return this.UserModel.find().exec();
+    }
+    async findByProcessId(processId) {
+        return await this.UserModel.find({ processId }).exec();
     }
     async findById(matricula) {
         const User = await this.UserModel.findById(matricula).exec();
@@ -75,6 +80,10 @@ let UserService = class UserService {
         }
         // Retorna o documento excluído
         return deletedUser;
+    }
+    async deleteByProcessId(processId) {
+        const result = await this.UserModel.deleteMany({ processId }).exec();
+        return { deletedCount: result.deletedCount };
     }
 };
 exports.UserService = UserService;

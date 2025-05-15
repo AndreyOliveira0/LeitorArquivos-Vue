@@ -17,6 +17,14 @@ export class DisciplineController {
     return this.DisciplineService.create(data);
   }
 
+  @Post('PostBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @ApiOperation({ summary: 'Envia várias disciplinas em um array' })
+  @ApiResponse({ status: 200, description: 'Disciplinas Enviadas com sucesso.' })
+  async insertMany(@Body() data: DisciplineDto[]): Promise<any> {
+    return this.DisciplineService.insertMany(data);
+  }
+
   @Get('Get')
   @ApiOperation({ summary: 'Lista todas as disciplinas' })
   @ApiResponse({ status: 200, description: 'Lista de disciplinas retornada com sucesso.' })
@@ -24,11 +32,11 @@ export class DisciplineController {
     return this.DisciplineService.findAll();
   }
 
-  @Get('Get/:codigo')
-  @ApiOperation({ summary: 'Lista uma única disciplina' })
-  @ApiResponse({ status: 200, description: 'Disciplina retornada com sucesso.' })
-  async findUnique(@Param('codigo') codigo: string): Promise<Discipline> {
-    return this.DisciplineService.findByCodigo(codigo);
+  @Get('GetByProcess/:processId')
+  @ApiOperation({ summary: 'Lista todas as disciplina relacionadas a um processo' })
+  @ApiResponse({ status: 200, description: 'Disciplinas retornadas com sucesso.' })
+  async findByProcessId(@Param('processId') processId: string): Promise<Discipline[]> {
+    return this.DisciplineService.findByProcessId(processId);
   }
 
   @Put('Put/:codigo')
@@ -55,4 +63,10 @@ export class DisciplineController {
     return this.DisciplineService.delete(codigo);
   }
 
+  @Delete('DeleteByProcess/:processId')
+  @ApiOperation({ summary: 'Deleta todas as disciplinas com o processId especificado' })
+  @ApiResponse({ status: 200, description: 'Disciplinas deletadas com sucesso.' })
+  async deleteByProcessId(@Param('processId') processId: string): Promise<{ deletedCount: number }> {
+    return this.DisciplineService.deleteByProcessId(processId);
+  }
 }

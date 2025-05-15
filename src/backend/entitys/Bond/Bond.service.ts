@@ -9,12 +9,19 @@ export class BondService {
   constructor(@InjectModel(Bond.name) private readonly BondModel: Model<Bond>) {}
 
   async create(data: BondDto): Promise<Bond> {
-    const newBond = new this.BondModel(data);
-    return await newBond.save();
+    return await this.BondModel.create(data);
+  }
+
+  async insertMany(data: BondDto[]): Promise<Bond[]> {
+    return await this.BondModel.insertMany(data, { ordered: true });
   }
 
   async findAll(): Promise<Bond[]> {
     return this.BondModel.find().exec();
+  }
+  
+  async findByProcessId(processId: string): Promise<Bond[]> {
+    return await this.BondModel.find({processId}).exec();
   }
 
   async findById(matricula: string): Promise<Bond> {
@@ -77,5 +84,8 @@ export class BondService {
     return deletedBond;
   }
 
-
+  async deleteByProcessId(processId: string): Promise<{ deletedCount: number }> {
+    const result = await this.BondModel.deleteMany({ processId }).exec();
+    return { deletedCount: result.deletedCount };
+  }
 }

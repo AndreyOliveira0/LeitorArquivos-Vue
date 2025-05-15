@@ -22,8 +22,13 @@ let DisciplineService = class DisciplineService {
         this.DisciplineModel = DisciplineModel;
     }
     async create(data) {
-        const newDiscipline = new this.DisciplineModel(data);
-        return await newDiscipline.save();
+        return await this.DisciplineModel.create(data);
+    }
+    async insertMany(data) {
+        return await this.DisciplineModel.insertMany(data, { ordered: true });
+    }
+    async findByProcessId(processId) {
+        return await this.DisciplineModel.find({ processId }).exec();
     }
     async findAll() {
         return this.DisciplineModel.find().exec();
@@ -75,6 +80,10 @@ let DisciplineService = class DisciplineService {
         }
         // Retorna o documento excluído
         return deletedDiscipline;
+    }
+    async deleteByProcessId(processId) {
+        const result = await this.DisciplineModel.deleteMany({ processId }).exec();
+        return { deletedCount: result.deletedCount };
     }
 };
 exports.DisciplineService = DisciplineService;

@@ -22,11 +22,16 @@ let ClassService = class ClassService {
         this.ClassModel = ClassModel;
     }
     async create(data) {
-        const newClass = new this.ClassModel(data);
-        return await newClass.save();
+        return await this.ClassModel.create(data);
+    }
+    async insertMany(data) {
+        return await this.ClassModel.insertMany(data, { ordered: true });
     }
     async findAll() {
         return this.ClassModel.find().exec();
+    }
+    async findByProcessId(processId) {
+        return await this.ClassModel.find({ processId }).exec();
     }
     async findById(codigo) {
         const Class = await this.ClassModel.findById(codigo).exec();
@@ -75,6 +80,10 @@ let ClassService = class ClassService {
         }
         // Retorna o documento excluído
         return deletedClass;
+    }
+    async deleteByProcessId(processId) {
+        const result = await this.ClassModel.deleteMany({ processId }).exec();
+        return { deletedCount: result.deletedCount };
     }
 };
 exports.ClassService = ClassService;

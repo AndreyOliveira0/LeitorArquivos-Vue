@@ -22,11 +22,16 @@ let BondService = class BondService {
         this.BondModel = BondModel;
     }
     async create(data) {
-        const newBond = new this.BondModel(data);
-        return await newBond.save();
+        return await this.BondModel.create(data);
+    }
+    async insertMany(data) {
+        return await this.BondModel.insertMany(data, { ordered: true });
     }
     async findAll() {
         return this.BondModel.find().exec();
+    }
+    async findByProcessId(processId) {
+        return await this.BondModel.find({ processId }).exec();
     }
     async findById(matricula) {
         const Bond = await this.BondModel.findById(matricula).exec();
@@ -75,6 +80,10 @@ let BondService = class BondService {
         }
         // Retorna o documento excluído
         return deletedBond;
+    }
+    async deleteByProcessId(processId) {
+        const result = await this.BondModel.deleteMany({ processId }).exec();
+        return { deletedCount: result.deletedCount };
     }
 };
 exports.BondService = BondService;

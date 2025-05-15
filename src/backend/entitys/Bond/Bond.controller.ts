@@ -17,6 +17,14 @@ export class BondController {
     return this.BondService.create(data);
   }
 
+  @Post('PostBulk')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @ApiOperation({ summary: 'Envia várias usuários em um array' })
+  @ApiResponse({ status: 200, description: 'Usuários Enviados com sucesso.' })
+  async insertMany(@Body() data: BondDto[]): Promise<any> {
+    return this.BondService.insertMany(data);
+  }
+
   @Get('Get')
   @ApiOperation({ summary: 'Lista todos os vínculos' })
   @ApiResponse({ status: 200, description: 'Lista de vínculos retornada com sucesso.' })
@@ -29,6 +37,13 @@ export class BondController {
   @ApiResponse({ status: 200, description: 'Vínculo retornado com sucesso.' })
   async findUnique(@Param('matricula') matricula: string): Promise<Bond> {
     return this.BondService.findByMatricula(matricula);
+  }
+  
+  @Get('GetByProcess/:processId')
+  @ApiOperation({ summary: 'Lista todos os vínculos relacionados a um processo' })
+  @ApiResponse({ status: 200, description: 'Vínculos retornados com sucesso.' })
+  async findByProcessId(@Param('processId') processId: string): Promise<Bond[]> {
+    return this.BondService.findByProcessId(processId);
   }
 
   @Put('Put/:matricula')
@@ -55,4 +70,10 @@ export class BondController {
     return this.BondService.delete(matricula);
   }
 
+  @Delete('DeleteByProcess/:processId')
+  @ApiOperation({ summary: 'Deleta todas os usuários com o processId especificado' })
+  @ApiResponse({ status: 200, description: 'Usuários deletados com sucesso.' })
+  async deleteByProcessId(@Param('processId') processId: string): Promise<{ deletedCount: number }> {
+    return this.BondService.deleteByProcessId(processId);
+  }
 }

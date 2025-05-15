@@ -14,7 +14,7 @@ exports.DisciplineSchema = exports.Discipline = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let Discipline = class Discipline extends mongoose_2.Document {
-    constructor(periodo, disciplina, codigo, inicio, termino, categoria, periodoCurricular, estado, campus, status, processId) {
+    constructor(periodo, disciplina, codigo, inicio, termino, categoria, periodoCurricular, estado, campus, processId) {
         super();
         this.periodo = periodo;
         this.disciplina = disciplina;
@@ -25,7 +25,6 @@ let Discipline = class Discipline extends mongoose_2.Document {
         this.periodoCurricular = periodoCurricular;
         this.estado = estado;
         this.campus = campus;
-        this.status = status;
         this.processId = processId;
     }
 };
@@ -39,7 +38,7 @@ __decorate([
     __metadata("design:type", String)
 ], Discipline.prototype, "disciplina", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, unique: true }),
+    (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
 ], Discipline.prototype, "codigo", void 0);
 __decorate([
@@ -69,13 +68,9 @@ __decorate([
 __decorate([
     (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
-], Discipline.prototype, "status", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ type: String }),
-    __metadata("design:type", String)
 ], Discipline.prototype, "processId", void 0);
 exports.Discipline = Discipline = __decorate([
     (0, mongoose_1.Schema)({ collection: 'Discipline' }),
-    __metadata("design:paramtypes", [String, String, String, Date, Date, String, Number, String, String, String, String])
+    __metadata("design:paramtypes", [String, String, String, Date, Date, String, Number, String, String, String])
 ], Discipline);
 exports.DisciplineSchema = mongoose_1.SchemaFactory.createForClass(Discipline);

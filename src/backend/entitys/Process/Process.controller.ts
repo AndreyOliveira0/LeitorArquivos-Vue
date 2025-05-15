@@ -24,19 +24,19 @@ export class ProcessController {
     return this.ProcessService.findAll();
   }
 
-  @Get('Get/:id')
+  @Get('Get/:_id')
   @ApiOperation({ summary: 'Lista um único processo' })
   @ApiResponse({ status: 200, description: 'Processo retornado com sucesso.' })
-  async findUnique(@Param('id') id: string): Promise<Process> {
+  async findUnique(@Param('_id') id: string): Promise<Process> {
     return this.ProcessService.findById(id);
   }
 
-  @Put('Put/:id')
+  @Put('Put/:_id')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de um único processo' })
   @ApiResponse({ status: 200, description: 'Processo atualizado com sucesso.' })
   async update(
-    @Param('id') id: string,
+    @Param('_id') id: string,
     @Body() data: ProcessDto
   ): Promise<Process> {
     return this.ProcessService.update(id, data);
@@ -48,10 +48,10 @@ export class ProcessController {
     return this.ProcessService.updateBulk(data);
   }
 
-  @Delete('Delete/:id')
+  @Delete('Delete/:_id')
   @ApiOperation({ summary: 'Deleta um único processo' })
   @ApiResponse({ status: 200, description: 'Processo deletado com sucesso.' })
-  async delete(@Param('id') id: string): Promise<Process> {
+  async delete(@Param('_id') id: string): Promise<Process> {
     return this.ProcessService.delete(id);
   }
 

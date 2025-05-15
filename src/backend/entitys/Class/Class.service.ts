@@ -9,12 +9,19 @@ export class ClassService {
   constructor(@InjectModel(Class.name) private readonly ClassModel: Model<Class>) {}
 
   async create(data: ClassDto): Promise<Class> {
-    const newClass = new this.ClassModel(data);
-    return await newClass.save();
+    return await this.ClassModel.create(data);
+  }
+
+  async insertMany(data: ClassDto[]): Promise<Class[]> {
+    return await this.ClassModel.insertMany(data, { ordered: true });
   }
 
   async findAll(): Promise<Class[]> {
     return this.ClassModel.find().exec();
+  }
+  
+  async findByProcessId(processId: string): Promise<Class[]> {
+    return await this.ClassModel.find({processId}).exec();
   }
 
   async findById(codigo: string): Promise<Class> {
@@ -77,5 +84,8 @@ export class ClassService {
     return deletedClass;
   }
 
-
+  async deleteByProcessId(processId: string): Promise<{ deletedCount: number }> {
+    const result = await this.ClassModel.deleteMany({ processId }).exec();
+    return { deletedCount: result.deletedCount };
+  }
 }

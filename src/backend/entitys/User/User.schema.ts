@@ -12,7 +12,7 @@ export class User extends Document{
   @Prop({ type: String})
   nome: String;
 
-  @Prop({ type: String, unique: true })
+  @Prop({ type: String})
   matricula: String;
 
   @Prop({ type: String})

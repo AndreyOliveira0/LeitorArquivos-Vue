@@ -9,8 +9,15 @@ export class DisciplineService {
   constructor(@InjectModel(Discipline.name) private readonly DisciplineModel: Model<Discipline>) {}
 
   async create(data: DisciplineDto): Promise<Discipline> {
-    const newDiscipline = new this.DisciplineModel(data);
-    return await newDiscipline.save();
+    return await this.DisciplineModel.create(data);
+  }
+  
+  async insertMany(data: DisciplineDto[]): Promise<Discipline[]> {
+    return await this.DisciplineModel.insertMany(data, { ordered: true });
+  }
+  
+  async findByProcessId(processId: string): Promise<Discipline[]> {
+    return await this.DisciplineModel.find({processId}).exec();
   }
 
   async findAll(): Promise<Discipline[]> {
@@ -78,4 +85,8 @@ export class DisciplineService {
   }
 
 
+  async deleteByProcessId(processId: string): Promise<{ deletedCount: number }> {
+    const result = await this.DisciplineModel.deleteMany({ processId }).exec();
+    return { deletedCount: result.deletedCount };
+  }
 }

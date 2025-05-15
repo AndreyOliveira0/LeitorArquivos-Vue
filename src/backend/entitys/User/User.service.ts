@@ -9,12 +9,19 @@ export class UserService {
   constructor(@InjectModel(User.name) private readonly UserModel: Model<User>) {}
 
   async create(data: UserDto): Promise<User> {
-    const newUser = new this.UserModel(data);
-    return await newUser.save();
+    return await this.UserModel.create(data);
+  }
+
+  async insertMany(data: UserDto[]): Promise<User[]> {
+    return await this.UserModel.insertMany(data, { ordered: true });
   }
 
   async findAll(): Promise<User[]> {
     return this.UserModel.find().exec();
+  }
+
+  async findByProcessId(processId: string): Promise<User[]> {
+    return await this.UserModel.find({processId}).exec();
   }
 
   async findById(matricula: string): Promise<User> {
@@ -77,5 +84,8 @@ export class UserService {
     return deletedUser;
   }
 
-
+  async deleteByProcessId(processId: string): Promise<{ deletedCount: number }> {
+    const result = await this.UserModel.deleteMany({ processId }).exec();
+    return { deletedCount: result.deletedCount };
+  }
 }

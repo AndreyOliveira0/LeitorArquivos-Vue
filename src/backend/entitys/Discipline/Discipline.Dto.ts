@@ -41,10 +41,6 @@ export abstract class DisciplineDto {
     @ApiProperty({ example: 'Aracaju' })
     campus: String;
 
-    @IsString()
-    @ApiProperty({ example: 'Em Andamento' })
-    status: String;
-
     @Matches(/^[A-Za-z0-9]+$/, { message: 'Id do processo deve conter apenas caracteres alfanuméricos.' })
     @IsString()
     @ApiProperty({ example: 'e3e03e39ie3jroefj484fd5gd84' })
@@ -69,8 +65,6 @@ export abstract class DisciplineDto {
         this.estado= partial.estado ?? "";
     
         this.campus= partial.campus ?? "";
-    
-        this.status= partial.status ?? "";
 
         this.processId= partial.processId ?? "";
     }

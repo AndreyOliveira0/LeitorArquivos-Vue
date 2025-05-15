@@ -24,11 +24,17 @@ let BondController = class BondController {
     async create(data) {
         return this.BondService.create(data);
     }
+    async insertMany(data) {
+        return this.BondService.insertMany(data);
+    }
     async findAll() {
         return this.BondService.findAll();
     }
     async findUnique(matricula) {
         return this.BondService.findByMatricula(matricula);
+    }
+    async findByProcessId(processId) {
+        return this.BondService.findByProcessId(processId);
     }
     async update(matricula, data) {
         return this.BondService.update(matricula, data);
@@ -38,6 +44,9 @@ let BondController = class BondController {
     }
     async delete(matricula) {
         return this.BondService.delete(matricula);
+    }
+    async deleteByProcessId(processId) {
+        return this.BondService.deleteByProcessId(processId);
     }
 };
 exports.BondController = BondController;
@@ -51,6 +60,16 @@ __decorate([
     __metadata("design:paramtypes", [Bond_Dto_1.BondDto]),
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('PostBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    (0, swagger_1.ApiOperation)({ summary: 'Envia várias usuários em um array' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuários Enviados com sucesso.' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], BondController.prototype, "insertMany", null);
 __decorate([
     (0, common_1.Get)('Get'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todos os vínculos' }),
@@ -68,6 +87,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "findUnique", null);
+__decorate([
+    (0, common_1.Get)('GetByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Lista todos os vínculos relacionados a um processo' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Vínculos retornados com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BondController.prototype, "findByProcessId", null);
 __decorate([
     (0, common_1.Put)('Put/:matricula'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
@@ -96,6 +124,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Delete)('DeleteByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Deleta todas os usuários com o processId especificado' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuários deletados com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BondController.prototype, "deleteByProcessId", null);
 exports.BondController = BondController = __decorate([
     (0, swagger_1.ApiTags)('Bond'),
     (0, common_1.Controller)('Bond'),

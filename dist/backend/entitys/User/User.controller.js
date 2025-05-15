@@ -24,11 +24,17 @@ let UserController = class UserController {
     async create(data) {
         return this.UserService.create(data);
     }
+    async insertMany(data) {
+        return this.UserService.insertMany(data);
+    }
     async findAll() {
         return this.UserService.findAll();
     }
     async findUnique(matricula) {
         return this.UserService.findByMatricula(matricula);
+    }
+    async findByProcessId(processId) {
+        return this.UserService.findByProcessId(processId);
     }
     async update(matricula, data) {
         return this.UserService.update(matricula, data);
@@ -38,6 +44,9 @@ let UserController = class UserController {
     }
     async delete(matricula) {
         return this.UserService.delete(matricula);
+    }
+    async deleteByProcessId(processId) {
+        return this.UserService.deleteByProcessId(processId);
     }
 };
 exports.UserController = UserController;
@@ -51,6 +60,16 @@ __decorate([
     __metadata("design:paramtypes", [User_Dto_1.UserDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('PostBulk'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
+    (0, swagger_1.ApiOperation)({ summary: 'Envia várias usuários em um array' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuários Enviados com sucesso.' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "insertMany", null);
 __decorate([
     (0, common_1.Get)('Get'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todos os usuários' }),
@@ -68,6 +87,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findUnique", null);
+__decorate([
+    (0, common_1.Get)('GetByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Lista todos os usuários relacionados a um processo' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuários retornados com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "findByProcessId", null);
 __decorate([
     (0, common_1.Put)('Put/:matricula'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
@@ -96,6 +124,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Delete)('DeleteByProcess/:processId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Deleta todas os usuários com o processId especificado' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuários deletados com sucesso.' }),
+    __param(0, (0, common_1.Param)('processId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "deleteByProcessId", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)('User'),
     (0, common_1.Controller)('User'),
