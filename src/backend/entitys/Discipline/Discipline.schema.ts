@@ -9,68 +9,58 @@ export type DisciplineDocument = HydratedDocument<Discipline>;
 
 @Schema({collection: 'Discipline' })
 export class Discipline extends Document{
-  @Prop({ type: Number})
-  id: number;
-
-  @Prop({ type: Number})
-  school_period_id: number;
-
-  @Prop({ type: Number})
-  academic_class_id: number;
+  @Prop({ type: String})
+  periodo: String;
 
   @Prop({ type: String})
-  name: string;
+  disciplina: String;
 
   @Prop({ type: String})
-  code: string;
+  codigo: String;
+
+  @Prop({ type: Date})
+  inicio: Date;
+
+  @Prop({ type: Date})
+  termino: Date;
 
   @Prop({ type: String })
-  shift: string;
+  categoria: string;
 
-  @Prop({ type: Boolean})
-  active: boolean;
+  @Prop({ type: Number})
+  periodoCurricular: Number;
 
-  @Prop({ type: Boolean})
-  is_exceptional: boolean;
+  @Prop({ type: String})
+  estado: String;
 
   @Prop({ type: String })
-  integration: string;
+  campus: string;
 
-  @Prop({type:Date})
-  created_at: Date;
+  @Prop({ type: String })
+  processId: String;
 
-  @Prop({type:Date})
-  updated_at: Date;
-
-  @Prop({type:Date})
-  deleted_at: Date;
-
-  constructor(id: number, school_period_id: number, academic_class_id: number, name: string, code: string, shift: string, active: boolean, is_exceptional: boolean, integration: string, created_at: Date, updated_at: Date, deleted_at: Date){
+  constructor(periodo: String, disciplina: String, codigo: String, inicio: Date, termino: Date, categoria: string, periodoCurricular: Number, estado: String, campus: string, processId: String){
     super();
 
-    this.id= id;
+    this.periodo= periodo;
 
-    this.school_period_id= school_period_id;
+    this.disciplina= disciplina;
 
-    this.academic_class_id= academic_class_id;
+    this.codigo= codigo;
 
-    this.name= name;
+    this.inicio= inicio;
 
-    this.code= code;
+    this.termino= termino;
 
-    this.shift= shift;
+    this.categoria= categoria;
 
-    this.active= active;
+    this.periodoCurricular= periodoCurricular;
 
-    this.is_exceptional= is_exceptional;
+    this.estado= estado;
 
-    this.integration= integration;
+    this.campus= campus;
 
-    this.created_at= created_at;
-
-    this.updated_at= updated_at;
-
-    this.deleted_at= deleted_at;
+    this.processId= processId;
   }
 }
 export const DisciplineSchema = SchemaFactory.createForClass(Discipline);

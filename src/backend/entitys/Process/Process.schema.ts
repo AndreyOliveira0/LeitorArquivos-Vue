@@ -8,38 +8,29 @@ export type ProcessDocument = HydratedDocument<Process>;
 
 @Schema({ collection: 'Process' })
 export class Process extends Document{
-  @Prop({ type: Number})
-  id: number;
+  @Prop({ type: String})
+  periodoInicio: String;
 
-  @Prop({ type: Number})
-  idAcademicClass: number;
+  @Prop({ type: String})
+  periodoTermino: String;
 
-  @Prop({ type: Number})
-  idDiscipline: number;
+  @Prop({ type: Date})
+  inicio: Date;
 
-  @Prop({ type: Number})
-  idDisciplineUser: number;
+  @Prop({ type: Date})
+  termino: Date;
 
-  @Prop({ type: Number})
-  idSchoolPeriod: number;
 
-  @Prop({ type: Number})
-  idUser: number;
-
-  constructor(id: number, idAcademicClass: number, idDiscipline: number, idDisciplineUser: number, idSchoolPeriod: number, idUser: number){
+  constructor(periodoInicio:String, periodoTermino:String, inicio:Date, termino:Date){
     super();
 
-    this.id= id;
+    this.periodoInicio= periodoInicio;
 
-    this.idAcademicClass= idAcademicClass;
+    this.periodoTermino= periodoTermino;
 
-    this.idDiscipline= idDiscipline;
+    this.inicio= inicio;
 
-    this.idDisciplineUser= idDisciplineUser;
-
-    this.idSchoolPeriod= idSchoolPeriod;
-
-    this.idUser= idUser;
+    this.termino= termino;
   }
 }
 export const ProcessSchema = SchemaFactory.createForClass(Process);

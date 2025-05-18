@@ -1,428 +1,292 @@
-<script>
-import axios from 'axios';
-import * as XLSX from "xlsx"; // Usado para o suporte a arquivos do Excel
-export default {
-	data() {
-		return {
-			formatos: [".csv", ".xlsx", ".json", ".xml"],
-			armazenadoMsg: null,
-			armazenadoCor: "gray",
-			lerSelecionado: false,
-			apagarSelecionado: false,
-			enviarSelecionado: false,
-			arquivoCarregado: null,
-			arquivoSelecionado: null,
-			mensagem: null,
-			mensagemCor: "gray",
-			arquivosArmazenados: new Map()
-		}
-	},
-	mounted() {
-		// carrega como array e converte para map
-		const arquivosSalvos = localStorage.getItem("arquivosArmazenados");
-		if(arquivosSalvos) {
-			JSON.parse(arquivosSalvos).forEach(element => {
-				this.arquivosArmazenados.set(element.name, element.content);
-				//console.log(`Encontrado: "${element.name}", tamanho: ${element.content.length}`);
-			});
-		}
-	},
-	methods: {
-		// Botões
-		lerPressionado(event) {
-			this.armazenadoMsg = null;
-			this.armazenadoCor = "gray";
-			this.lerSelecionado = true;
-		},
-		apagarPressionado(event) {
-			this.armazenadoMsg = null;
-			this.armazenadoCor = "gray";
-			this.apagarSelecionado = true;
-		},
-		enviarPressionado(event) {
-			this.armazenadoMsg = null;
-			this.armazenadoCor = "gray";
-			this.arquivoSelecionado = null;
-			this.enviarSelecionado = true;
-		},
-		voltarPressionado(event) {
-			if(this.arquivoCarregado) {
-				this.arquivoCarregado = null;
-			} else {
-				this.mensagem = null;
-				this.lerSelecionado = false;
-				this.apagarSelecionado = false;
-				this.enviarSelecionado = false;
-			}
-		},
-		//Modificar
-		arquivoEnviado(event) {
-			const file = event.target.files[0];
-     		if (!file) return;
-
-			const fileExtension = file.name.split(".").pop();
-			if(this.formatos.includes("." + fileExtension.toLowerCase())) {
-				this.arquivoSelecionado = file;
-			}
-		},
-		enviarBDPressionado(event){
-			console.log("Botão pressionado");
-			this.armazenadoMsg = "Enviando para o banco de dados...";
-			this.armazenadoCor = "blue"; 
-			this.enviarBDSelecionado = true; 
-
-			if (this.arquivoSelecionado) {
-				console.log("Condição Verificada");
-				try {
-					this.enviarDadosParaBD(this.arquivoSelecionado);
-					this.armazenadoMsg = "Dados enviados com sucesso!";
-					this.armazenadoCor = "green"; 
-				} catch (error) {
-					this.armazenadoMsg = "Erro ao enviar dados.";
-					this.armazenadoCor = "red"; 
-				}
-			} else {
-				this.armazenadoMsg = "Nenhum dado para enviar.";
-				this.armazenadoCor = "orange";
-			}
-		},
-
-		// Armazena arquivo selecionado e salva no cache
-		uploadArquivo(event) {
-			const file = event.target.files[0];
-     		if (!file) {
-				this.armazenadoMsg = "Operação cancelada.";
-				this.armazenadoCor = "gray";
-				return;
-			}
-
-			const fileName = file.name;
-			const fileExtension = fileName.split(".").pop();
-			if(!this.formatos.includes("." + fileExtension.toLowerCase())) {
-				this.armazenadoMsg = "Este formato de arquivo não é permitido! Use apenas: " + this.formatos.join(", ");
-				this.armazenadoCor = "red";
-				return;
-			}
-
-			this.armazenadoMsg = "Carregando...";
-			this.armazenadoCor = "gray";
-			let acao = this.arquivosArmazenados.has(fileName) ? "sobreescrito" : "carregado";
-
-			const reader = new FileReader();
-			if(fileExtension.toLowerCase() == "xlsx") {
-				// Salva XLSX como Base64 para evitar corrupção de dados
-				reader.onload = () => {
-					const readerResult = new Uint8Array(reader.result).reduce((data, byte) => data + String.fromCharCode(byte), "");
-					this.arquivosArmazenados.set(fileName, btoa(readerResult));
-					this.armazenadoMsg = `Arquivo "${fileName}" ${acao} com sucesso!`;
-					this.armazenadoCor = "green";
-					this.salvar();
-				}
-				reader.readAsArrayBuffer(file);
-			} else {
-				reader.onload = () => {
-					this.arquivosArmazenados.set(fileName, reader.result);
-					this.armazenadoMsg = `Arquivo "${fileName}" ${acao} com sucesso!`;
-					this.armazenadoCor = "green";
-					this.salvar();
-				}
-				reader.readAsText(file);
-			}
-		},
-
-		// Apaga arquivo selecionado depois de confirmação
-		apagarArquivo(event) {
-			this.arquivosArmazenados.delete(this.arquivoCarregado);
-			this.arquivoCarregado = null;
-			this.salvar();
-		},
-
-		// Faz parse do(s) arquivo(s) selecionado(s) e o(s) representa em forma de <li> e <ul>
-		visualizarArquivo(event) {
-			let data = "";
-			// Suporte a JSON
-			let jsonNum = 1;
-			function recursivaJson(subdata) {
-				if (Array.isArray(subdata)) {
-					data += "<ul>";
-					subdata.forEach((element) => {
-						if(typeof element === "object") {
-							data += `<li>#${jsonNum}:`;
-							recursivaJson(element);
-							data += "</li>";
-							jsonNum++;
-						}
-						else {
-							recursivaJson(element);
-						}
-					});
-					data += "</ul>";
-				} else if (typeof subdata === "object") {
-					Object.entries(subdata).forEach(([key, value]) => {
-						data += "<ul><li>";
-						if(Array.isArray(value) || typeof value === "object")
-						{
-							data += `${key}:`;
-							recursivaJson(value);
-						}
-						else data += `${key}: ${value}`;
-						data += "</li></ul>";
-					});
-				} else {
-					data += `<li>${subdata}</li>`;
-				}
-			}
-
-			// Suporte a XML
-			function recursivaXml(subdata) {
-				if(subdata instanceof Element) {
-					for (child of subdata.children) {
-						recursivaXml(subdata.children);
-					}
-				} else if(subdata instanceof HTMLCollection) {
-					for (const element of subdata) {
-						let atributos = [];
-						let elementName = element.tagName;
-						for (const attr of element.attributes) {
-							atributos.push(`${attr.name}: ${attr.value}`);
-						}
-						if(atributos.length > 0) elementName += ` (${atributos.join(", ")})`;
-						
-						data += "<li>" + elementName;
-						if(element.children.length > 0) {
-							data += "<ul>";
-							recursivaXml(element.children);
-							data += "</ul>";
-						} else {
-							data += `: ${element.textContent}`;
-						}
-						data += "</li>";
-					}
-				}
-			}
-
-			// Suporte a .XLSX e .CSV
-			function visualizarPlanilha(linhas) {
-				data += "<ul>";
-				const nomeColunas = linhas[0].split(";");
-				for (let i = 1 ; i < linhas.length ; i++) {
-					let dados = linhas[i].split(";");
-					if(dados.length <= 1 && dados[0] == "") continue;
-
-					data += `<li>#${i}:<ul>`;
-					for (let j = 0 ; j < dados.length ; j++) {
-						data += `<li>${nomeColunas[j]}: ${dados[j]}</li>`;
-					}
-					data += "</ul></li>";
-				}
-				data += "</ul>";
-			}
-
-			// Carregar único arquivo ou lista
-			let primeiro = true;
-			function _carregar(content, name) {
-				if(!primeiro) data += "<br>";
-				data += `<li><strong>${name}</strong>`;
-				switch(name.split('.').pop().toLowerCase()) {
-					case "json": {
-						recursivaJson(JSON.parse(content));
-						jsonNum = 1;
-						break;
-					}
-					case "xml": {
-						data += "<ul>";
-						let xml = new DOMParser().parseFromString(content, "text/xml");
-						recursivaXml(xml.documentElement.children);
-						data += "</ul>";
-						break;
-					}
-					case "xlsx": {
-						// Converte Planilha XLSX para uma planilha simples CSV
-						try {
-							// Converte planilha salva em Base64 de volta para ArrayBuffer
-							const binaryStr = atob(content);
-							const len = binaryStr.length;
-							const bytes = new Uint8Array(len);
-							for (let i = 0; i < len; i++) {
-								bytes[i] = binaryStr.charCodeAt(i);
-							}
-							const workbook = XLSX.read(bytes, { type: "array", cellText: true, cellDates: true });
-							const primeiraPlanilha = workbook.SheetNames[0];
-
-							const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[primeiraPlanilha], { header: 1 });
-							const csv = jsonData.map(row => row.join(";"));
-							visualizarPlanilha(csv);
-						} catch (erro) {
-							console.error("Erro ao converter XLSX para CSV:", erro);
-						}
-						break;
-					}
-					case "csv": {
-						visualizarPlanilha(content.replace('\r\n', '\n').split('\n'));
-						break;
-					}
-				}
-				data += "</li>";
-				primeiro = false;
-			}
-
-			if(this.arquivoCarregado == "*")
-				this.arquivosArmazenados.forEach(_carregar);
-			else
-				_carregar(this.arquivosArmazenados.get(this.arquivoCarregado), this.arquivoCarregado);
-			return data
-		},
-
-		// Salva arquivos armazenados no cache
-		salvar() {
-			// converte map para array e salva
-			const arquivos = Array.from(this.arquivosArmazenados, ([name, content]) => ({ name, content }));
-			localStorage.setItem("arquivosArmazenados", JSON.stringify(arquivos));
-		},
-
-	
-		// Função para validar e enviar arquivo para a API
-enviarDadosParaBD(file, schemaKey) {			
-    if (!file) {
-        this.mensagem = "Operação cancelada.";
-        return;
-    }
-
-    const fileName = file.name;
-    const fileExtension = fileName.split(".").pop().toLowerCase();
-    if (!this.formatos.includes("." + fileExtension)) {
-        this.mensagem = "Este formato de arquivo não é permitido! Use apenas: " + this.formatos.join(", ");
-        return;
-    }
-
-    this.arquivoSelecionado = file; // Usa diretamente a variável `file`
-    this.enviarArquivo(schemaKey);  // Descomente se for chamar a função logo após a validação
-},
-
-async enviarArquivo(schemaKey) {
-    // Verifica se o arquivo foi selecionado
-    if (!this.arquivoSelecionado) {
-        this.mensagem = "Nenhum arquivo selecionado.";
-        return;
-    }
-
-    // Verifica se o schemaKey foi fornecido
-    if (!schemaKey) {
-        this.mensagem = "Nenhuma schemaKey fornecida.";
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", this.arquivoSelecionado); // Use a variável 'arquivoSelecionado' aqui
-
-    try {
-        // Substitui ':schemaKey' na URL pelo valor real do schemaKey
-        const url = `http://localhost:8080/api/generic/${schemaKey}`;
-        const response = await axios.post(url, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            }
-        });
-
-        // Verificar a resposta
-        console.log(response); // Para debug
-        this.mensagem = `Upload realizado com sucesso: ${response.data}`; // Ajuste conforme a resposta esperada
-
-    } catch (error) {
-        console.error("Erro no upload:", error);
-
-        // Trate o erro
-        this.mensagem = error.response
-            ? `Erro no upload: ${error.response.data.message || "Erro desconhecido"}`
-            : "Erro na conexão com o servidor.";
-    }
-}
-
-
-
-		}
-
-	
-		
-	}
-
-</script>
+<script src="./frontend.js"></script>
 
 <template>
 	<!-- Tela inicial -->
-	<div v-if="!lerSelecionado && !apagarSelecionado && !enviarSelecionado">
-		<h1>Escolha uma ação:</h1>
-		<hr>
-		<input type="file" ref="file" :accept="formatos.join(',')" style="display: none" @change="uploadArquivo"/>
-		<button @click="$refs.file.click()">Armazenar Arquivo</button>
-		<br>
-		<button @click="enviarPressionado">Enviar ao Banco de Dados</button>
-		<br>
-		<button @click="apagarPressionado">Apagar Arquivo</button>
-		<br><br>
-		<button @click="lerPressionado">Ler Arquivo</button>
-		<br>
-		<p v-if="armazenadoMsg != null" :style="{ color: armazenadoCor } ">{{ armazenadoMsg }}</p>
-	</div>
-
-	<!-- Tela de seleção de arquivo -->
-	<div v-else-if="(lerSelecionado || apagarSelecionado) && arquivoCarregado == null">
-		<h3>Arquivos salvos: {{ arquivosArmazenados.size }} </h3>
-		<hr>
-		<h3 v-if="lerSelecionado">Qual arquivo deseja abrir?</h3>
-		<h3 v-else="apagarSelecionado">Qual arquivo quer apagar?</h3>
-		<div v-for="[key, value] in arquivosArmazenados" :key="key">
-			<button @click="arquivoCarregado = key">{{ key }}</button>
+	<div v-if="tela == 'inicio'" class="telaInicial">
+		<div class="caixaTelaInicial">
+			<h1>Sistema Bonsae</h1>
+			<div class="bg"></div>
 			<br>
-		</div>
-		<br>
-		<button v-if="lerSelecionado" @click="arquivoCarregado = '*'" id="botaoListaTodos">Mostrar Todos</button>
-		<button @click="voltarPressionado">Voltar</button>
-	</div>
-
-	<!-- Tela de confirmação para apagar arquivo -->
-	<div v-else-if="apagarSelecionado">
-		<h3>Deseja apagar: "{{ arquivoCarregado }}"?</h3>
-		<hr>
-		<button @click="apagarArquivo">Sim</button>
-		<br>
-		<button @click="voltarPressionado">Não</button>
-	</div>
-
-	<!--Tela de envio de arquivo, Modificar se necessário-->
-	<div v-else-if="enviarSelecionado">
-		<h3>Enviar Arquivo ao Banco de Dados</h3>
-		<hr>
-		<!-- Input para seleção de arquivo -->
-		<label for="fileInput">Escolha um arquivo para enviar:</label>
-		<br>
-		<input id="fileInput" type="file" @change="arquivoEnviado"/>
-		<br><br>
-		
-		<!-- Botão para enviar o arquivo -->
-		<button @click="enviarBDPressionado">
-			Enviar Arquivo
-		</button>
-		
-		<!-- Botão para cancelar -->
-		<button @click="voltarPressionado">
-			Cancelar
-		</button>
-		
-		<!-- Feedback do status -->
-		<div v-if="mensagem != null">
-			<p :style="{ color: mensagemCor }">{{ mensagem }}</p>
+			<button @click="mudarTela('controleDados')">Controle de Importações</button>
+			<button @click="iniciarProcesso">Importação de Dados</button>
 		</div>
 	</div>
-	
-	<!-- Tela de visualização de arquivo -->
+
 	<div v-else>
-		<h3 v-if="arquivoCarregado != '*'">Visualizando: {{ arquivoCarregado }}</h3>
-		<h3 v-else>Visualizando: Todos</h3>
-		<hr>
-		<ol v-html="visualizarArquivo()"></ol>
-		<hr>
-		<button @click="voltarPressionado">Voltar</button>
-	</div>
+		<!-- Header -->
+		<div class="header">
+			<img src="./images/back.png" draggable="false" @click="voltarTela()">
+			<div style="display: flex; flex-direction: column; align-items: flex-start;">
+				<p class="nomeDaTela" v-html="nomeDaTela()"></p>
+				<p class="descricaoDaTela" v-html="descricaoDaTela()"></p>
+			</div>
 
+			<button v-if="tela == 'controleDados'" @click="iniciarProcesso">+ Novo Processo</button>
+			</div>
+
+		<div style="margin-top: 50px;">
+			<!-- Controle de Importações -->
+			<div v-if="tela == 'controleDados'" style="display: flex; justify-content: center; align-items: center;">
+				<table class="tabelaDados">
+					<thead>
+						<tr>
+							<th>ID do Processo</th>
+							<th>Período Letivo</th>
+							<th>Data de Início</th>
+							<th>Data de Término</th>
+							<th>Status do Envio</th>
+							<th>Ações</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr v-for="(processo, id) in processos" :key="id">
+							<td v-html="processo._id"></td>
+							<td v-html="processo.periodoInicio + ' - ' + processo.periodoTermino"></td>
+							<td v-html="formatarDataHora(processo.inicio)"></td>
+							<td v-html="processo.termino > processo.inicio ? formatarDataHora(processo.termino) : '-'"></td>
+							<td style="padding: 0;" v-if="processo.status">
+								<p v-html="processo.status" class="processoStatus" :class="{statusAndamento: processo.status.toLowerCase() == 'em andamento', statusConcluido: processo.status.toLowerCase() == 'concluído'}"></p>
+							</td>
+
+							<!-- Botões para "Em andamento"-->
+							<td v-if="processo.status && processo.status.toLowerCase() == 'em andamento'" >
+								<div class="processoAcoes">
+									<button class="botaoAcao botaoCinza" @click="abrirProcesso(processo._id)">Editar</button>
+									<button class="botaoAcao botaoVermelho" @click="cancelarProcesso(processo._id)">Cancelar</button>
+								</div>
+							</td>
+							<!-- Botões para "Concluído"-->
+							<td v-else-if="processo.status && processo.status.toLowerCase() == 'concluído'">
+								<div class="processoAcoes">
+									<button class="botaoAcao" style="width: 150px;" @click="abrirProcesso(processo._id)">Visualizar</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Importação de Dados -->
+			<div v-else-if="telaEtapas.includes(tela)" class="importacao-container">
+				<div class="etapas"> <!-- Os circulos das etapas -->
+					<div v-for="(etapa, index) in nomeEtapas" :key="index" :class="{etapa, etapaAtiva: index <= etapaAtual, etapaBrilho: index == etapaAtual}">
+						<div class="numero" v-html="index+1"></div>
+						<div v-html="nomeEtapas[index]"></div>
+					</div>
+				</div>
+
+				<!-- Caixa de Upload com clique em toda a área -->
+				<label v-if="tela !== 'importarPeriodo' && !processoVisualizando" class="upload-box" for="fileInput">
+					<div class="icone-upload-circulo">
+						<img src="./images/upload.png" class="upload-icone" />
+					</div>
+					<div>
+						<strong>Arquivo carregado:</strong>
+						<br>
+						<span class="upload-texto">{{ arquivoSelecionado ? truncarNome(arquivoSelecionado.name) : 'Nenhum arquivo selecionado' }}</span>
+					</div>
+					<!-- Input de arquivo escondido -->
+					<input
+						id="fileInput"
+						type="file"
+						style="display: none"
+						@change="uploadArquivo"
+					/>
+				</label>
+
+
+				<!-- Etapa 1 - Período Letivo -->
+				<div v-if="tela == 'importarPeriodo'" class="telaPeriodos">
+					<div class="caixaErro" v-if="anoLetivoInicio > anoLetivoTermino || (anoLetivoInicio == anoLetivoTermino && periodoInicio > periodoTermino)">
+						<p v-if="anoLetivoInicio > anoLetivoTermino">O Ano Letivo do Começo não pode ser maior que do Término.</p>
+						<p v-else>O Período do Começo não pode ser maior que do Término.</p>
+					</div>
+
+					<div style="display: flex; flex-direction: column;">
+						<div class="container-parent">
+							<h2 style="margin-left: 30px;">Início do Ano Letivo</h2>
+							<div class="inputs-container">
+								<div class="input-grupo">
+									<label for="anoLetivoInicio">Ano</label>
+									<input type="number" id="anoLetivoInicio" v-model="anoLetivoInicio" :disabled="processoVisualizando" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
+								</div>
+
+								<div class="input-grupo">
+									<label for="periodoInicio">Período</label>
+									<input type="number" id="periodoInicio" v-model="periodoInicio" :disabled="processoVisualizando" min="1" max="99" /> <!-- Limites do Perido -->
+								</div>
+							</div>
+						</div>
+
+						<div class="container-parent">
+							<h2>Término do Ano Letivo</h2>
+							<div class="inputs-container">
+								<div class="input-grupo">
+									<label for="anoLetivoTermino">Ano</label>
+									<input type="number" id="anoLetivoTermino" v-model="anoLetivoTermino" :disabled="processoVisualizando" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
+								</div>
+
+								<div class="input-grupo">
+									<label for="periodoTermino">Período</label>
+									<input type="number" id="periodoTermino" v-model="periodoTermino" :disabled="processoVisualizando" min="1" max="99" /> <!-- Limites do Perido -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<button class="botao-avancar" @click="proximaEtapa()" :disabled="!processoVisualizando && (anoLetivoInicio > anoLetivoTermino || (anoLetivoInicio == anoLetivoTermino && periodoInicio > periodoTermino))">Avançar</button>
+				</div>
+				
+				<!-- Etapa 2 a 5 -->
+				<div v-else class="tabelaLista">
+					<!-- Etapa 2 - Disciplinas -->
+					<table v-if="tela == 'importarDisciplinas'">
+						<thead>
+							<tr>
+								<th>Período Letivo</th>
+								<th>Disciplina</th>
+								<th>Código</th>
+								<th>Data de Início</th>
+								<th>Data de Término</th>
+								<th>Categoria</th>
+								<th>Período Curricular</th>
+								<th>Estado</th>
+								<th>Campus</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index">
+								<td>{{ disciplina.periodo }}</td>
+								<td>{{ disciplina.disciplina }}</td>
+								<td>{{ disciplina.codigo }}</td>
+								<td>{{ formatarData(disciplina.inicio) }}</td>
+								<td>{{ formatarData(disciplina.termino) }}</td>
+								<td>{{ disciplina.categoria }}</td>
+								<td>{{ disciplina.periodoCurricular }}</td>
+								<td>{{ disciplina.estado }}</td>
+								<td>{{ disciplina.campus }}</td>
+								<td><span class="status" :class="disciplina.status ? disciplina.status.toLowerCase() : 'null'">{{ disciplina.status }}</span></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<!-- Etapa 3 - Turmas -->
+					<table v-else-if="tela == 'importarTurmas'">
+						<thead>
+							<tr>
+								<th>Nome da Turma</th>
+								<th>Código</th>
+								<th>Disciplina Associada</th>
+								<th>Turno</th>
+								<th>Capacidade</th>
+								<th>Início das Aulas</th>
+								<th>Término das Aulas</th>
+								<th>Professor Responsável</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr v-for="(turma, index) in limiteDePagina(listaTurmas)" :key="index">
+								<td>{{ turma.turma }}</td>
+								<td>{{ turma.codigo }}</td>
+								<td>{{ turma.disciplina }}</td>
+								<td>{{ turma.turno }}</td>
+								<td>{{ turma.capacidade }}</td>
+								<td>{{ formatarData(turma.inicio) }}</td>
+								<td>{{ formatarData(turma.termino) }}</td>
+								<td>{{ turma.professor }}</td>
+								<td><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<!-- Etapa 4 - Usuários -->
+					<table v-else-if="tela == 'importarUsuarios'">
+						<thead>
+							<tr>
+								<th>Nome Completo</th>
+								<th>Matrícula</th>
+								<th>E-mail</th>
+								<th>Tipo</th>
+								<th>Curso</th>
+								<th>Data de Nascimento</th>
+								<th>Data de Cadastro</th>
+								<th>Contato</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr v-for="(turma, index) in limiteDePagina(listaUsuarios)" :key="index">
+								<td>{{ turma.nome }}</td>
+								<td>{{ turma.matricula }}</td>
+								<td>{{ turma.email }}</td>
+								<td>{{ turma.tipo }}</td>
+								<td>{{ turma.curso }}</td>
+								<td>{{ formatarData(turma.nascimento) }}</td>
+								<td>{{ formatarData(turma.cadastro) }}</td>
+								<td>{{ turma.contato }}</td>
+								<td><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<!-- Etapa 5 - Vínculos -->
+					<table v-else-if="tela == 'importarVinculos'">
+						<thead>
+							<tr>
+								<th>Nome de Usuário</th>
+								<th>Matrícula</th>
+								<th>Turma</th>
+								<th>Disciplina</th>
+								<th>Papel</th>
+								<th>Data de Início</th>
+								<th>Data de Término</th>
+								<th>Observações</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr v-for="(vinculo, index) in limiteDePagina(listaVinculos)" :key="index">
+								<td>{{ vinculo.nome }}</td>
+								<td>{{ vinculo.matricula }}</td>
+								<td>{{ vinculo.turma }}</td>
+								<td>{{ vinculo.disciplina }}</td>
+								<td>{{ vinculo.papel }}</td>
+								<td>{{ formatarData(vinculo.inicio) }}</td>
+								<td>{{ formatarData(vinculo.termino) }}</td>
+								<td>{{ vinculo.obs }}</td>
+								<td><span class="status" :class="vinculo.status.toLowerCase()">{{ vinculo.status }}</span></td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- Paginação -->
+					<div class="paginacao" v-if="listaAtual && Math.ceil(listaAtual.length / 5) > 1">
+						<!-- Botões da esquerda -->
+						<button class="paginacao" @click="mudarPagina(0)">«</button>
+						<button class="paginacao" @click="mudarPagina(Math.max(0, paginaAtual - 1))">‹</button>
+
+						<!-- Botões de páginas -->
+						<button v-for="n in Math.ceil(listaAtual.length / 5)" :key="n" @click="mudarPagina(n-1)" :class="{paginacao: paginaAtual != n-1, paginacaoAtual: paginaAtual == n-1 }"> {{ n }} </button>
+
+						<!-- Botões da direita -->
+						<button class="paginacao" @click="mudarPagina(Math.min(Math.ceil(listaAtual.length / 5) - 1, paginaAtual + 1))">›</button>
+						<button class="paginacao" @click="mudarPagina(Math.ceil(listaAtual.length / 5) - 1)">»</button>
+					</div>
+					<div style="margin-bottom: 30px;" v-else></div>
+					
+					<!-- Botão Avançar -->
+					<div class="botao-direita">
+						<button class="botao-avancar" @click="proximaEtapa()" v-if="etapaAtual < telaEtapas.length - 1" :disabled="!processoVisualizando && !arquivoSelecionado">Avançar</button>
+						<button class="botao-avancar" @click="!processoVisualizando ? finalizarProcesso() : mudarTela('controleDados')" :disabled="!processoVisualizando && !arquivoSelecionado" v-else>Finalizar Processo</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>

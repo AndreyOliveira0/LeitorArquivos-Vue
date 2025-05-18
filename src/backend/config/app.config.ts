@@ -3,7 +3,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 
 @Injectable()
 export class AppConfig {
-  // Configurações globais de CORS
+  // Configurações globais de CORS para o backend
   public getCorsConfig(): CorsOptions {
     return {
       origin: 'http://localhost:8080', // Permite esta origem específica
