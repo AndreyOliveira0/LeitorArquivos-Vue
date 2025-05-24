@@ -45,19 +45,19 @@ import { UserEntity } from './entitys/User/User.sqlEntity';
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.MYSQL_HOST || 'localhost',
-      port: parseInt(process.env.MYSQL_PORT || '3306'),
-      username: process.env.MYSQL_USER || 'caio',
-      password: process.env.MYSQL_PASSWORD || 'cad',
-      database: process.env.MYSQL_DATABASE || 'residência3',
+      port: parseInt(process.env.MYSQL_PORT || '3307'),
+      username: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
       entities: [DisciplineEntity, ClassEntity, BondEntity, UserEntity],
       synchronize: true,
     }),
-
     // Importação dos módulos das entidades - SQL
     DisciplineSQLModule,
     ClassSQLModule,
     BondSQLModule,
     UserSQLModule,
   ],
+  
 })
 export class AppModule {}
