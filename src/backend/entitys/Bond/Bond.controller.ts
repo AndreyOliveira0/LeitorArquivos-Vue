@@ -9,6 +9,7 @@ import { BondDto } from './Bond.Dto';
 export class BondController {
   constructor(private readonly BondService: BondService) {}
 
+  
   @Post('Post')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Envia um único vínculo' })
