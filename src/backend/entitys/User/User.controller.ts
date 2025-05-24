@@ -9,7 +9,7 @@ import { UserDto } from './User.Dto';
 export class UserController {
   constructor(private readonly UserService: UserService) {}
 
-  @Post('Post')
+  @Post('')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Envia um único usuário' })
   @ApiResponse({ status: 200, description: 'Usuário Enviado com sucesso.' })
@@ -25,14 +25,14 @@ export class UserController {
     return this.UserService.insertMany(data);
   }
 
-  @Get('Get')
+  @Get('')
   @ApiOperation({ summary: 'Lista todos os usuários' })
   @ApiResponse({ status: 200, description: 'Lista de usuários retornada com sucesso.' })
   async findAll(): Promise<User[]> {
     return this.UserService.findAll();
   }
 
-  @Get('Get/:matricula')
+  @Get(':matricula')
   @ApiOperation({ summary: 'Lista um único usuário' })
   @ApiResponse({ status: 200, description: 'Usuário retornado com sucesso.' })
   async findUnique(@Param('matricula') matricula: string): Promise<User> {
@@ -46,7 +46,7 @@ export class UserController {
     return this.UserService.findByProcessId(processId);
   }
 
-  @Put('Put/:matricula')
+  @Put(':matricula')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de um único usuário' })
   @ApiResponse({ status: 200, description: 'Usuário atualizado com sucesso.' })
@@ -63,7 +63,7 @@ export class UserController {
     return this.UserService.updateBulk(data);
   }
 
-  @Delete('Delete/:matricula')
+  @Delete(':matricula')
   @ApiOperation({ summary: 'Deleta um único usuário' })
   @ApiResponse({ status: 200, description: 'Usuário deletado com sucesso.' })
   async delete(@Param('matricula') matricula: string): Promise<User> {

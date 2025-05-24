@@ -9,7 +9,7 @@ import { BondDto } from './Bond.Dto';
 export class BondController {
   constructor(private readonly BondService: BondService) {}
 
-  @Post('Post')
+  @Post('')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Envia um único vínculo' })
   @ApiResponse({ status: 200, description: 'Vínculo Enviado com sucesso.' })
@@ -25,14 +25,14 @@ export class BondController {
     return this.BondService.insertMany(data);
   }
 
-  @Get('Get')
+  @Get('')
   @ApiOperation({ summary: 'Lista todos os vínculos' })
   @ApiResponse({ status: 200, description: 'Lista de vínculos retornada com sucesso.' })
   async findAll(): Promise<Bond[]> {
     return this.BondService.findAll();
   }
 
-  @Get('Get/:matricula')
+  @Get(':matricula')
   @ApiOperation({ summary: 'Lista um único vínculo' })
   @ApiResponse({ status: 200, description: 'Vínculo retornado com sucesso.' })
   async findUnique(@Param('matricula') matricula: string): Promise<Bond> {
@@ -46,7 +46,7 @@ export class BondController {
     return this.BondService.findByProcessId(processId);
   }
 
-  @Put('Put/:matricula')
+  @Put(':matricula')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de um único vínculo' })
   @ApiResponse({ status: 200, description: 'Vínculo atualizado com sucesso.' })
@@ -63,7 +63,7 @@ export class BondController {
     return this.BondService.updateBulk(data);
   }
 
-  @Delete('Delete/:matricula')
+  @Delete(':matricula')
   @ApiOperation({ summary: 'Deleta um único vínculo' })
   @ApiResponse({ status: 200, description: 'Vínculo deletado com sucesso.' })
   async delete(@Param('matricula') matricula: string): Promise<Bond> {

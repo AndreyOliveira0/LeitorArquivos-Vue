@@ -17,14 +17,12 @@ import { DisciplineSQLModule } from './entitys/Discipline/Discipline.sqlModule';
 import { ClassSQLModule } from './entitys/Class/Class.sqlModule';
 import { BondSQLModule } from './entitys/Bond/Bond.sqlModule';
 import { UserSQLModule } from './entitys/User/User.sqlModule';
-import { ProcessSQLModule } from './entitys/Process/Process.sqlModule';
 
 //Arquivos 'Entity' das entidades
 import { DisciplineEntity } from './entitys/Discipline/Discipline.sqlEntity';
 import { ClassEntity } from './entitys/Class/Class.sqlEntity';
 import { BondEntity } from './entitys/Bond/Bond.sqlEntity';
 import { UserEntity } from './entitys/User/User.sqlEntity';
-import { ProcessEntity } from './entitys/Process/Process.sqlEntity';
 
 @Module({
   imports: [
@@ -51,7 +49,7 @@ import { ProcessEntity } from './entitys/Process/Process.sqlEntity';
       username: process.env.MYSQL_USER || 'caio',
       password: process.env.MYSQL_PASSWORD || 'cad',
       database: process.env.MYSQL_DATABASE || 'residência3',
-      entities: [DisciplineEntity, ClassEntity, BondEntity, UserEntity, ProcessEntity],
+      entities: [DisciplineEntity, ClassEntity, BondEntity, UserEntity],
       synchronize: true,
     }),
 
@@ -60,7 +58,6 @@ import { ProcessEntity } from './entitys/Process/Process.sqlEntity';
     ClassSQLModule,
     BondSQLModule,
     UserSQLModule,
-    ProcessSQLModule,
   ],
 })
 export class AppModule {}

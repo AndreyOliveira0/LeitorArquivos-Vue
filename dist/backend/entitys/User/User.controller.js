@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "insertMany", null);
 __decorate([
-    (0, common_1.Get)('Get'),
+    (0, common_1.Get)(''),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todos os usuários' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de usuários retornada com sucesso.' }),
     __metadata("design:type", Function),
@@ -79,7 +79,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('Get/:matricula'),
+    (0, common_1.Get)(':matricula'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista um único usuário' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuário retornado com sucesso.' }),
     __param(0, (0, common_1.Param)('matricula')),

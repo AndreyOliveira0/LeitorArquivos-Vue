@@ -14,13 +14,11 @@ exports.ProcessSchema = exports.Process = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 let Process = class Process extends mongoose_2.Document {
-    constructor(periodoInicio, periodoTermino, inicio, termino, id) {
+    constructor(id, periodoInicio, periodoTermino) {
         super();
         this.id = id;
         this.periodoInicio = periodoInicio;
         this.periodoTermino = periodoTermino;
-        this.inicio = inicio;
-        this.termino = termino;
     }
 };
 exports.Process = Process;
@@ -36,16 +34,8 @@ __decorate([
     (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
 ], Process.prototype, "periodoTermino", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ type: Date }),
-    __metadata("design:type", Date)
-], Process.prototype, "inicio", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ type: Date }),
-    __metadata("design:type", Date)
-], Process.prototype, "termino", void 0);
 exports.Process = Process = __decorate([
     (0, mongoose_1.Schema)({ collection: 'Process' }),
-    __metadata("design:paramtypes", [String, String, Date, Date, String])
+    __metadata("design:paramtypes", [String, String, String])
 ], Process);
 exports.ProcessSchema = mongoose_1.SchemaFactory.createForClass(Process);

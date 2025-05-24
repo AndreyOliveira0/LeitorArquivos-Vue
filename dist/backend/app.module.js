@@ -23,13 +23,11 @@ const Discipline_sqlModule_1 = require("./entitys/Discipline/Discipline.sqlModul
 const Class_sqlModule_1 = require("./entitys/Class/Class.sqlModule");
 const Bond_sqlModule_1 = require("./entitys/Bond/Bond.sqlModule");
 const User_sqlModule_1 = require("./entitys/User/User.sqlModule");
-const Process_sqlModule_1 = require("./entitys/Process/Process.sqlModule");
 //Arquivos 'Entity' das entidades
 const Discipline_sqlEntity_1 = require("./entitys/Discipline/Discipline.sqlEntity");
 const Class_sqlEntity_1 = require("./entitys/Class/Class.sqlEntity");
 const Bond_sqlEntity_1 = require("./entitys/Bond/Bond.sqlEntity");
 const User_sqlEntity_1 = require("./entitys/User/User.sqlEntity");
-const Process_sqlEntity_1 = require("./entitys/Process/Process.sqlEntity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -56,7 +54,7 @@ exports.AppModule = AppModule = __decorate([
                 username: process.env.MYSQL_USER || 'caio',
                 password: process.env.MYSQL_PASSWORD || 'cad',
                 database: process.env.MYSQL_DATABASE || 'residência3',
-                entities: [Discipline_sqlEntity_1.DisciplineEntity, Class_sqlEntity_1.ClassEntity, Bond_sqlEntity_1.BondEntity, User_sqlEntity_1.UserEntity, Process_sqlEntity_1.ProcessEntity],
+                entities: [Discipline_sqlEntity_1.DisciplineEntity, Class_sqlEntity_1.ClassEntity, Bond_sqlEntity_1.BondEntity, User_sqlEntity_1.UserEntity],
                 synchronize: true,
             }),
             // Importação dos módulos das entidades - SQL
@@ -64,7 +62,6 @@ exports.AppModule = AppModule = __decorate([
             Class_sqlModule_1.ClassSQLModule,
             Bond_sqlModule_1.BondSQLModule,
             User_sqlModule_1.UserSQLModule,
-            Process_sqlModule_1.ProcessSQLModule,
         ],
     })
 ], AppModule);
