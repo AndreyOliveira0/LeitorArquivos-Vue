@@ -1,14 +1,19 @@
 version: '3.8'
 
 services:
-  mongo:
-    image: mongo:6.0
-    container_name: mongodb_local
+  mysql:
+    image: mysql:8.0
     restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: bonsaeSQL
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: bonsae123
     ports:
-      - "27017:27017"
+      - '3307:3306'
     volumes:
-      - mongo_data:/data/db
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
-  mongo_data:
+  mysql_data:

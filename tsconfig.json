@@ -19,6 +19,6 @@
       "@services/*": ["src/backend/services/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/backend/**/*"],
   "exclude": ["node_modules", "dist", "src/**/*.spec.ts"]
 }

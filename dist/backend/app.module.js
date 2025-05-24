@@ -15,6 +15,7 @@ const Class_module_1 = require("./entitys/Class/Class.module");
 const Bond_module_1 = require("./entitys/Bond/Bond.module");
 const User_module_1 = require("./entitys/User/User.module");
 const Process_module_1 = require("./entitys/Process/Process.module");
+const typeorm_1 = require("@nestjs/typeorm");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,6 +27,16 @@ exports.AppModule = AppModule = __decorate([
             }),
             mongoose_1.MongooseModule.forRoot(process.env.MONGO_URI || '', {
                 dbName: process.env.DB_NAME || 'squad07-Bonsae',
+            }),
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'mysql',
+                host: process.env.MYSQL_HOST || 'localhost',
+                port: parseInt(process.env.MYSQL_PORT || '3307'),
+                username: process.env.MYSQL_USER,
+                password: process.env.MYSQL_PASSWORD,
+                database: process.env.MYSQL_DATABASE,
+                autoLoadEntities: true,
+                synchronize: true,
             }),
             // Importação dos módulos das entidades
             Discipline_module_1.DisciplineModule,
