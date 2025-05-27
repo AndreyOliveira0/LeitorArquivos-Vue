@@ -22,7 +22,7 @@ export class UserSQLService {
   }
 
   // Busca uma linha pela coluna string
-  async getByMatricula(matricula: String): Promise<UserEntity> {
+  async getByMatricula(matricula: Number): Promise<UserEntity> {
     const user = await this.fileRepository.findOneBy({ matricula });
     if (!user) {
           throw new NotFoundException(`Registro com ID ${matricula} não encontrado`);
@@ -32,6 +32,8 @@ export class UserSQLService {
 
   async insertMany(data: Partial<UserEntity>[]): Promise<UserEntity[]> {
     // Salva a lista no banco usando o método `save` do TypeORM
+    console.log("Função no SQL Service");
+    console.log(data);
     return await this.fileRepository.save(data);
   }
 }

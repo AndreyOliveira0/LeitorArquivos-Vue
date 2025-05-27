@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConcrClassDto = exports.ClassDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 class ClassDto {
     constructor(partial = {}) {
         this.codigo = partial.codigo ?? "";
@@ -30,53 +31,63 @@ exports.ClassDto = ClassDto;
 __decorate([
     (0, class_validator_1.Matches)(/^[A-Za-z0-9]+$/, { message: 'Código deve conter apenas caracteres alfanuméricos.' }),
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: 'f1ds5fsg8sd5' }),
     __metadata("design:type", String)
 ], ClassDto.prototype, "codigo", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: 'N03' }),
     __metadata("design:type", String)
 ], ClassDto.prototype, "turma", void 0);
 __decorate([
     (0, class_validator_1.Matches)(/^[A-Za-zÀ-ÿ0-9\s]+$/, { message: 'Disciplina deve conter apenas letras, números e espaços.' }),
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: 'Legislação' }),
     __metadata("design:type", String)
 ], ClassDto.prototype, "disciplina", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: 'Noturno' }),
     __metadata("design:type", String)
 ], ClassDto.prototype, "turno", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: '52' }),
     __metadata("design:type", Number)
 ], ClassDto.prototype, "capacidade", void 0);
 __decorate([
     (0, class_validator_1.IsDateString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: '2025-04-23T10:30:00.000Z' }),
     __metadata("design:type", Date)
 ], ClassDto.prototype, "inicio", void 0);
 __decorate([
     (0, class_validator_1.IsDateString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: '2025-04-23T10:30:00.000Z' }),
     __metadata("design:type", Date)
 ], ClassDto.prototype, "termino", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: 'José Gama da Silva' }),
     __metadata("design:type", String)
 ], ClassDto.prototype, "professor", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: 'Finalizada' }),
     __metadata("design:type", String)
 ], ClassDto.prototype, "status", void 0);
 __decorate([
     (0, class_validator_1.Matches)(/^[A-Za-z0-9]+$/, { message: 'Id do processo deve conter apenas caracteres alfanuméricos.' }),
     (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({ example: 'e3e03e39ie3jroefj484fd5gd84' }),
     __metadata("design:type", String)
 ], ClassDto.prototype, "processId", void 0);

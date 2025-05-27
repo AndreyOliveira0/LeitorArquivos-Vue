@@ -34,8 +34,8 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "nome", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String }),
-    __metadata("design:type", String)
+    (0, mongoose_1.Prop)({ type: Number }),
+    __metadata("design:type", Number)
 ], User.prototype, "matricula", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ type: String }),
@@ -71,6 +71,6 @@ __decorate([
 ], User.prototype, "processId", void 0);
 exports.User = User = __decorate([
     (0, mongoose_1.Schema)({ collection: 'User' }),
-    __metadata("design:paramtypes", [String, String, String, String, String, Date, Date, String, String, String])
+    __metadata("design:paramtypes", [String, Number, String, String, String, Date, Date, String, String, String])
 ], User);
 exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);

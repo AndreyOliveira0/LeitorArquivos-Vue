@@ -21,6 +21,8 @@ export class UserSQLController {
 
     // Transforma os dados usando o DTO
     const formattedData = plainToInstance(ConcrUserDto, mongoData);
+    console.log("Função no SQL Controller");
+    console.log(formattedData);
 
     /*
     // Converte o formato de 'matricula' e salva no SQL
@@ -42,7 +44,7 @@ export class UserSQLController {
   }
 
   @Get(':matricula')
-  getByMatricula(@Param('matricula') matricula: String): Promise<UserEntity> {
+  getByMatricula(@Param('matricula') matricula: Number): Promise<UserEntity> {
     return this.UserSQLService.getByMatricula(matricula);
   }
 }

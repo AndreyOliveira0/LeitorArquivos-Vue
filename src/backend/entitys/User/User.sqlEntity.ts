@@ -6,7 +6,7 @@ export class UserEntity {
   nome: String;
 
   @PrimaryGeneratedColumn()
-  matricula: String;
+  matricula: Number;
 
   @Column()
   email: String;
@@ -32,7 +32,7 @@ export class UserEntity {
   @Column()
   processId: String;
 
-  constructor(nome: String, matricula: String, email: String, curso: String, tipo: String, nascimento: Date, cadastro: Date, contato: String, status: String, processId: String){
+  constructor(nome: String, matricula: Number, email: String, curso: String, tipo: String, nascimento: Date, cadastro: Date, contato: String, status: String, processId: String){
     this.nome= nome;
 
     this.matricula= matricula;
