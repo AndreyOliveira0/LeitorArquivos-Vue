@@ -158,6 +158,25 @@ export default {
 			.then(response => {
 				const processo = response.data;
 				processo.status = (processo.inicio >= processo.termino) ? "Em andamento" : "Concluído";
+
+				this.processoVisualizando = false;
+				this.processoAtual = null;
+
+				this.arquivoDisciplinas = null;
+				this.listaDisciplinas = [];
+				this.errosDisciplinas = [];
+
+				this.arquivoTurmas = null;
+				this.listaTurmas = [];
+				this.errosTurmas = [];
+
+				this.arquivoUsuarios = null;
+				this.listaUsuarios = [];
+				this.errosUsuarios = [];
+
+				this.arquivoVinculos = null;
+				this.listaVinculos = [];
+				this.errosVinculos = [];
 				this.processoAtual = processo;
 				this.processos.push(processo);
 				this.mudarTela("importarPeriodo");
@@ -287,8 +306,8 @@ export default {
 			this.paginaAtual = num;
 		},
 		limiteDePagina(lista) {
-			let min = Math.floor(this.paginaAtual * 5);
-			return lista.slice(min, min + 5);
+			let min = Math.floor(this.paginaAtual * 10);
+			return lista.slice(min, min + 10);
 		},
 
 		//Modificar
@@ -328,6 +347,7 @@ export default {
 						this.processos = [];
 						this.mudarTela("controleDados");
 
+						this.processoVisualizando = false;
 						this.processoAtual = null;
 
 						this.arquivoDisciplinas = null;

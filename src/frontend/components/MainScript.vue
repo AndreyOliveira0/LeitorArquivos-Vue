@@ -157,7 +157,7 @@
 						</thead>
 
 						<tbody>
-							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index" :class="{'error-row': (erro = errosDisciplinas[index + paginaAtual * 5])}" >
+							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index" :class="{'error-row': (erro = errosDisciplinas[index + paginaAtual * 10])}" >
 								<td :class="{'error-cell': erro?.periodo}">{{ disciplina.periodo }}</td>
 								<td :class="{'error-cell': erro?.disciplina}">{{ disciplina.disciplina }}</td>
 								<td :class="{'error-cell': erro?.codigo}">{{ disciplina.codigo }}</td>
@@ -266,17 +266,17 @@
 					</table>
 
 					<!-- Paginação -->
-					<div class="paginacao" v-if="listaAtual && Math.ceil(listaAtual.length / 5) > 1">
+					<div class="paginacao" v-if="listaAtual && Math.ceil(listaAtual.length / 10) > 1">
 						<!-- Botões da esquerda -->
 						<button class="paginacao" @click="mudarPagina(0)">«</button>
 						<button class="paginacao" @click="mudarPagina(Math.max(0, paginaAtual - 1))">‹</button>
 
 						<!-- Botões de páginas -->
-						<button v-for="n in Math.ceil(listaAtual.length / 5)" :key="n" @click="mudarPagina(n-1)" :class="{paginacao: paginaAtual != n-1, paginacaoAtual: paginaAtual == n-1 }"> {{ n }} </button>
+						<button v-for="n in Math.ceil(listaAtual.length / 10)" :key="n" @click="mudarPagina(n-1)" :class="{paginacao: paginaAtual != n-1, paginacaoAtual: paginaAtual == n-1 }"> {{ n }} </button>
 
 						<!-- Botões da direita -->
-						<button class="paginacao" @click="mudarPagina(Math.min(Math.ceil(listaAtual.length / 5) - 1, paginaAtual + 1))">›</button>
-						<button class="paginacao" @click="mudarPagina(Math.ceil(listaAtual.length / 5) - 1)">»</button>
+						<button class="paginacao" @click="mudarPagina(Math.min(Math.ceil(listaAtual.length / 10) - 1, paginaAtual + 1))">›</button>
+						<button class="paginacao" @click="mudarPagina(Math.ceil(listaAtual.length / 10) - 1)">»</button>
 					</div>
 					<div style="margin-bottom: 30px;" v-else></div>
 					
