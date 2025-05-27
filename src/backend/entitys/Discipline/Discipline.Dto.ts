@@ -29,9 +29,9 @@ export abstract class DisciplineDto {
     @ApiProperty({ example: 'Presencial' })
     categoria: String;
 
-    @IsNumber()
+    @IsString()
     @ApiProperty({ example: '3°' })
-    periodoCurricular: Number;
+    periodoCurricular: String;
 
     @IsString()
     @ApiProperty({ example: 'SE' })
@@ -40,6 +40,10 @@ export abstract class DisciplineDto {
     @IsString()
     @ApiProperty({ example: 'Aracaju' })
     campus: String;
+
+    @IsString()
+    @ApiProperty({ example: 'Pendente' })
+    status: String;
 
     @Matches(/^[A-Za-z0-9]+$/, { message: 'Id do processo deve conter apenas caracteres alfanuméricos.' })
     @IsString()
@@ -60,11 +64,13 @@ export abstract class DisciplineDto {
     
         this.categoria= partial.categoria ?? "";
     
-        this.periodoCurricular= partial.periodoCurricular ?? 0;
+        this.periodoCurricular= partial.periodoCurricular ?? "";
     
         this.estado= partial.estado ?? "";
     
         this.campus= partial.campus ?? "";
+    
+        this.status= partial.status ?? "";
 
         this.processId= partial.processId ?? "";
     }

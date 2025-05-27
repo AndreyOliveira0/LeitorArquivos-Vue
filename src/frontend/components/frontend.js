@@ -2,10 +2,13 @@
 import axios from 'axios';
 import * as XLSX from "xlsx"; // Usado para o suporte a arquivos do Excel
 import "./sheets/styles.css";  // Importação do CSS externo
+import { isNumber } from 'class-validator';
 
 export default {
 	data() {
 		return {
+			REGEX_ALPHANUMERIC: /^[A-Za-z0-9]+$/,
+			REGEX_NO_SYMBOLS: /^[\p{L}0-9 ]+$/u,
 			JSONHeaders: {'Content-Type': 'application/json'},
 			formatos: [".csv", ".xlsx", ".json"],
 			arquivoCarregado: null,
@@ -21,7 +24,6 @@ export default {
 			telaEtapas: ["importarPeriodo", "importarDisciplinas", "importarTurmas", "importarUsuarios", "importarVinculos"],
 			nomeEtapas: ["Período Letivo", "Disciplinas", "Turmas", "Usuários", "Vínculos"],
 			etapaAtual: 0,
-			listaAtual: null,
 			
 			paginaAtual: 0, //Para a paginação
 
@@ -35,18 +37,22 @@ export default {
 			// Etapa 2 - Disciplinas
 			arquivoDisciplinas: null,
 			listaDisciplinas: [],
+			errosDisciplinas: [],
 
 			// Etapa 3 - Turmas
 			arquivoTurmas: null,
 			listaTurmas: [],
+			errosTurmas: [],
 
 			// Etapa 4 - Usuarios
 			arquivoUsuarios: null,
 			listaUsuarios: [],
+			errosUsuarios: [],
 
 			// Etapa 5 - Vínculos
 			arquivoVinculos: null,
-			listaVinculos: []
+			listaVinculos: [],
+			errosVinculos: []
 		}
 	},
 	mounted() {
@@ -55,6 +61,21 @@ export default {
 	watch: {
 		tela() {
 			this.atualizarPaginacao();
+		}
+	},
+	computed: {
+		listaAtual() {
+			switch(this.tela) {
+				case "importarDisciplinas":
+					return this.listaDisciplinas;
+				case "importarTurmas":
+					return this.listaTurmas;
+				case "importarUsuarios":
+					return this.listaUsuarios;
+				case "importarVinculos":
+					return this.listaVinculos;
+			};
+			return null;
 		}
 	},
 	methods: {
@@ -87,6 +108,11 @@ export default {
 						}
 					}
 
+					let etapa = 0;
+					if(periodoInicio && periodoTermino) {
+						etapa++;
+					}
+
 					this.processoVisualizando = (this.processoAtual.inicio <= this.processoAtual.termino);
 					if(this.processoVisualizando) {
 						const id = this.processoAtual._id;
@@ -105,8 +131,15 @@ export default {
 						this.listaTurmas = await pegarLista("Class");
 						this.listaUsuarios = await pegarLista("User");
 						this.listaVinculos = await pegarLista("Bond");
+						this.errosDisciplinas = [];
+						this.errosTurmas = [];
+						this.errosUsuarios = [];
+						this.errosVinculos = [];
+						etapa = this.telaEtapas.length-1;
 					}
-					this.mudarTela("importarPeriodo");
+					for (let i = 0 ; i <= etapa ; i++) {
+						this.mudarTela(this.telaEtapas[i]);
+					}
 				}
 				else console.error(`Erro ao abrir processo (ID: ${id}): Dado vazio.`);
 			})
@@ -296,24 +329,43 @@ export default {
 						this.mudarTela("controleDados");
 
 						this.processoAtual = null;
-						this.listaAtual = null;
 
 						this.arquivoDisciplinas = null;
 						this.listaDisciplinas = [];
+						this.errosDisciplinas = [];
+
 						this.arquivoTurmas = null;
 						this.listaTurmas = [];
+						this.errosTurmas = [];
+
 						this.arquivoUsuarios = null;
 						this.listaUsuarios = [];
+						this.errosUsuarios = [];
+
 						this.arquivoVinculos = null;
 						this.listaVinculos = [];
+						this.errosVinculos = [];
 					})
 					.catch(error => {
-						console.error(`Erro ao atualizar processo (ID: ${id}): `, error?.message ?? error);
+						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): `, error?.message ?? error);
 					});
 					return true;
 				}
 				else {
-					//TO DO: Deleta os que já foram enviados para evitar dados duplicados
+					async function deletarRelacionados(schemaKey) {
+						await axios.delete(`http://localhost:8080/${schemaKey}/DeleteByProcess/${this.processoAtual._id}`, JSONHeaders)
+						.then(response => {
+							console.log(`Foram deletados ${response.data.deletedCount} dados (schemaKey: ${schemaKey})`);
+						})
+						.catch(error => {
+							console.error(`Erro ao apagar dados do processo (ID: ${this.processoAtual._id}, schemaKey: ${schemaKey}): ` + error?.message ?? error);
+						});
+					}
+
+					await deletarRelacionados("Discipline");
+					await deletarRelacionados("Class");
+					await deletarRelacionados("User");
+					await deletarRelacionados("Bond");
 					return true;
 				}
 			} else {
@@ -368,21 +420,25 @@ export default {
 							case "disciplina":
 								this.arquivoDisciplinas = file;
 								this.listaDisciplinas = converter({"Periodo Letivo": "periodo", "Data de Inicio": "inicio", "Data de Termino": "termino", "Periodo Curricular": "periodoCurricular"}, planilha);
+								this.validarDisciplinas();
 								break;
 							case "turmas":
 							case "turma":
 								this.arquivoTurmas = file;
 								this.listaTurmas = converter({"Nome da Turma": "turma", "Disciplina Associada": "disciplina", "Inicio das Aulas": "inicio", "Termino das Aulas": "termino", "Professor Responsavel": "professor"}, planilha);
+								this.validarTurmas();
 								break;
 							case "usuarios":
 							case "usuario":
 								this.arquivoUsuarios = file;
 								this.listaUsuarios = converter({"Nome Completo": "nome", "Data de Nascimento": "nascimento", "Data de Cadastro": "cadastro", "Periodo Curricular": "periodoCurricular"}, planilha);
+								this.validarUsuarios();
 								break;
 							case "vinculos":
 							case "vinculo":
 								this.arquivoVinculos = file;
 								this.listaVinculos = converter({"Nome de Usuario": "nome", "Data de Inicio": "inicio", "Data de Termino": "termino", "Observacoes": "obs"}, planilha);
+								this.validarVinculos();
 								break;
 							default:
 								console.error(`Planilha desconhecida no arquivo: "${planilhaNome}"`);
@@ -418,29 +474,26 @@ export default {
 		atualizarPaginacao() {
 			switch(this.tela) {
 				case "importarDisciplinas":
-					this.listaAtual = this.listaDisciplinas;
 					this.arquivoSelecionado = this.arquivoDisciplinas;
 					break;
 				case "importarTurmas":
-					this.listaAtual = this.listaTurmas;
 					this.arquivoSelecionado = this.arquivoTurmas;
 					break;
 				case "importarUsuarios":
-					this.listaAtual = this.listaUsuarios;
 					this.arquivoSelecionado = this.arquivoUsuarios;
 					break;
 				case "importarVinculos":
-					this.listaAtual = this.listaVinculos;
 					this.arquivoSelecionado = this.arquivoVinculos;
 					break;
 				default:
-					this.listaAtual = null;
 					this.arquivoSelecionado = null;
 			}
 		},
 
 		formatarData(data) {
 			const d = new Date(data);
+			if(isNaN(d)) return `--/--/--`;
+
 			const dia = String(d.getDate()).padStart(2, '0');
 			const mes = String(d.getMonth() + 1).padStart(2, '0'); // Janeiro = 0
 			const ano = d.getFullYear();
@@ -467,6 +520,113 @@ export default {
 			const base = partes.join(".");
 			const truncado = base.slice(0, limite - extensao.length - 5); // "....ext"
 			return `${truncado}....${extensao}`;
+		},
+
+		/* Validação de erros */
+		validarDisciplinas() {
+			let algumErro = false;
+			this.errosDisciplinas = [];
+			for (let linha of this.listaDisciplinas) {
+				let erros = {
+					periodo: this.validaString("Período", linha.periodo),
+					disciplina: this.validaString("Disciplina", linha.disciplina, this.REGEX_NO_SYMBOLS),
+					codigo: this.validaString("Código", linha.codigo, this.REGEX_ALPHANUMERIC),
+					inicio: this.validaDate("Data de Início", linha.inicio),
+					termino: this.validaDate("Data de Término", linha.termino),
+					categoria: this.validaString("Categoria", linha.categoria, this.REGEX_NO_SYMBOLS),
+					periodoCurricular: this.validaNumero("Período Curricular", linha.periodoCurricular, 0),
+					estado: this.validaString("Estado", linha.estado, this.REGEX_ALPHANUMERIC),
+					campus: this.validaString("Campus", linha.campus, this.REGEX_NO_SYMBOLS),
+				}
+
+				let temErros = false;
+				for (const [k, v] of Object.entries(erros)) {
+					if(v) {
+						algumErro = true;
+						temErros = true;
+						break;
+					}
+				}
+
+				//console.log(erros);
+				if(temErros) {
+					this.errosDisciplinas.push(erros);
+				}
+				else this.errosDisciplinas.push(null);
+			}
+
+			if(algumErro) {
+				if(this.etapaAtual > this.telaEtapas.indexOf("importarDisciplinas")) {
+					this.mudarTela("importarDisciplinas");
+				}
+			}
+			else this.errosDisciplinas = [];
+		},
+
+		validarTurmas() {
+			this.errosTurmas = [];
+		},
+
+		validarUsuarios() {
+			this.errosUsuarios = [];
+		},
+
+		validarVinculos() {
+			this.errosVinculos = [];
+		},
+
+		// null = sem erros
+		validaString(campo, str = "", regex = null) {
+			str = (str ?? "").toString().trim();
+			if(!str || str.length == 0) {
+				return `${campo} está vazio.`
+			}
+
+			if(regex && !str.match(regex)) {
+				if(regex === this.REGEX_ALPHANUMERIC)
+					return `${campo} deve conter apenas apenas caracteres alfanuméricos.`;
+				else if(regex === this.REGEX_NO_SYMBOLS) {
+					return `${campo} deve conter apenas letras, números e espaços.`;
+				}
+				else
+					return `${campo} não está de acordo.`;
+			}
+			return null;
+		},
+		validaDate(campo, date) {
+			if(isNaN(date) || !date instanceof Date) {
+				return `${campo} não é uma data válida.`;
+			}
+			return null;
+		},
+		validaNumero(campo, n, min = null, max = null) {
+			if(isNaN(n)) {
+				return `${campo} está vazio.`;
+			}
+			if(!Number.isInteger(n)) {
+				return `${campo} não aceita valores decimais.`;
+			}
+			if(min && n < min) {
+				return `${campo} tem como valor mínimo: ${min}`;
+			}
+			if(max && n > max) {
+				return `${campo} tem como valor máximo: ${max}`;
+			}
+			return null;
+		},
+
+		listaAtualTemErros() {
+			switch(this.telaEtapas[this.etapaAtual]) {
+				case "importarDisciplinas":
+					return this.errosDisciplinas.length > 0;
+				case "importarTurmas":
+					return this.errosTurmas.length > 0;
+				case "importarUsuarios":
+					return this.errosUsuarios.length > 0;
+				case "importarVinculos":
+					return this.errosVinculos.length > 0;
+			}
+			return false;
 		}
 	}
 }

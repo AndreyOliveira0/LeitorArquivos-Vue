@@ -20,9 +20,10 @@ class DisciplineDto {
         this.inicio = partial.inicio ?? new Date();
         this.termino = partial.termino ?? new Date();
         this.categoria = partial.categoria ?? "";
-        this.periodoCurricular = partial.periodoCurricular ?? 0;
+        this.periodoCurricular = partial.periodoCurricular ?? "";
         this.estado = partial.estado ?? "";
         this.campus = partial.campus ?? "";
+        this.status = partial.status ?? "";
         this.processId = partial.processId ?? "";
     }
 }
@@ -60,9 +61,9 @@ __decorate([
     __metadata("design:type", String)
 ], DisciplineDto.prototype, "categoria", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsString)(),
     (0, swagger_1.ApiProperty)({ example: '3°' }),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], DisciplineDto.prototype, "periodoCurricular", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
@@ -74,6 +75,11 @@ __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Aracaju' }),
     __metadata("design:type", String)
 ], DisciplineDto.prototype, "campus", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({ example: 'Pendente' }),
+    __metadata("design:type", String)
+], DisciplineDto.prototype, "status", void 0);
 __decorate([
     (0, class_validator_1.Matches)(/^[A-Za-z0-9]+$/, { message: 'Id do processo deve conter apenas caracteres alfanuméricos.' }),
     (0, class_validator_1.IsString)(),

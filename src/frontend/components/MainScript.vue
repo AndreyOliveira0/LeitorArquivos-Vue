@@ -157,16 +157,16 @@
 						</thead>
 
 						<tbody>
-							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index">
-								<td>{{ disciplina.periodo }}</td>
-								<td>{{ disciplina.disciplina }}</td>
-								<td>{{ disciplina.codigo }}</td>
-								<td>{{ formatarData(disciplina.inicio) }}</td>
-								<td>{{ formatarData(disciplina.termino) }}</td>
-								<td>{{ disciplina.categoria }}</td>
-								<td>{{ disciplina.periodoCurricular }}</td>
-								<td>{{ disciplina.estado }}</td>
-								<td>{{ disciplina.campus }}</td>
+							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index" :class="{'error-row': (erro = errosDisciplinas[index + paginaAtual * 5])}" >
+								<td :class="{'error-cell': erro?.periodo}">{{ disciplina.periodo }}</td>
+								<td :class="{'error-cell': erro?.disciplina}">{{ disciplina.disciplina }}</td>
+								<td :class="{'error-cell': erro?.codigo}">{{ disciplina.codigo }}</td>
+								<td :class="{'error-cell': erro?.inicio}">{{ formatarData(disciplina.inicio) }}</td>
+								<td :class="{'error-cell': erro?.termino}">{{ formatarData(disciplina.termino) }}</td>
+								<td :class="{'error-cell': erro?.categoria}">{{ disciplina.categoria }}</td>
+								<td :class="{'error-cell': erro?.periodoCurricular}">{{ disciplina.periodoCurricular }}</td>
+								<td :class="{'error-cell': erro?.estado}">{{ disciplina.estado }}</td>
+								<td :class="{'error-cell': erro?.campus}">{{ disciplina.campus }}</td>
 								<td><span class="status" :class="disciplina.status ? disciplina.status.toLowerCase() : 'null'">{{ disciplina.status }}</span></td>
 							</tr>
 						</tbody>
@@ -282,8 +282,8 @@
 					
 					<!-- Botão Avançar -->
 					<div class="botao-direita">
-						<button class="botao-avancar" @click="proximaEtapa()" v-if="etapaAtual < telaEtapas.length - 1" :disabled="!processoVisualizando && !arquivoSelecionado">Avançar</button>
-						<button class="botao-avancar" @click="!processoVisualizando ? finalizarProcesso() : mudarTela('controleDados')" :disabled="!processoVisualizando && !arquivoSelecionado" v-else>Finalizar Processo</button>
+						<button class="botao-avancar" @click="proximaEtapa()" v-if="etapaAtual < telaEtapas.length - 1" :disabled="(!processoVisualizando && !arquivoSelecionado) || listaAtualTemErros()">Avançar</button>
+						<button class="botao-avancar" @click="!processoVisualizando ? finalizarProcesso() : mudarTela('controleDados')" :disabled="(!processoVisualizando && !arquivoSelecionado) || listaAtualTemErros()" v-else>Finalizar Processo</button>
 					</div>
 				</div>
 			</div>
