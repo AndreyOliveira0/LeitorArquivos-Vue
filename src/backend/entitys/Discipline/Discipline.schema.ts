@@ -25,7 +25,7 @@ export class Discipline extends Document{
   termino: Date;
 
   @Prop({ type: String })
-  categoria: string;
+  categoria: String;
 
   @Prop({ type: Number})
   periodoCurricular: Number;
@@ -34,12 +34,12 @@ export class Discipline extends Document{
   estado: String;
 
   @Prop({ type: String })
-  campus: string;
+  campus: String;
 
   @Prop({ type: String })
   processId: String;
 
-  constructor(periodo: String, disciplina: String, codigo: String, inicio: Date, termino: Date, categoria: string, periodoCurricular: Number, estado: String, campus: string, processId: String){
+  constructor(periodo: String, disciplina: String, codigo: String, inicio: Date, termino: Date, categoria: String, periodoCurricular: Number, estado: String, campus: String, processId: String){
     super();
 
     this.periodo= periodo;

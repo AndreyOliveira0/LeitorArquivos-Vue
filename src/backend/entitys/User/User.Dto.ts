@@ -69,3 +69,5 @@ export abstract class UserDto {
 
   }
 }
+
+export class ConcrUserDto extends UserDto {}

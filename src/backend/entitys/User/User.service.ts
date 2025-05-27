@@ -33,12 +33,12 @@ export class UserService {
   }
 
   async findByMatricula(matricula: string): Promise<User> {
-  const User = await this.UserModel.findOne({ matricula }).exec();
-  if (!User) {
-    throw new NotFoundException(`Registro com matrícula ${matricula} não encontrado`);
+    const User = await this.UserModel.findOne({ matricula }).exec();
+    if (!User) {
+      throw new NotFoundException(`Registro com matrícula ${matricula} não encontrado`);
+    }
+    return User;
   }
-  return User;
-}
 
 
   async update(matricula: string, data: UserDto): Promise<User> {

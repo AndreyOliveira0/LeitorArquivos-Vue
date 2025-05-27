@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClassEntity } from './Class.sqlEntity';
 import { ClassSQLService } from './Class.sqlService';
 import { ClassSQLController } from './Class.sqlController';
+import { ClassModule } from './Class.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClassEntity])],
+  imports: [TypeOrmModule.forFeature([ClassEntity]), ClassModule],
   controllers: [ClassSQLController],
   providers: [ClassSQLService],
 })

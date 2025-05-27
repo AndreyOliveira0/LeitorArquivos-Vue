@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserDto = void 0;
+exports.ConcrUserDto = exports.UserDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 class UserDto {
@@ -81,3 +81,6 @@ __decorate([
     (0, swagger_1.ApiProperty)({ example: 'e3e03e39ie3jroefj484fd5gd84' }),
     __metadata("design:type", String)
 ], UserDto.prototype, "processId", void 0);
+class ConcrUserDto extends UserDto {
+}
+exports.ConcrUserDto = ConcrUserDto;

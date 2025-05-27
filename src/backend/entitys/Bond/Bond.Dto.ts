@@ -67,3 +67,5 @@ export abstract class BondDto {
         this.processId= partial.processId ?? "";
     }
 }
+
+export class ConcrBondDto extends BondDto {}

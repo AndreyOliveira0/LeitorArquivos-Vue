@@ -67,3 +67,5 @@ export abstract class ClassDto {
         this.processId= partial.processId ?? "";
     }
 }
+
+export class ConcrClassDto extends ClassDto {}

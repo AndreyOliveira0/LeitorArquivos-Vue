@@ -69,3 +69,5 @@ export abstract class DisciplineDto {
         this.processId= partial.processId ?? "";
     }
 }
+
+export class ConcrDisciplineDto extends DisciplineDto {}
