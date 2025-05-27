@@ -112,6 +112,22 @@ export default {
 					if(periodoInicio && periodoTermino) {
 						etapa++;
 					}
+					
+					this.arquivoDisciplinas = null;
+					this.listaDisciplinas = [];
+					this.errosDisciplinas = [];
+
+					this.arquivoTurmas = null;
+					this.listaTurmas = [];
+					this.errosTurmas = [];
+
+					this.arquivoUsuarios = null;
+					this.listaUsuarios = [];
+					this.errosUsuarios = [];
+
+					this.arquivoVinculos = null;
+					this.listaVinculos = [];
+					this.errosVinculos = [];
 
 					this.processoVisualizando = (this.processoAtual.inicio <= this.processoAtual.termino);
 					if(this.processoVisualizando) {
@@ -131,10 +147,6 @@ export default {
 						this.listaTurmas = await pegarLista("Class");
 						this.listaUsuarios = await pegarLista("User");
 						this.listaVinculos = await pegarLista("Bond");
-						this.errosDisciplinas = [];
-						this.errosTurmas = [];
-						this.errosUsuarios = [];
-						this.errosVinculos = [];
 						etapa = this.telaEtapas.length-1;
 					}
 					for (let i = 0 ; i <= etapa ; i++) {
@@ -160,23 +172,7 @@ export default {
 				processo.status = (processo.inicio >= processo.termino) ? "Em andamento" : "Concluído";
 
 				this.processoVisualizando = false;
-				this.processoAtual = null;
-
-				this.arquivoDisciplinas = null;
-				this.listaDisciplinas = [];
-				this.errosDisciplinas = [];
-
-				this.arquivoTurmas = null;
-				this.listaTurmas = [];
-				this.errosTurmas = [];
-
-				this.arquivoUsuarios = null;
-				this.listaUsuarios = [];
-				this.errosUsuarios = [];
-
-				this.arquivoVinculos = null;
-				this.listaVinculos = [];
-				this.errosVinculos = [];
+				this.arquivoDisciplinas = false;
 				this.processoAtual = processo;
 				this.processos.push(processo);
 				this.mudarTela("importarPeriodo");
@@ -347,7 +343,6 @@ export default {
 						this.processos = [];
 						this.mudarTela("controleDados");
 
-						this.processoVisualizando = false;
 						this.processoAtual = null;
 
 						this.arquivoDisciplinas = null;

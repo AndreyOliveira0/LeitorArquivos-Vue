@@ -562,7 +562,7 @@ button:disabled {
 .tabelaLista .error-row .error-cell,
 .error-cell {
 	background-color: rgb(255, 150, 150);
-	border: 2px dashed rgb(255, 100, 100);
+	border: 1px solid rgb(255, 100, 100);
 	color: #ffffff;
 	font-weight: 600;
 	padding: 4px 8px;
