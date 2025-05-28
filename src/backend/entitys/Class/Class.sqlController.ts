@@ -1,4 +1,7 @@
 import { Controller, Post, Get, Param, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+
 import { ClassSQLService } from './Class.sqlService'; // Serviço do MySQL
 import { ClassEntity } from './Class.sqlEntity';
 import { ConcrClassDto } from './Class.Dto';
@@ -15,6 +18,8 @@ export class ClassSQLController {
   
   @Post(':Processid')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @ApiOperation({ summary: 'Envia uma lista de turmas' })
+  @ApiResponse({ status: 200, description: 'Turmas enviadas com sucesso.' })
   async syncMongoToSQL(@Param('Processid') Processid: string): Promise<ClassEntity[]> {
     // Busca os dados no MongoDB pelo ID através do MongoController
     const mongoData = await this.ClassService.findByProcessId(Processid);
@@ -28,6 +33,8 @@ export class ClassSQLController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Recebe todas as turmas' })
+  @ApiResponse({ status: 200, description: 'Turmas recebidas com sucesso.' })
   getAll(): Promise<ClassEntity[]> {
     return this.ClassSQLService.getAll();
   }

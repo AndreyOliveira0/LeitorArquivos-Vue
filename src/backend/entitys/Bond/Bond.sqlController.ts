@@ -1,4 +1,7 @@
 import { Controller, Post, Get, Param, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+
 import { BondSQLService } from './Bond.sqlService'; // Serviço do MySQL
 import { BondEntity } from './Bond.sqlEntity';
 import { ConcrBondDto } from './Bond.Dto';
@@ -15,6 +18,8 @@ export class BondSQLController {
   
   @Post(':Processid')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @ApiOperation({ summary: 'Envia uma lista de vínculos' })
+  @ApiResponse({ status: 200, description: 'Vínculos enviados com sucesso.' })
   async syncMongoToSQL(@Param('Processid') Processid: string): Promise<BondEntity[]> {
     // Busca os dados no MongoDB pelo ID através do MongoController
     const mongoData = await this.BondService.findByProcessId(Processid);
@@ -37,11 +42,15 @@ export class BondSQLController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Recebe todos os vínculos' })
+  @ApiResponse({ status: 200, description: 'Vínculo recebidos com sucesso.' })
   getAll(): Promise<BondEntity[]> {
     return this.BondSQLService.getAll();
   }
 
   @Get(':matricula')
+  @ApiOperation({ summary: 'Recebe um único vínculo' })
+  @ApiResponse({ status: 200, description: 'Vínculo recebido com sucesso.' })
   getByMatricula(@Param('matricula') matricula: String): Promise<BondEntity> {
     return this.BondSQLService.getByMatricula(matricula);
   }

@@ -1,4 +1,7 @@
 import { Controller, Post, Get, Param, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+
 import { DisciplineSQLService } from './Discipline.sqlService'; // Serviço do MySQL
 import { DisciplineEntity } from './Discipline.sqlEntity';
 import { ConcrDisciplineDto } from './Discipline.Dto';
@@ -14,6 +17,8 @@ export class DisciplineSQLController {
 
   
   @Post(':Processid')
+  @ApiOperation({ summary: 'Envia uma lista de disciplinas' })
+  @ApiResponse({ status: 200, description: 'turmas enviadas com sucesso.' })
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async syncMongoToSQL(@Param('Processid') Processid: string): Promise<DisciplineEntity[]> {
     // Busca os dados no MongoDB pelo ID através do MongoController
@@ -27,6 +32,8 @@ export class DisciplineSQLController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Recebe todas as disciplinas' })
+  @ApiResponse({ status: 200, description: 'Disciplinas recebidas com sucesso.' })
   getAll(): Promise<DisciplineEntity[]> {
     return this.DisciplineSQLService.getAll();
   }
