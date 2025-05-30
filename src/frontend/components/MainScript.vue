@@ -157,7 +157,7 @@
 						</thead>
 
 						<tbody>
-							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index" :class="{'error-row': (erro = errosDisciplinas[index + paginaAtual * 10])}" >
+							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index" :class="{'error-row': (erro = errosDisciplinas[index + paginaAtual * 5])}" >
 								<td :class="{'error-cell': erro?.periodo}">{{ disciplina.periodo }}</td>
 								<td :class="{'error-cell': erro?.disciplina}">{{ disciplina.disciplina }}</td>
 								<td :class="{'error-cell': erro?.codigo}">{{ disciplina.codigo }}</td>
