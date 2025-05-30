@@ -31,7 +31,11 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
+
+
+    // Configuração da interface Swagger
     SwaggerModule.setup('api-docs', app, document);
+
 
     // Inicializa o servidor na porta especificada
     const port = process.env.PORT || 8080;

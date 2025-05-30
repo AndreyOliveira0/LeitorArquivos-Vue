@@ -51,7 +51,7 @@ let ClassController = class ClassController {
 };
 exports.ClassController = ClassController;
 __decorate([
-    (0, common_1.Post)('Post'),
+    (0, common_1.Post)(''),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Envia uma única turma' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Turma Enviado com sucesso.' }),
@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "insertMany", null);
 __decorate([
-    (0, common_1.Get)('Get'),
+    (0, common_1.Get)(''),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todas as turmas' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de turmas retornada com sucesso.' }),
     __metadata("design:type", Function),
@@ -79,7 +79,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('Get/:codigo'),
+    (0, common_1.Get)(':codigo'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista uma única turma' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Turma retornada com sucesso.' }),
     __param(0, (0, common_1.Param)('codigo')),
@@ -97,7 +97,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "findByProcessId", null);
 __decorate([
-    (0, common_1.Put)('Put/:codigo'),
+    (0, common_1.Put)(':codigo'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de uma única turma' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Turma atualizada com sucesso.' }),
@@ -116,7 +116,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ClassController.prototype, "updateBulk", null);
 __decorate([
-    (0, common_1.Delete)('Delete/:codigo'),
+    (0, common_1.Delete)(':codigo'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta uma única turma' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Turma deletada com sucesso.' }),
     __param(0, (0, common_1.Param)('codigo')),

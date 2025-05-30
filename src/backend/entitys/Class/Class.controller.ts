@@ -9,7 +9,7 @@ import { ClassDto } from './Class.Dto';
 export class ClassController {
   constructor(private readonly ClassService: ClassService) {}
 
-  @Post('Post')
+  @Post('')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Envia uma única turma' })
   @ApiResponse({ status: 200, description: 'Turma Enviado com sucesso.' })
@@ -25,14 +25,14 @@ export class ClassController {
     return this.ClassService.insertMany(data);
   }
 
-  @Get('Get')
+  @Get('')
   @ApiOperation({ summary: 'Lista todas as turmas' })
   @ApiResponse({ status: 200, description: 'Lista de turmas retornada com sucesso.' })
   async findAll(): Promise<Class[]> {
     return this.ClassService.findAll();
   }
 
-  @Get('Get/:codigo')
+  @Get(':codigo')
   @ApiOperation({ summary: 'Lista uma única turma' })
   @ApiResponse({ status: 200, description: 'Turma retornada com sucesso.' })
   async findUnique(@Param('codigo') codigo: string): Promise<Class> {
@@ -46,7 +46,7 @@ export class ClassController {
     return this.ClassService.findByProcessId(processId);
   }
 
-  @Put('Put/:codigo')
+  @Put(':codigo')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de uma única turma' })
   @ApiResponse({ status: 200, description: 'Turma atualizada com sucesso.' })
@@ -63,7 +63,7 @@ export class ClassController {
     return this.ClassService.updateBulk(data);
   }
 
-  @Delete('Delete/:codigo')
+  @Delete(':codigo')
   @ApiOperation({ summary: 'Deleta uma única turma' })
   @ApiResponse({ status: 200, description: 'Turma deletada com sucesso.' })
   async delete(@Param('codigo') codigo: string): Promise<Class> {

@@ -30,6 +30,7 @@ async function bootstrap() {
             .setVersion('1.0')
             .build();
         const document = swagger_1.SwaggerModule.createDocument(app, config);
+        // Configuração da interface Swagger
         swagger_1.SwaggerModule.setup('api-docs', app, document);
         // Inicializa o servidor na porta especificada
         const port = process.env.PORT || 8080;

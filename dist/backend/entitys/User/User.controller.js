@@ -51,7 +51,7 @@ let UserController = class UserController {
 };
 exports.UserController = UserController;
 __decorate([
-    (0, common_1.Post)('Post'),
+    (0, common_1.Post)(''),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Envia um único usuário' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuário Enviado com sucesso.' }),
@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "insertMany", null);
 __decorate([
-    (0, common_1.Get)('Get'),
+    (0, common_1.Get)(''),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todos os usuários' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de usuários retornada com sucesso.' }),
     __metadata("design:type", Function),
@@ -79,7 +79,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('Get/:matricula'),
+    (0, common_1.Get)(':matricula'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista um único usuário' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuário retornado com sucesso.' }),
     __param(0, (0, common_1.Param)('matricula')),
@@ -97,7 +97,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findByProcessId", null);
 __decorate([
-    (0, common_1.Put)('Put/:matricula'),
+    (0, common_1.Put)(':matricula'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de um único usuário' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuário atualizado com sucesso.' }),
@@ -116,7 +116,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "updateBulk", null);
 __decorate([
-    (0, common_1.Delete)('Delete/:matricula'),
+    (0, common_1.Delete)(':matricula'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta um único usuário' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Usuário deletado com sucesso.' }),
     __param(0, (0, common_1.Param)('matricula')),

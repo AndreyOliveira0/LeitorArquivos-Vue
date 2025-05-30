@@ -9,7 +9,7 @@ import { DisciplineDto } from './Discipline.Dto';
 export class DisciplineController {
   constructor(private readonly DisciplineService: DisciplineService) {}
 
-  @Post('Post')
+  @Post('')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Envia uma única disciplina' })
   @ApiResponse({ status: 200, description: 'Disciplina Enviado com sucesso.' })
@@ -25,7 +25,7 @@ export class DisciplineController {
     return this.DisciplineService.insertMany(data);
   }
 
-  @Get('Get')
+  @Get('')
   @ApiOperation({ summary: 'Lista todas as disciplinas' })
   @ApiResponse({ status: 200, description: 'Lista de disciplinas retornada com sucesso.' })
   async findAll(): Promise<Discipline[]> {
@@ -39,7 +39,7 @@ export class DisciplineController {
     return this.DisciplineService.findByProcessId(processId);
   }
 
-  @Put('Put/:codigo')
+  @Put(':codigo')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @ApiOperation({ summary: 'Atualiza os dados de uma única disciplina' })
   @ApiResponse({ status: 200, description: 'Disciplina atualizada com sucesso.' })
@@ -56,7 +56,7 @@ export class DisciplineController {
     return this.DisciplineService.updateBulk(data);
   }
 
-  @Delete('Delete/:codigo')
+  @Delete(':codigo')
   @ApiOperation({ summary: 'Deleta uma única disciplina' })
   @ApiResponse({ status: 200, description: 'Disciplina deletada com sucesso.' })
   async delete(@Param('codigo') codigo: string): Promise<Discipline> {

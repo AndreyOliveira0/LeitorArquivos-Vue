@@ -48,7 +48,7 @@ let DisciplineController = class DisciplineController {
 };
 exports.DisciplineController = DisciplineController;
 __decorate([
-    (0, common_1.Post)('Post'),
+    (0, common_1.Post)(''),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Envia uma única disciplina' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplina Enviado com sucesso.' }),
@@ -68,7 +68,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DisciplineController.prototype, "insertMany", null);
 __decorate([
-    (0, common_1.Get)('Get'),
+    (0, common_1.Get)(''),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todas as disciplinas' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de disciplinas retornada com sucesso.' }),
     __metadata("design:type", Function),
@@ -85,7 +85,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DisciplineController.prototype, "findByProcessId", null);
 __decorate([
-    (0, common_1.Put)('Put/:codigo'),
+    (0, common_1.Put)(':codigo'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de uma única disciplina' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplina atualizada com sucesso.' }),
@@ -104,7 +104,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DisciplineController.prototype, "updateBulk", null);
 __decorate([
-    (0, common_1.Delete)('Delete/:codigo'),
+    (0, common_1.Delete)(':codigo'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta uma única disciplina' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Disciplina deletada com sucesso.' }),
     __param(0, (0, common_1.Param)('codigo')),

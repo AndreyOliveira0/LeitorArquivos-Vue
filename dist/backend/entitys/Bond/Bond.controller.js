@@ -51,7 +51,7 @@ let BondController = class BondController {
 };
 exports.BondController = BondController;
 __decorate([
-    (0, common_1.Post)('Post'),
+    (0, common_1.Post)(''),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Envia um único vínculo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Vínculo Enviado com sucesso.' }),
@@ -71,7 +71,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "insertMany", null);
 __decorate([
-    (0, common_1.Get)('Get'),
+    (0, common_1.Get)(''),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todos os vínculos' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de vínculos retornada com sucesso.' }),
     __metadata("design:type", Function),
@@ -79,7 +79,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('Get/:matricula'),
+    (0, common_1.Get)(':matricula'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista um único vínculo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Vínculo retornado com sucesso.' }),
     __param(0, (0, common_1.Param)('matricula')),
@@ -97,7 +97,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "findByProcessId", null);
 __decorate([
-    (0, common_1.Put)('Put/:matricula'),
+    (0, common_1.Put)(':matricula'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de um único vínculo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Vínculo atualizado com sucesso.' }),
@@ -116,7 +116,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BondController.prototype, "updateBulk", null);
 __decorate([
-    (0, common_1.Delete)('Delete/:matricula'),
+    (0, common_1.Delete)(':matricula'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta um único vínculo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Vínculo deletado com sucesso.' }),
     __param(0, (0, common_1.Param)('matricula')),

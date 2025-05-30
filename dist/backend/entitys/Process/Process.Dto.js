@@ -14,13 +14,19 @@ const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 class ProcessDto {
     constructor(partial = {}) {
+        this.id = partial.id ?? "";
         this.periodoInicio = partial.periodoInicio ?? "";
         this.periodoTermino = partial.periodoTermino ?? "";
-        this.inicio = partial.inicio ?? new Date();
-        this.termino = partial.termino ?? new Date();
     }
 }
 exports.ProcessDto = ProcessDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^[A-Za-z0-9]+$/, { message: 'Id do processo deve conter apenas caracteres alfanuméricos.' }),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({ example: 'e3e03e39ie3jroefj484fd5gd84' }),
+    __metadata("design:type", String)
+], ProcessDto.prototype, "id", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, swagger_1.ApiProperty)({ example: '2025/1' }),
@@ -31,13 +37,3 @@ __decorate([
     (0, swagger_1.ApiProperty)({ example: '2025/2' }),
     __metadata("design:type", String)
 ], ProcessDto.prototype, "periodoTermino", void 0);
-__decorate([
-    (0, class_validator_1.IsDateString)(),
-    (0, swagger_1.ApiProperty)({ example: '2025-04-23T10:30:00.000Z' }),
-    __metadata("design:type", Date)
-], ProcessDto.prototype, "inicio", void 0);
-__decorate([
-    (0, class_validator_1.IsDateString)(),
-    (0, swagger_1.ApiProperty)({ example: '2025-04-23T10:30:00.000Z' }),
-    __metadata("design:type", Date)
-], ProcessDto.prototype, "termino", void 0);

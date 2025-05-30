@@ -33,16 +33,13 @@ let ProcessController = class ProcessController {
     async update(id, data) {
         return this.ProcessService.update(id, data);
     }
-    async updateBulk(data) {
-        return this.ProcessService.updateBulk(data);
-    }
     async delete(id) {
         return this.ProcessService.delete(id);
     }
 };
 exports.ProcessController = ProcessController;
 __decorate([
-    (0, common_1.Post)('Post'),
+    (0, common_1.Post)(''),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Envia um único processo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Processo Enviado com sucesso.' }),
@@ -52,7 +49,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProcessController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)('Get'),
+    (0, common_1.Get)(''),
     (0, swagger_1.ApiOperation)({ summary: 'Lista todos os processos' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Lista de processos retornada com sucesso.' }),
     __metadata("design:type", Function),
@@ -60,7 +57,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProcessController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('Get/:_id'),
+    (0, common_1.Get)(':_id'),
     (0, swagger_1.ApiOperation)({ summary: 'Lista um único processo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Processo retornado com sucesso.' }),
     __param(0, (0, common_1.Param)('_id')),
@@ -69,7 +66,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProcessController.prototype, "findUnique", null);
 __decorate([
-    (0, common_1.Put)('Put/:_id'),
+    (0, common_1.Put)(':_id'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
     (0, swagger_1.ApiOperation)({ summary: 'Atualiza os dados de um único processo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Processo atualizado com sucesso.' }),
@@ -80,15 +77,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProcessController.prototype, "update", null);
 __decorate([
-    (0, common_1.Put)('PutBulk'),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
-    __metadata("design:returntype", Promise)
-], ProcessController.prototype, "updateBulk", null);
-__decorate([
-    (0, common_1.Delete)('Delete/:_id'),
+    (0, common_1.Delete)(':_id'),
     (0, swagger_1.ApiOperation)({ summary: 'Deleta um único processo' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Processo deletado com sucesso.' }),
     __param(0, (0, common_1.Param)('_id')),

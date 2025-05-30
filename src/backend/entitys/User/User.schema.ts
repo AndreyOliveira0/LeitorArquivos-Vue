@@ -12,8 +12,8 @@ export class User extends Document{
   @Prop({ type: String})
   nome: String;
 
-  @Prop({ type: String})
-  matricula: String;
+  @Prop({ type: Number})
+  matricula: Number;
 
   @Prop({ type: String})
   email: String;
@@ -39,7 +39,7 @@ export class User extends Document{
   @Prop({type:String})
   processId: String;
   
-  constructor(nome: String, matricula: String, email: String, curso: String, tipo: String, nascimento: Date, cadastro: Date, contato: String, status: String, processId: String){
+  constructor(nome: String, matricula: Number, email: String, curso: String, tipo: String, nascimento: Date, cadastro: Date, contato: String, status: String, processId: String){
     super();
     
     this.nome= nome;
