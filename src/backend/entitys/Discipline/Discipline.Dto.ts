@@ -69,9 +69,9 @@ export abstract class DisciplineDto {
         this.disciplina= partial.disciplina ?? "";
 
     
-        this.inicio= partial.inicio ?? new Date()
+        this.inicio= partial.inicio ?? new Date();
     
-        this.termino= partial.termino ?? new Date()
+        this.termino= partial.termino ?? new Date();
     
         this.categoria= partial.categoria ?? "";
     

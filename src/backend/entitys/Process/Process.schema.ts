@@ -11,14 +11,13 @@ export class Process extends Document{
   @Prop({type:String})
   id: String;
 
-  @Prop({ type: String})
-  periodoInicio: String;
+  @Prop({ type: Date})
+  periodoInicio: Date;
 
-  @Prop({ type: String})
-  periodoTermino: String;
+  @Prop({ type: Date})
+  periodoTermino: Date;
 
-
-  constructor(id:String, periodoInicio:String, periodoTermino:String){
+  constructor(id:String, periodoInicio:Date, periodoTermino:Date){
     super();
 
     this.id= id;
