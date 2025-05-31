@@ -28,10 +28,10 @@ export default {
 			paginaAtual: 0, //Para a paginação
 
 			// Etapa 1 - Ano Letivo
-			anoLetivoInicio: new Date().getFullYear(),
+			dataInicio: "",
 			periodoInicio: 1,
 
-			anoLetivoTermino: new Date().getFullYear(),
+			dataTermino: "",
 			periodoTermino: 2,
 
 			// Etapa 2 - Disciplinas
@@ -82,7 +82,7 @@ export default {
 		// Processos
 		async abrirProcesso(id) {
 			const JSONHeaders = this.JSONHeaders;
-			const url = `http://localhost:8080/Process/Get/${id}`;
+			const url = `http://localhost:8080/Process/${id}`;
 			await axios.get(url, JSONHeaders)
 			.then(async response => {
 				const processo = response.data;
@@ -95,16 +95,17 @@ export default {
 					if(periodoInicio) {
 						const split = periodoInicio.split("/");
 						if(split?.length == 2) {
-							this.anoLetivoInicio = parseInt(split[0])
-							this.periodoInicio = parseInt(split[1])
+							this.dataInicio = parseInt(split[0]);
+							this.periodoInicio = parseInt(split[1]);
 						}
 					}
+					
 					// Término de Período detectado, carregando dado vindo do banco
 					if(periodoTermino) {
 						const split = periodoTermino.split("/");
 						if(split?.length == 2) {
-							this.anoLetivoTermino = parseInt(split[0])
-							this.periodoTermino = parseInt(split[1])
+							this.dataTermino = parseInt(split[0]);
+							this.periodoTermino = parseInt(split[1]);
 						}
 					}
 
@@ -161,11 +162,11 @@ export default {
 			});
 		},
 		async iniciarProcesso() {
-			const response = await axios.post("http://localhost:8080/Process/Post", {
+			const response = await axios.post("http://localhost:8080/Process", {
 				periodoInicio: "",
 				periodoTermino: "",
-				inicio: new Date(),
-				termino: new Date(0)
+				envioInicio: new Date(),
+				envioTermino: new Date(0)
 			}, this.JSONHeaders)
 			.then(response => {
 				const processo = response.data;
@@ -178,7 +179,7 @@ export default {
 				this.mudarTela("importarPeriodo");
 			})
 			.catch(error => {
-				console.error(`Erro ao iniciar processo: `, error?.message ?? error);
+				console.error(`Erro ao iniciar processo:`, error?.message ?? error);
 			});
 		},
 		async cancelarProcesso(id) {
@@ -203,7 +204,7 @@ export default {
 			await deletarRelacionados("Bond");
 
 			if(semErros) {
-				await axios.delete(`http://localhost:8080/Process/Delete/${id}`, this.JSONHeaders)
+				await axios.delete(`http://localhost:8080/Process/${id}`, this.JSONHeaders)
 				.then(response => {
 					this.processos = [];
 					this.atualizarProcessos();
@@ -250,13 +251,13 @@ export default {
 
 		proximaEtapa() {
 			if(this.etapaAtual == this.telaEtapas.indexOf("importarPeriodo")) {
-				this.processoAtual.periodoInicio = `${this.anoLetivoInicio}/${this.periodoInicio}`;
-				this.processoAtual.periodoTermino = `${this.anoLetivoTermino}/${this.periodoTermino}`;
-				axios.put(`http://localhost:8080/Process/Put/${this.processoAtual._id}`, {
+				this.processoAtual.periodoInicio = `${this.dataInicio}/${this.periodoInicio}`;
+				this.processoAtual.periodoTermino = `${this.dataTermino}/${this.periodoTermino}`;
+				axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
 					periodoInicio: this.processoAtual.periodoInicio,
 					periodoTermino: this.processoAtual.periodoTermino,
-					inicio: this.processoAtual.inicio,
-					termino: this.processoAtual.termino
+					envioInicio: this.processoAtual.inicio,
+					envioTermino: this.processoAtual.termino
 				}, this.JSONHeaders);
 			}
 			this.mudarTela(this.telaEtapas[this.etapaAtual+1]);
@@ -332,11 +333,11 @@ export default {
 				console.log(`Upload de dados realizado com sucesso, criando processo!`);
 
 				if(semErros) {
-					const processo = await axios.put(`http://localhost:8080/Process/Put/${this.processoAtual._id}`, {
+					const processo = await axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
 						periodoInicio: this.processoAtual.periodoInicio,
 						periodoTermino: this.processoAtual.periodoTermino,
-						inicio: this.processoAtual.inicio,
-						termino: new Date()
+						envioInicio: this.processoAtual.inicio,
+						envioTermino: new Date()
 					})
 					.then(response => {
 						console.log("Processo enviado! Voltando a tela de Controle de Importações...");
@@ -468,7 +469,7 @@ export default {
 		},
 
 		async atualizarProcessos() {
-			const url = `http://localhost:8080/Process/Get`;
+			const url = `http://localhost:8080/Process`;
 			axios.get(url, this.JSONHeaders)
 			.then(response => {
 				console.log("Processos recebidos:", response.data?.length ?? 0);
@@ -524,6 +525,13 @@ export default {
 			const minutos = String(d.getMinutes()).padStart(2, '0');
 
 			return `${dia}/${mes}/${ano} - ${horas}:${minutos}`;
+		},
+		dateYMD(date) {
+			const d = new Date(date);
+			const dia = String(d.getDate()).padStart(2, '0');
+			const mes = String(d.getMonth() + 1).padStart(2, '0'); // Janeiro = 0
+			const ano = d.getFullYear();
+			return `${ano}-${mes}-${dia}`;
 		},
 
 		truncarNome(nome) {

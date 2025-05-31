@@ -379,6 +379,13 @@ button:disabled {
 	text-align: center;
 }
 
+.input-grupo input[type=date] {
+	font-size: 16px;
+	padding: 12px;
+	width: 150px;
+	height: 29px;
+}
+
 .caixaErro {
 	display: flex;
 	justify-content: center;

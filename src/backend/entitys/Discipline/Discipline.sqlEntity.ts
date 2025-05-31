@@ -21,7 +21,7 @@ export class DisciplineEntity {
   categoria: String;
 
   @Column()
-  periodoCurricular: Number;
+  periodoCurricular: String;
 
   @Column()
   estado: String;
@@ -32,7 +32,7 @@ export class DisciplineEntity {
   @Column()
   processId: String;
 
-  constructor(periodo: String, disciplina: String, codigo: String, inicio: Date, termino: Date, categoria: String, periodoCurricular: Number, estado: String, campus: String, processId: String){
+  constructor(periodo: String, disciplina: String, codigo: String, inicio: Date, termino: Date, categoria: String, periodoCurricular: String, estado: String, campus: String, processId: String){
     this.periodo= periodo;
 
     this.disciplina= disciplina;

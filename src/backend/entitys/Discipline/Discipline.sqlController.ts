@@ -18,7 +18,7 @@ export class DisciplineSQLController {
   
   @Post(':Processid')
   @ApiOperation({ summary: 'Envia uma lista de disciplinas' })
-  @ApiResponse({ status: 200, description: 'turmas enviadas com sucesso.' })
+  @ApiResponse({ status: 200, description: 'Disciplinas enviadas com sucesso.' })
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async syncMongoToSQL(@Param('Processid') Processid: string): Promise<DisciplineEntity[]> {
     // Busca os dados no MongoDB pelo ID através do MongoController
