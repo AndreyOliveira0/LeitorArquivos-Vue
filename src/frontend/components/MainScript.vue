@@ -31,9 +31,10 @@
 					<thead>
 						<tr>
 							<th>ID do Processo</th>
-							<th>Período Letivo</th>
-							<th>Data de Início</th>
-							<th>Data de Término</th>
+							<th>Início do Período Letivo</th>
+							<th>Término do Período Letivo</th>
+							<th>Início do Envio</th>
+							<th>Término do Envio</th>
 							<th>Status do Envio</th>
 							<th>Ações</th>
 						</tr>
@@ -42,7 +43,8 @@
 					<tbody>
 						<tr v-for="(processo, id) in processos" :key="id">
 							<td v-html="processo._id"></td>
-							<td v-html="processo.periodoInicio + ' - ' + processo.periodoTermino"></td>
+							<td v-html="processo.periodoInicio"></td>
+							<td v-html="processo.periodoTermino"></td>
 							<td v-html="formatarDataHora(processo.inicio)"></td>
 							<td v-html="processo.termino > processo.inicio ? formatarDataHora(processo.termino) : '-'"></td>
 							<td style="padding: 0;" v-if="processo.status">
@@ -108,8 +110,8 @@
 							<h2 style="margin-left: 30px;">Início do Ano Letivo</h2>
 							<div class="inputs-container">
 								<div class="input-grupo">
-									<label for="anoLetivoInicio">Ano</label>
-									<input type="number" id="anoLetivoInicio" v-model="anoLetivoInicio" :disabled="processoVisualizando" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
+									<label for="dataInicio">Data</label>
+									<input type="date" id="dataInicio" v-model="dataInicio" :disabled="processoVisualizando" /> <!-- Limites da Data -->
 								</div>
 
 								<div class="input-grupo">
@@ -123,8 +125,8 @@
 							<h2>Término do Ano Letivo</h2>
 							<div class="inputs-container">
 								<div class="input-grupo">
-									<label for="anoLetivoTermino">Ano</label>
-									<input type="number" id="anoLetivoTermino" v-model="anoLetivoTermino" :disabled="processoVisualizando" min="2000" max="3000" /> <!-- Limites do Ano seletivo -->
+									<label for="dataTermino">Data</label>
+									<input type="date" id="dataTermino" v-model="dataTermino" :disabled="processoVisualizando" /> <!-- Limites da Data -->
 								</div>
 
 								<div class="input-grupo">

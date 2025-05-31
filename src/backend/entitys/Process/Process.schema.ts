@@ -11,13 +11,20 @@ export class Process extends Document{
   @Prop({type:String})
   id: String;
 
-  @Prop({ type: Date})
-  periodoInicio: Date;
+  @Prop({ type: String})
+  periodoInicio: String;
 
-  @Prop({ type: Date})
-  periodoTermino: Date;
+  @Prop({ type: String})
+  periodoTermino: String;
 
-  constructor(id:String, periodoInicio:Date, periodoTermino:Date){
+  @Prop({ type: String})
+  envioInicio: Date;
+
+  @Prop({ type: String})
+  envioTermino: Date;
+
+
+  constructor(id:String, periodoInicio:String, periodoTermino:String, envioInicio:Date, envioTermino:Date){
     super();
 
     this.id= id;
@@ -26,6 +33,9 @@ export class Process extends Document{
 
     this.periodoTermino= periodoTermino;
 
+    this.envioInicio= envioInicio;
+
+    this.envioTermino= envioTermino;
   }
 }
 export const ProcessSchema = SchemaFactory.createForClass(Process);
