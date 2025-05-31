@@ -130,7 +130,7 @@ body {
 /* Controle de Dados */
 .tabelaDados {
 	border-spacing: 0;
-	font-size: clamp(12px, 2vw, 16px);
+	font-size: clamp(10px, 2vw, 14px);
 	margin: 100px;
 	border-bottom: 1px solid rgb(160 160 160);
 }
@@ -138,7 +138,7 @@ body {
 	border: 1px solid rgb(160 160 160);
 	border-left: 0;
 	border-bottom: 0;
-	padding: clamp(8px, 2.4vh, 16px) max(12px, 3vw);
+	padding: clamp(8px, 2.4vh, 16px) max(12px, 2vw);
 }
 .tabelaDados th:first-child {
 	border-top-left-radius: 10px;
@@ -151,7 +151,7 @@ body {
 	border: 1px solid rgb(160 160 160);
 	border-left: 0;
 	border-bottom: 0;
-	padding: clamp(8px, 2.4vh, 16px) max(12px, 3vw);
+	padding: clamp(8px, 2.4vh, 16px) max(12px, 2vw);
 }
 .tabelaDados td:first-child {
 	border-left: 1px solid rgb(160 160 160);

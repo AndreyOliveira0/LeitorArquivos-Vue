@@ -28,11 +28,8 @@ export default {
 			paginaAtual: 0, //Para a paginação
 
 			// Etapa 1 - Ano Letivo
-			dataInicio: "",
-			periodoInicio: 1,
-
-			dataTermino: "",
-			periodoTermino: 2,
+			periodoInicio: null,
+			periodoTermino: null,
 
 			// Etapa 2 - Disciplinas
 			arquivoDisciplinas: null,
@@ -82,55 +79,25 @@ export default {
 		// Processos
 		async abrirProcesso(id) {
 			const JSONHeaders = this.JSONHeaders;
+			this.resetarDadosProcesso();
+
 			const url = `http://localhost:8080/Process/${id}`;
 			await axios.get(url, JSONHeaders)
 			.then(async response => {
 				const processo = response.data;
 				if(processo) {
 					this.processoAtual = response.data;
-					const periodoInicio = this.processoAtual.periodoInicio?.trim() ?? "";
-					const periodoTermino = this.processoAtual.periodoTermino?.trim() ?? "";
 
-					// Início de Período detectado, carregando dado vindo do banco
-					if(periodoInicio) {
-						const split = periodoInicio.split("/");
-						if(split?.length == 2) {
-							this.dataInicio = parseInt(split[0]);
-							this.periodoInicio = parseInt(split[1]);
-						}
-					}
-					
-					// Término de Período detectado, carregando dado vindo do banco
-					if(periodoTermino) {
-						const split = periodoTermino.split("/");
-						if(split?.length == 2) {
-							this.dataTermino = parseInt(split[0]);
-							this.periodoTermino = parseInt(split[1]);
-						}
-					}
+					// Etapa 1
+					this.periodoInicio = this.processoAtual.periodoInicio ? this.dateYMD(this.processoAtual.periodoInicio) : null;
+					this.periodoTermino = this.processoAtual.periodoInicio ? this.dateYMD(this.processoAtual.periodoTermino) : null;
 
 					let etapa = 0;
-					if(periodoInicio && periodoTermino) {
+					if(this.periodoInicio && this.periodoTermino) {
 						etapa++;
 					}
-					
-					this.arquivoDisciplinas = null;
-					this.listaDisciplinas = [];
-					this.errosDisciplinas = [];
 
-					this.arquivoTurmas = null;
-					this.listaTurmas = [];
-					this.errosTurmas = [];
-
-					this.arquivoUsuarios = null;
-					this.listaUsuarios = [];
-					this.errosUsuarios = [];
-
-					this.arquivoVinculos = null;
-					this.listaVinculos = [];
-					this.errosVinculos = [];
-
-					this.processoVisualizando = (this.processoAtual.inicio <= this.processoAtual.termino);
+					this.processoVisualizando = !!(this.processoAtual.envioTermino);
 					if(this.processoVisualizando) {
 						const id = this.processoAtual._id;
 						async function pegarLista(schemaKey) {
@@ -163,15 +130,12 @@ export default {
 		},
 		async iniciarProcesso() {
 			const response = await axios.post("http://localhost:8080/Process", {
-				periodoInicio: "",
-				periodoTermino: "",
 				envioInicio: new Date(),
-				envioTermino: new Date(0)
 			}, this.JSONHeaders)
 			.then(response => {
+				this.resetarDadosProcesso();
 				const processo = response.data;
-				processo.status = (processo.inicio >= processo.termino) ? "Em andamento" : "Concluído";
-
+				processo.status = "Em andamento";
 				this.processoVisualizando = false;
 				this.arquivoDisciplinas = false;
 				this.processoAtual = processo;
@@ -215,6 +179,28 @@ export default {
 				});
 			}
 		},
+		resetarDadosProcesso() {
+			// Etapa 1
+			this.periodoInicio = null;
+			this.periodoTermino = null;
+			
+			// Etapas 2-5
+			this.arquivoDisciplinas = null;
+			this.listaDisciplinas = [];
+			this.errosDisciplinas = [];
+
+			this.arquivoTurmas = null;
+			this.listaTurmas = [];
+			this.errosTurmas = [];
+
+			this.arquivoUsuarios = null;
+			this.listaUsuarios = [];
+			this.errosUsuarios = [];
+
+			this.arquivoVinculos = null;
+			this.listaVinculos = [];
+			this.errosVinculos = [];
+		},
 
 		// Telas
 		mudarTela(tela, historico = true) {
@@ -250,14 +236,14 @@ export default {
 		},
 
 		proximaEtapa() {
-			if(this.etapaAtual == this.telaEtapas.indexOf("importarPeriodo")) {
-				this.processoAtual.periodoInicio = `${this.dataInicio}/${this.periodoInicio}`;
-				this.processoAtual.periodoTermino = `${this.dataTermino}/${this.periodoTermino}`;
+			if(this.telaEtapas[this.etapaAtual] == "importarPeriodo") {
+				this.processoAtual.periodoInicio = this.periodoInicio;
+				this.processoAtual.periodoTermino = this.periodoTermino;
 				axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
 					periodoInicio: this.processoAtual.periodoInicio,
 					periodoTermino: this.processoAtual.periodoTermino,
-					envioInicio: this.processoAtual.inicio,
-					envioTermino: this.processoAtual.termino
+					envioInicio: this.processoAtual.envioInicio,
+					envioTermino: this.processoAtual.envioTermino
 				}, this.JSONHeaders);
 			}
 			this.mudarTela(this.telaEtapas[this.etapaAtual+1]);
@@ -336,7 +322,7 @@ export default {
 					const processo = await axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
 						periodoInicio: this.processoAtual.periodoInicio,
 						periodoTermino: this.processoAtual.periodoTermino,
-						envioInicio: this.processoAtual.inicio,
+						envioInicio: this.processoAtual.envioInicio,
 						envioTermino: new Date()
 					})
 					.then(response => {
@@ -345,22 +331,7 @@ export default {
 						this.mudarTela("controleDados");
 
 						this.processoAtual = null;
-
-						this.arquivoDisciplinas = null;
-						this.listaDisciplinas = [];
-						this.errosDisciplinas = [];
-
-						this.arquivoTurmas = null;
-						this.listaTurmas = [];
-						this.errosTurmas = [];
-
-						this.arquivoUsuarios = null;
-						this.listaUsuarios = [];
-						this.errosUsuarios = [];
-
-						this.arquivoVinculos = null;
-						this.listaVinculos = [];
-						this.errosVinculos = [];
+						this.resetarDadosProcesso();
 					})
 					.catch(error => {
 						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): `, error?.message ?? error);
@@ -476,7 +447,7 @@ export default {
 				if (response.data && response.data.length > 0) {
 					this.processos = response.data;
 					for (let processo of this.processos) {
-						processo.status = (processo.inicio >= processo.termino) ? "Em andamento" : "Concluído";
+						processo.status = processo.envioTermino ? "Concluído" : "Em andamento";
 					}
 				}
 				else this.processos = [];
@@ -510,9 +481,9 @@ export default {
 			const d = new Date(data);
 			if(isNaN(d)) return `--/--/--`;
 
-			const dia = String(d.getDate()).padStart(2, '0');
-			const mes = String(d.getMonth() + 1).padStart(2, '0'); // Janeiro = 0
-			const ano = d.getFullYear();
+			const dia = String(d.getUTCDate()).padStart(2, '0');
+			const mes = String(d.getUTCMonth() + 1).padStart(2, '0'); // Janeiro = 0
+			const ano = d.getUTCFullYear();
 			return `${dia}/${mes}/${ano}`;
 		},
 		formatarDataHora(dataHora) {
@@ -528,9 +499,9 @@ export default {
 		},
 		dateYMD(date) {
 			const d = new Date(date);
-			const dia = String(d.getDate()).padStart(2, '0');
-			const mes = String(d.getMonth() + 1).padStart(2, '0'); // Janeiro = 0
-			const ano = d.getFullYear();
+			const dia = String(d.getUTCDate()).padStart(2, '0');
+			const mes = String(d.getUTCMonth() + 1).padStart(2, '0'); // Janeiro = 0
+			const ano = d.getUTCFullYear();
 			return `${ano}-${mes}-${dia}`;
 		},
 

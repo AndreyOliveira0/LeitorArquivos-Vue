@@ -43,10 +43,10 @@
 					<tbody>
 						<tr v-for="(processo, id) in processos" :key="id">
 							<td v-html="processo._id"></td>
-							<td v-html="processo.periodoInicio"></td>
-							<td v-html="processo.periodoTermino"></td>
-							<td v-html="formatarDataHora(processo.inicio)"></td>
-							<td v-html="processo.termino > processo.inicio ? formatarDataHora(processo.termino) : '-'"></td>
+							<td v-html="processo.periodoInicio ? formatarData(processo.periodoInicio) : '---'"></td>
+							<td v-html="processo.periodoTermino ? formatarData(processo.periodoTermino) : '---'"></td>
+							<td v-html="formatarDataHora(processo.envioInicio)"></td>
+							<td v-html="processo.envioTermino ? formatarDataHora(processo.envioTermino) : '---'"></td>
 							<td style="padding: 0;" v-if="processo.status">
 								<p v-html="processo.status" class="processoStatus" :class="{statusAndamento: processo.status.toLowerCase() == 'em andamento', statusConcluido: processo.status.toLowerCase() == 'concluído'}"></p>
 							</td>
@@ -100,43 +100,32 @@
 
 				<!-- Etapa 1 - Período Letivo -->
 				<div v-if="tela == 'importarPeriodo'" class="telaPeriodos">
-					<div class="caixaErro" v-if="anoLetivoInicio > anoLetivoTermino || (anoLetivoInicio == anoLetivoTermino && periodoInicio > periodoTermino)">
-						<p v-if="anoLetivoInicio > anoLetivoTermino">O Ano Letivo do Começo não pode ser maior que do Término.</p>
-						<p v-else>O Período do Começo não pode ser maior que do Término.</p>
+					<div class="caixaErro" v-if="periodoInicio && periodoTermino && periodoInicio > periodoTermino">
+						<p>O Ano Letivo do Começo não pode ser maior que do Término.</p>
 					</div>
 
-					<div style="display: flex; flex-direction: column;">
+					<div style="display: flex; flex-direction: row; gap: 50px;">
 						<div class="container-parent">
-							<h2 style="margin-left: 30px;">Início do Ano Letivo</h2>
-							<div class="inputs-container">
+							<h2>Início do Ano Letivo</h2>
+							<div class="inputs-container" style="width: 300px;">
 								<div class="input-grupo">
-									<label for="dataInicio">Data</label>
-									<input type="date" id="dataInicio" v-model="dataInicio" :disabled="processoVisualizando" /> <!-- Limites da Data -->
-								</div>
-
-								<div class="input-grupo">
-									<label for="periodoInicio">Período</label>
-									<input type="number" id="periodoInicio" v-model="periodoInicio" :disabled="processoVisualizando" min="1" max="99" /> <!-- Limites do Perido -->
+									<label for="periodoInicio">Data</label>
+									<input type="date" id="periodoInicio" v-model="periodoInicio" :disabled="processoVisualizando" /> <!-- Limites da Data -->
 								</div>
 							</div>
 						</div>
 
 						<div class="container-parent">
 							<h2>Término do Ano Letivo</h2>
-							<div class="inputs-container">
+							<div class="inputs-container" style="width: 300px;">
 								<div class="input-grupo">
-									<label for="dataTermino">Data</label>
-									<input type="date" id="dataTermino" v-model="dataTermino" :disabled="processoVisualizando" /> <!-- Limites da Data -->
-								</div>
-
-								<div class="input-grupo">
-									<label for="periodoTermino">Período</label>
-									<input type="number" id="periodoTermino" v-model="periodoTermino" :disabled="processoVisualizando" min="1" max="99" /> <!-- Limites do Perido -->
+									<label for="periodoTermino">Data</label>
+									<input type="date" id="periodoTermino" v-model="periodoTermino" :disabled="processoVisualizando" /> <!-- Limites da Data -->
 								</div>
 							</div>
 						</div>
 					</div>
-					<button class="botao-avancar" @click="proximaEtapa()" :disabled="!processoVisualizando && (anoLetivoInicio > anoLetivoTermino || (anoLetivoInicio == anoLetivoTermino && periodoInicio > periodoTermino))">Avançar</button>
+					<button class="botao-avancar" @click="proximaEtapa()" :disabled="!processoVisualizando && (!periodoInicio || !periodoTermino || periodoInicio > periodoTermino)">Avançar</button>
 				</div>
 				
 				<!-- Etapa 2 a 5 -->
@@ -284,8 +273,14 @@
 					
 					<!-- Botão Avançar -->
 					<div class="botao-direita">
+						<!-- Etapas 1-4 -->
 						<button class="botao-avancar" @click="proximaEtapa()" v-if="etapaAtual < telaEtapas.length - 1" :disabled="(!processoVisualizando && !arquivoSelecionado) || listaAtualTemErros()">Avançar</button>
-						<button class="botao-avancar" @click="!processoVisualizando ? finalizarProcesso() : mudarTela('controleDados')" :disabled="(!processoVisualizando && !arquivoSelecionado) || listaAtualTemErros()" v-else>Finalizar Processo</button>
+
+						<!-- Etapas 5 (Visualizando Processo) -->
+						<button class="botao-avancar" @click="mudarTela('controleDados')" v-else-if="processoVisualizando">Fechar Processo</button>
+						
+						<!-- Etapas 5 (Editando Processo) -->
+						<button class="botao-avancar" @click="finalizarProcesso()" :disabled="!arquivoSelecionado || listaAtualTemErros()" v-else>Finalizar Processo</button>
 					</div>
 				</div>
 			</div>

@@ -8,26 +8,21 @@ export type ProcessDocument = HydratedDocument<Process>;
 
 @Schema({ collection: 'Process' })
 export class Process extends Document{
-  @Prop({type:String})
-  id: String;
+  @Prop({ type: Date, required: false, default: null})
+  periodoInicio?: Date;
 
-  @Prop({ type: Date})
-  periodoInicio: Date;
-
-  @Prop({ type: Date})
-  periodoTermino: Date;
+  @Prop({ type: Date, required: false, default: null})
+  periodoTermino?: Date;
 
   @Prop({ type: Date})
   envioInicio: Date;
 
-  @Prop({ type: Date})
-  envioTermino: Date;
+  @Prop({ type: Date, required: false, default: null})
+  envioTermino?: Date;
 
 
-  constructor(id:String, periodoInicio:Date, periodoTermino:Date, envioInicio:Date, envioTermino:Date){
+  constructor(periodoInicio:Date, periodoTermino:Date, envioInicio:Date, envioTermino:Date){
     super();
-
-    this.id= id;
 
     this.periodoInicio= periodoInicio;
 
