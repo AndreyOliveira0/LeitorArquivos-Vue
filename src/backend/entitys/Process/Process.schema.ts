@@ -11,20 +11,20 @@ export class Process extends Document{
   @Prop({type:String})
   id: String;
 
-  @Prop({ type: String})
-  periodoInicio: String;
+  @Prop({ type: Date})
+  periodoInicio: Date;
 
-  @Prop({ type: String})
-  periodoTermino: String;
+  @Prop({ type: Date})
+  periodoTermino: Date;
 
-  @Prop({ type: String})
+  @Prop({ type: Date})
   envioInicio: Date;
 
-  @Prop({ type: String})
+  @Prop({ type: Date})
   envioTermino: Date;
 
 
-  constructor(id:String, periodoInicio:String, periodoTermino:String, envioInicio:Date, envioTermino:Date){
+  constructor(id:String, periodoInicio:Date, periodoTermino:Date, envioInicio:Date, envioTermino:Date){
     super();
 
     this.id= id;

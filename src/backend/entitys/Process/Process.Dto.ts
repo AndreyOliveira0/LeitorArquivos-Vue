@@ -16,11 +16,23 @@ export abstract class ProcessDto {
     @ApiProperty({ example: '2025-04-23T10:30:00.000Z' })
     periodoTermino: Date;
 
+    @IsDateString()
+    @ApiProperty({ example: '2025-04-23T10:30:00.000Z' })
+    envioInicio: Date;
+
+    @IsDateString()
+    @ApiProperty({ example: '2025-04-23T10:30:00.000Z' })
+    envioTermino: Date;
+
     constructor(partial: Partial<ProcessDto> = {}) {
         this.id= partial.id ?? "";
 
         this.periodoInicio= partial.periodoInicio ?? new Date();
 
         this.periodoTermino= partial.periodoTermino ?? new Date();
+
+        this.envioInicio= partial.envioInicio ?? new Date();
+
+        this.envioTermino= partial.envioTermino ?? new Date();
     }
 }
