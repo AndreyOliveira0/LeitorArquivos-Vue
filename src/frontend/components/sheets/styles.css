@@ -216,6 +216,7 @@ button {
 }
 
 button:hover {
+	cursor: pointer;
 	background-color: var(--azul-bonsae-hover);
 	/*text-decoration: underline;*/
 }
@@ -394,6 +395,17 @@ button:disabled {
 	padding: 0vw 1vh;
 	background-color: #ffd0d0;
 	border: 1px #ffa0a0 solid;
+	border-radius: 5px;
+}
+
+.caixaAviso {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	padding: 0vw 1vh;
+	background-color: #e2e2e2;
+	border: 1px #bfbfbf solid;
 	border-radius: 5px;
 }
 
@@ -576,30 +588,80 @@ button:disabled {
 }
 
 .tooltip {
-    position: relative;
-    cursor: pointer;
+	position: relative;
+	cursor: pointer;
 }
 
 .tooltip .tooltip-text {
-    visibility: hidden;
-    background-color: #f44336;
-    color: #fff; 
-    text-align: center;
-    border-radius: 8px;
-    padding: 10px 15px;
-    font-size: 14px;
-    position: absolute;
-    z-index: 1;
-    bottom: 110%;
-    left: 50%;
-    margin-left: -75px; 
-    width: 150px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	visibility: hidden;
+	background-color: #f44336;
+	color: #fff; 
+	text-align: center;
+	border-radius: 8px;
+	padding: 10px 15px;
+	font-size: 14px;
+	position: absolute;
+	z-index: 1;
+	bottom: 110%;
+	left: 50%;
+	margin-left: -75px; 
+	width: 150px;
+	opacity: 0;
+	transition: opacity 0.3s;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
+	visibility: visible;
+	opacity: 1;
+}
+
+/* Telas de carregamento */
+
+.loading {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.loading p {
+	color: #646464;
+}
+
+.loading-circle {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	border: 5px solid #ffffff;
+	border-top: 5px solid var(--azul-bonsae);
+	animation: loading-spin 1s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+}
+
+@keyframes loading-spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+.listaErro {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.listaErro p {
+	font-size: 18px;
+	color: #646464;
+}
+
+.caixaErro .listaErro p,
+.caixaErro p {
+	color: rgb(175, 0, 0);
 }

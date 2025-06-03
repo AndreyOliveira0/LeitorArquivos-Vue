@@ -1,29 +1,27 @@
-
-import axios from 'axios';
+import axios from 'axios'
+import { routerSetup } from './routing.js'
+import { dateFunctionsSetup } from './date.js'
+import { createProcessSetup } from './createProcess.js'
+import { useRoute } from 'vue-router'
 import * as XLSX from "xlsx"; // Usado para o suporte a arquivos do Excel
-import "./sheets/styles.css";  // Importação do CSS externo
-import { isNumber } from 'class-validator';
+import "../sheets/styles.css";  // Importação do CSS externo
 
 export default {
 	data() {
 		return {
+			erro: null,
+			carregado: false,
+
 			REGEX_ALPHANUMERIC: /^[A-Za-z0-9]+$/,
 			REGEX_NO_SYMBOLS: /^[\p{L}0-9 ]+$/u,
 			formatos: [".csv", ".xlsx", ".json"],
-			arquivoCarregado: null,
 			arquivoSelecionado: null,
-			tela: "inicio",
-			_historicoTelas: [], //Usado para o botão de voltar
 
-			processos: [], // Informações de processos já carregados para o Controle de Importações
 			processoAtual: null, //Processo carregado para edição
 			processoVisualizando: false, //Evita edição do processo atual
 
-			// Para a importação de dados:
-			telaEtapas: ["importarPeriodo", "importarDisciplinas", "importarTurmas", "importarUsuarios", "importarVinculos"],
 			nomeEtapas: ["Período Letivo", "Disciplinas", "Turmas", "Usuários", "Vínculos"],
 			etapaAtual: 0,
-			
 			paginaAtual: 0, //Para a paginação
 
 			// Etapa 1 - Ano Letivo
@@ -51,170 +49,81 @@ export default {
 			errosVinculos: []
 		}
 	},
-	mounted() {
-		this.atualizarProcessos();
-	},
-	watch: {
-		tela() {
-			this.atualizarPaginacao();
-		}
-	},
 	computed: {
 		listaAtual() {
-			switch(this.tela) {
-				case "importarDisciplinas":
+			switch(this.etapaAtual) {
+				case 1:
 					return this.listaDisciplinas;
-				case "importarTurmas":
+				case 2:
 					return this.listaTurmas;
-				case "importarUsuarios":
+				case 3:
 					return this.listaUsuarios;
-				case "importarVinculos":
+				case 4:
 					return this.listaVinculos;
 			};
 			return null;
 		}
 	},
-	methods: {
-		// Processos
-		async abrirProcesso(id) {
-			this.resetarDadosProcesso();
+	mounted() {
+		const route = useRoute()
+		const id = route.params.id;
 
-			const url = `http://localhost:8080/Process/${id}`;
-			await axios.get(url, {'Content-Type': 'application/json'})
-			.then(async response => {
-				const processo = response.data;
-				if(processo) {
-					this.processoAtual = response.data;
-
-					// Etapa 1
-					this.periodoInicio = this.processoAtual.periodoInicio ? this.dateYMD(this.processoAtual.periodoInicio) : null;
-					this.periodoTermino = this.processoAtual.periodoInicio ? this.dateYMD(this.processoAtual.periodoTermino) : null;
-
-					let etapa = 0;
-					if(this.periodoInicio && this.periodoTermino) {
-						etapa++;
-					}
-
-					this.processoVisualizando = !!(this.processoAtual.envioTermino);
-					if(this.processoVisualizando) {
-						const id = this.processoAtual._id;
-						async function pegarLista(schemaKey) {
-							try {
-								const response = await axios.get(`http://localhost:8080/${schemaKey}/GetByProcess/${id}`, {'Content-Type': 'application/json'});
-								console.log(`Dados recebidos (schemaKey: ${schemaKey}): `, response.data?.length ?? 0);
-								return response.data ?? [];
-							} catch (error) {
-								console.error(`Erro ao receber dados (schemaKey: ${schemaKey}):`, error?.message ?? error);
-								return [];
-							}
-						}
-
-						this.listaDisciplinas = await pegarLista("Discipline");
-						this.listaTurmas = await pegarLista("Class");
-						this.listaUsuarios = await pegarLista("User");
-						this.listaVinculos = await pegarLista("Bond");
-						etapa = this.telaEtapas.length-1;
-					}
-					for (let i = 0 ; i <= etapa ; i++) {
-						this.mudarTela(this.telaEtapas[i]);
-					}
-				}
-				else console.error(`Erro ao abrir processo (ID: ${id}): Dado vazio.`);
-			})
-			.catch(error => {
-				this.processos = [];
-				console.error(`Erro ao abrir processo (ID: ${id}): `, error?.message ?? error);
-			});
-		},
-		async iniciarProcesso() {
-			const response = await axios.post("http://localhost:8080/Process", {
-				envioInicio: new Date(),
-			}, {'Content-Type': 'application/json'})
-			.then(response => {
-				this.resetarDadosProcesso();
-				const processo = response.data;
-				processo.status = "Em andamento";
-				this.processoVisualizando = false;
-				this.arquivoDisciplinas = false;
+		this.erro = null;
+		this.carregado = false;
+		const url = `http://localhost:8080/Process/${id}`;
+		axios.get(url, {'Content-Type': 'application/json'})
+		.then(async response => {
+			const processo = response.data;
+			if(processo) {
 				this.processoAtual = processo;
-				this.processos.push(processo);
-				this.mudarTela("importarPeriodo");
-			})
-			.catch(error => {
-				console.error(`Erro ao iniciar processo:`, error?.message ?? error);
-			});
-		},
-		async cancelarProcesso(id) {
-			let semErros = true;
-			async function deletarRelacionados(schemaKey) {
-				if(!semErros) return;
 
-				await axios.delete(`http://localhost:8080/${schemaKey}/DeleteByProcess/${id}`, {'Content-Type': 'application/json'})
-				.then(response => {
-					console.log(`Foram deletados ${response.data.deletedCount} dados (schemaKey: ${schemaKey})`);
-				})
-				.catch(error => {
-					console.error(`Erro ao apagar dados do processo (ID: ${id}, schemaKey: ${schemaKey}): ` + error?.message ?? error);
-					semErros = false;
-				});
+				// Etapa 1
+				this.periodoInicio = this.processoAtual.periodoInicio ? this.dateYMD(this.processoAtual.periodoInicio) : null;
+				this.periodoTermino = this.processoAtual.periodoInicio ? this.dateYMD(this.processoAtual.periodoTermino) : null;
+
+				let etapa = 0;
+				if(this.periodoInicio && this.periodoTermino) {
+					etapa++;
+				}
+
+				this.processoVisualizando = !!(this.processoAtual.envioTermino);
+				if(this.processoVisualizando) {
+					async function pegarLista(schemaKey) {
+						try {
+							const response = await axios.get(`http://localhost:8080/${schemaKey}/GetByProcess/${id}`, {'Content-Type': 'application/json'});
+							console.log(`Dados recebidos (schemaKey: ${schemaKey}): `, response.data?.length ?? 0);
+							return response.data ?? [];
+						} catch (error) {
+							console.error(`Erro ao receber dados (schemaKey: ${schemaKey}):`, error?.message ?? error);
+							return [];
+						}
+					}
+
+					this.listaDisciplinas = await pegarLista("Discipline");
+					this.listaTurmas = await pegarLista("Class");
+					this.listaUsuarios = await pegarLista("User");
+					this.listaVinculos = await pegarLista("Bond");
+					etapa = this.nomeEtapas.length-1;
+				}
+				this.etapaAtual = etapa;
 			}
-
-			await deletarRelacionados("Discipline");
-			await deletarRelacionados("Class");
-			await deletarRelacionados("User");
-			await deletarRelacionados("Bond");
-
-			if(semErros) {
-				await axios.delete(`http://localhost:8080/Process/${id}`, {'Content-Type': 'application/json'})
-				.then(response => {
-					this.processos = [];
-					this.atualizarProcessos();
-				})
-				.catch(error => {
-					this.processos = [];
-					console.error(`Erro ao apagar processo (ID: ${id}): `, error?.message ?? error);
-				});
-			}
-		},
-		resetarDadosProcesso() {
-			// Etapa 1
-			this.periodoInicio = null;
-			this.periodoTermino = null;
-			
-			// Etapas 2-5
-			this.arquivoDisciplinas = null;
-			this.listaDisciplinas = [];
-			this.errosDisciplinas = [];
-
-			this.arquivoTurmas = null;
-			this.listaTurmas = [];
-			this.errosTurmas = [];
-
-			this.arquivoUsuarios = null;
-			this.listaUsuarios = [];
-			this.errosUsuarios = [];
-
-			this.arquivoVinculos = null;
-			this.listaVinculos = [];
-			this.errosVinculos = [];
-		},
-
-		// Telas
-		mudarTela(tela, historico = true) {
-			if(historico) {
-				this._historicoTelas.push(this.tela);
-			}
-			this.tela = tela;
-			this.paginaAtual = 0;
-			this.etapaAtual = this.telaEtapas.indexOf(tela);
-		},
-		voltarTela() {
-			// Botão voltar não deve adicionar a tela ao histórico para evitar loop de telas
-			this.mudarTela(this._historicoTelas.pop(), false);
-		},
-
+			else console.error(`Erro ao carregar processo (ID: ${id}): Dado vazio.`);
+			this.carregado = true;
+		})
+		.catch(error => {
+			this.erro = error?.message ?? error;
+			this.carregado = true;
+			console.error(`Erro ao carregar processo (ID: ${id}): ` + this.erro);
+		});
+	},
+	watch: {
+		etapaAtual() {
+			this.atualizarPaginacao();
+		}
+	},
+	methods: {
 		proximaEtapa() {
-			if(this.telaEtapas[this.etapaAtual] == "importarPeriodo") {
+			if(this.etapaAtual == 0) {
 				this.processoAtual.periodoInicio = this.periodoInicio;
 				this.processoAtual.periodoTermino = this.periodoTermino;
 				axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
@@ -224,88 +133,13 @@ export default {
 					envioTermino: this.processoAtual.envioTermino
 				}, {'Content-Type': 'application/json'});
 			}
-			this.mudarTela(this.telaEtapas[this.etapaAtual+1]);
+			this.etapaAtual++;
 		},
-		async finalizarProcesso() {
-			if(await this.enviarBDPressionado()) {
-				this.mudarTela("controleDados");
+		voltarTela() {
+			if(this.etapaAtual > 0) {
+				this.etapaAtual--;
 			}
-		},
-
-		// Paginação
-		mudarPagina(num) {
-			this.paginaAtual = num;
-		},
-		limiteDePagina(lista) {
-			let min = Math.floor(this.paginaAtual * 10);
-			return lista.slice(min, min + 10);
-		},
-
-		//Modificar
-		async enviarBDPressionado() {
-			console.log("Enviando para o banco de dados...");
-			if (this.arquivoSelecionado) {
-				let semErros = true;
-				async function enviarBulk(data, schemaKey) {
-					if(!semErros) return;
-
-					await axios.post(`http://localhost:8080/${schemaKey}/PostBulk`, data, {'Content-Type': 'application/json'})
-					.then(response => {
-						console.log(`Enviado com sucesso (schemaKey: ${schemaKey})`);
-					})
-					.catch(error => {
-						console.error(`Erro no PostBulk (schemaKey: ${schemaKey}): `, error?.message ?? error);
-						semErros = false;
-					});
-				}
-
-				await enviarBulk(this.listaDisciplinas, "Discipline");
-				await enviarBulk(this.listaTurmas, "Class");
-				await enviarBulk(this.listaUsuarios, "User");
-				await enviarBulk(this.listaVinculos, "Bond");
-				console.log(`Upload de dados realizado com sucesso, criando processo!`);
-
-				if(semErros) {
-					const processo = await axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
-						periodoInicio: this.processoAtual.periodoInicio,
-						periodoTermino: this.processoAtual.periodoTermino,
-						envioInicio: this.processoAtual.envioInicio,
-						envioTermino: new Date()
-					})
-					.then(response => {
-						console.log("Processo enviado! Voltando a tela de Controle de Importações...");
-						this.processos = [];
-						this.mudarTela("controleDados");
-
-						this.processoAtual = null;
-						this.resetarDadosProcesso();
-					})
-					.catch(error => {
-						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): `, error?.message ?? error);
-					});
-					return true;
-				}
-				else {
-					async function deletarRelacionados(schemaKey) {
-						await axios.delete(`http://localhost:8080/${schemaKey}/DeleteByProcess/${this.processoAtual._id}`, {'Content-Type': 'application/json'})
-						.then(response => {
-							console.log(`Foram deletados ${response.data.deletedCount} dados (schemaKey: ${schemaKey})`);
-						})
-						.catch(error => {
-							console.error(`Erro ao apagar dados do processo (ID: ${this.processoAtual._id}, schemaKey: ${schemaKey}): ` + error?.message ?? error);
-						});
-					}
-
-					await deletarRelacionados("Discipline");
-					await deletarRelacionados("Class");
-					await deletarRelacionados("User");
-					await deletarRelacionados("Bond");
-					return true;
-				}
-			} else {
-				console.log("Nenhum dado para enviar.");
-			}
-			return false;
+			else this.rota('/list');
 		},
 
 		// Armazena arquivo selecionado e salva no cache
@@ -342,10 +176,12 @@ export default {
 				})));
 			}
 
+			let maiorEtapa = 1;
 			switch(fileExtension) {
 				case "xlsx":
 					const arrayBuffer = await file.arrayBuffer();
 					const workbook = XLSX.read(arrayBuffer, { type: "array", cellText: true, cellDates: true });
+
 					for (const planilhaNome of workbook.SheetNames) {
 						const id = this.processoAtual._id;
 						const planilha = XLSX.utils.sheet_to_json(workbook.Sheets[planilhaNome]).map(item => ({ ...item, processId: id }));
@@ -361,18 +197,21 @@ export default {
 								this.arquivoTurmas = file;
 								this.listaTurmas = converter({"Nome da Turma": "turma", "Disciplina Associada": "disciplina", "Inicio das Aulas": "inicio", "Termino das Aulas": "termino", "Professor Responsavel": "professor"}, planilha);
 								this.validarTurmas();
+								maiorEtapa = Math.max(2, maiorEtapa);
 								break;
 							case "usuarios":
 							case "usuario":
 								this.arquivoUsuarios = file;
 								this.listaUsuarios = converter({"Nome Completo": "nome", "Data de Nascimento": "nascimento", "Data de Cadastro": "cadastro", "Periodo Curricular": "periodoCurricular"}, planilha);
 								this.validarUsuarios();
+								maiorEtapa = Math.max(3, maiorEtapa);
 								break;
 							case "vinculos":
 							case "vinculo":
 								this.arquivoVinculos = file;
 								this.listaVinculos = converter({"Nome de Usuario": "nome", "Data de Inicio": "inicio", "Data de Termino": "termino", "Observacoes": "obs"}, planilha);
 								this.validarVinculos();
+								maiorEtapa = Math.max(4, maiorEtapa);
 								break;
 							default:
 								console.error(`Planilha desconhecida no arquivo: "${planilhaNome}"`);
@@ -382,46 +221,76 @@ export default {
 				case "csv":
 					break;
 			}
-			this.paginaAtual = 0;
+
+			if(this.etapaAtual > maiorEtapa) {
+				this.etapaAtual = maiorEtapa;
+			}
 			this.atualizarPaginacao();
 		},
+		
 
-		async atualizarProcessos() {
-			const url = `http://localhost:8080/Process`;
-			axios.get(url, {'Content-Type': 'application/json'})
-			.then(response => {
-				console.log("Processos recebidos:", response.data?.length ?? 0);
-				if (response.data && response.data.length > 0) {
-					this.processos = response.data;
-					for (let processo of this.processos) {
-						processo.status = processo.envioTermino ? "Concluído" : "Em andamento";
-					}
+		// Envio do Processo
+		async enviarProcesso() {
+			console.log("Enviando para o banco de dados...");
+			if (this.arquivoSelecionado) {
+				let semErros = true;
+				async function enviarBulk(data, schemaKey) {
+					if(!semErros) return;
+
+					await axios.post(`http://localhost:8080/${schemaKey}/PostBulk`, data, {'Content-Type': 'application/json'})
+					.then(response => {
+						console.log(`Enviado com sucesso (schemaKey: ${schemaKey})`);
+					})
+					.catch(error => {
+						console.error(`Erro no PostBulk (schemaKey: ${schemaKey}): `, error?.message ?? error);
+						semErros = false;
+					});
 				}
-				else this.processos = [];
-			})
-			.catch(error => {
-				this.processos = [];
-				console.error("Erro ao atualizar processos:", error?.message ?? error);
-			});
-		},
 
-		atualizarPaginacao() {
-			switch(this.tela) {
-				case "importarDisciplinas":
-					this.arquivoSelecionado = this.arquivoDisciplinas;
-					break;
-				case "importarTurmas":
-					this.arquivoSelecionado = this.arquivoTurmas;
-					break;
-				case "importarUsuarios":
-					this.arquivoSelecionado = this.arquivoUsuarios;
-					break;
-				case "importarVinculos":
-					this.arquivoSelecionado = this.arquivoVinculos;
-					break;
-				default:
-					this.arquivoSelecionado = null;
+				await enviarBulk(this.listaDisciplinas, "Discipline");
+				await enviarBulk(this.listaTurmas, "Class");
+				await enviarBulk(this.listaUsuarios, "User");
+				await enviarBulk(this.listaVinculos, "Bond");
+				console.log(`Upload de dados realizado com sucesso, criando processo!`);
+
+				if(semErros) {
+					const processo = await axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
+						periodoInicio: this.processoAtual.periodoInicio,
+						periodoTermino: this.processoAtual.periodoTermino,
+						envioInicio: this.processoAtual.envioInicio,
+						envioTermino: new Date()
+					})
+					.then(response => {
+						console.log("Processo enviado! Voltando a tela de Controle de Importações...");
+						this.rota("/list");
+						this.processoAtual = null;
+					})
+					.catch(error => {
+						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): `, error?.message ?? error);
+					});
+					return true;
+				}
+				else {
+					async function deletarRelacionados(schemaKey) {
+						await axios.delete(`http://localhost:8080/${schemaKey}/DeleteByProcess/${this.processoAtual._id}`, {'Content-Type': 'application/json'})
+						.then(response => {
+							console.log(`Foram deletados ${response.data.deletedCount} dados (schemaKey: ${schemaKey})`);
+						})
+						.catch(error => {
+							console.error(`Erro ao apagar dados do processo (ID: ${this.processoAtual._id}, schemaKey: ${schemaKey}): ` + error?.message ?? error);
+						});
+					}
+
+					await deletarRelacionados("Discipline");
+					await deletarRelacionados("Class");
+					await deletarRelacionados("User");
+					await deletarRelacionados("Bond");
+					return true;
+				}
+			} else {
+				console.log("Nenhum dado para enviar.");
 			}
+			return false;
 		},
 
 		truncarNome(nome) {
@@ -434,6 +303,34 @@ export default {
 			const truncado = base.slice(0, limite - extensao.length - 5); // "....ext"
 			return `${truncado}....${extensao}`;
 		},
+		
+		// Paginação
+		atualizarPaginacao() {
+			switch(this.etapaAtual) {
+				case 1:
+					this.arquivoSelecionado = this.arquivoDisciplinas;
+					break;
+				case 2:
+					this.arquivoSelecionado = this.arquivoTurmas;
+					break;
+				case 3:
+					this.arquivoSelecionado = this.arquivoUsuarios;
+					break;
+				case 4:
+					this.arquivoSelecionado = this.arquivoVinculos;
+					break;
+				default:
+					this.arquivoSelecionado = null;
+			}
+		},
+		mudarPagina(num) {
+			this.paginaAtual = num;
+		},
+		limiteDePagina(lista) {
+			let min = Math.floor(this.paginaAtual * 10);
+			return lista.slice(min, min + 10);
+		},
+
 
 		/* Validação de erros */
 		validarDisciplinas() {
@@ -469,8 +366,8 @@ export default {
 			}
 
 			if(algumErro) {
-				if(this.etapaAtual > this.telaEtapas.indexOf("importarDisciplinas")) {
-					this.mudarTela("importarDisciplinas");
+				if(this.etapaAtual > 1) {
+					this.etapaAtual = 1;
 				}
 			}
 			else this.errosDisciplinas = [];
@@ -508,8 +405,8 @@ export default {
 			}
 
 			if(algumErro) {
-				if(this.etapaAtual > this.telaEtapas.indexOf("importarTurmas")) {
-					this.mudarTela("importarTurmas");
+				if(this.etapaAtual > 2) {
+					this.etapaAtual = 2;
 				}
 			}
 			else this.errosTurmas = [];
@@ -525,7 +422,7 @@ export default {
 					email: this.validaString("Email", linha.email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/),
 					tipo: this.validaString("Tipo", linha.tipo, this.REGEX_NO_SYMBOLS),
 					curso: this.validaString("Curso", linha.curso, this.REGEX_NO_SYMBOLS),
-					contato: this.validaString("Contato", linha.contato, /^[0-9]+$/),
+					contato: this.validaString("Contato", linha.contato, /^[0-9 ()-]+$/),
 					nascimento: this.validaDate("Data de Nascimento", linha.nascimento),
 					cadastro: this.validaDate("Data de Cadastro", linha.cadastro),
 				};
@@ -547,8 +444,8 @@ export default {
 			}
 
 			if(algumErro) {
-				if(this.etapaAtual > this.telaEtapas.indexOf("importarUsuarios")) {
-					this.mudarTela("importarUsuarios");
+				if(this.etapaAtual > 3) {
+					this.etapaAtual = 3;
 				}
 			}
 			else this.errosUsuarios = [];
@@ -586,8 +483,8 @@ export default {
 			}
 
 			if(algumErro) {
-				if(this.etapaAtual > this.telaEtapas.indexOf("importarVinculos")) {
-					this.mudarTela("importarVinculos");
+				if(this.etapaAtual > 4) {
+					this.etapaAtual = 4;
 				}
 			}
 			else this.errosVinculos = [];
@@ -634,17 +531,36 @@ export default {
 		},
 
 		listaAtualTemErros() {
-			switch(this.telaEtapas[this.etapaAtual]) {
-				case "importarDisciplinas":
+			switch(this.etapaAtual) {
+				case 1:
 					return this.errosDisciplinas.length > 0;
-				case "importarTurmas":
+				case 2:
 					return this.errosTurmas.length > 0;
-				case "importarUsuarios":
+				case 3:
 					return this.errosUsuarios.length > 0;
-				case "importarVinculos":
+				case 4:
 					return this.errosVinculos.length > 0;
 			}
 			return false;
+		}
+	},
+	created() {
+		const { rota } = routerSetup();
+		this.rota = rota;
+
+		const { formatarData, formatarDataHora, dateYMD} = dateFunctionsSetup();
+		this.formatarData = formatarData;
+		this.formatarDataHora = formatarDataHora;
+		this.dateYMD = dateYMD;
+
+		const { iniciarProcesso } = createProcessSetup();
+		this.iniciarProcesso = async() => {
+			iniciarProcesso((response) => {
+				const processo = response.data;
+				this.abrirProcesso(processo._id);
+			}, (error) => {
+				console.error(`Erro ao iniciar processo:`, error?.message ?? error);
+			});
 		}
 	}
 }
