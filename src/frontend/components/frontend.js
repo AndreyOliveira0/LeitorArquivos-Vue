@@ -558,15 +558,120 @@ export default {
 		},
 
 		validarTurmas() {
+			let algumErro = false;
 			this.errosTurmas = [];
+			for (let linha of this.listaTurmas) {
+				let erros = {
+					turma: this.validaString("Turma", linha.turma, this.REGEX_NO_SYMBOLS),
+					disciplina: this.validaString("Disciplina", linha.disciplina, this.REGEX_NO_SYMBOLS),
+					codigo: this.validaString("Código", linha.codigo, this.REGEX_ALPHANUMERIC),
+					turno: this.validaString("Turno", linha.turno, this.REGEX_NO_SYMBOLS),
+					capacidade: this.validaNumero("Capacidade", linha.capacidade, 1),
+					inicio: this.validaDate("Data de Início", linha.inicio),
+					termino: this.validaDate("Data de Término", linha.termino),
+					professor: this.validaString("Professor", linha.professor, this.REGEX_NO_SYMBOLS),
+				};
+
+				let temErros = false;
+				for (const [k, v] of Object.entries(erros)) {
+					if(v) {
+						algumErro = true;
+						temErros = true;
+						break;
+					}
+				}
+
+				if (temErros) {
+					this.errosTurmas.push(erros);
+				} else {
+					this.errosTurmas.push(null);
+				}
+			}
+
+			if(algumErro) {
+				if(this.etapaAtual > this.telaEtapas.indexOf("importarTurmas")) {
+					this.mudarTela("importarTurmas");
+				}
+			}
+			else this.errosTurmas = [];
 		},
 
 		validarUsuarios() {
+			let algumErro = false;
 			this.errosUsuarios = [];
+			for (let linha of this.listaUsuarios) {
+				let erros = {
+					nome: this.validaString("Nome", linha.nome, this.REGEX_NO_SYMBOLS),
+					matricula: this.validaString("Matrícula", linha.matricula, this.REGEX_ALPHANUMERIC),
+					email: this.validaString("Email", linha.email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+					tipo: this.validaString("Tipo", linha.tipo, this.REGEX_NO_SYMBOLS),
+					curso: this.validaString("Curso", linha.curso, this.REGEX_NO_SYMBOLS),
+					contato: this.validaString("Contato", linha.contato, /^[0-9]+$/),
+					nascimento: this.validaDate("Data de Nascimento", linha.nascimento),
+					cadastro: this.validaDate("Data de Cadastro", linha.cadastro),
+				};
+
+				let temErros = false;
+				for (const [k, v] of Object.entries(erros)) {
+					if(v) {
+						algumErro = true;
+						temErros = true;
+						break;
+					}
+				}
+
+				if (temErros) {
+					this.errosUsuarios.push(erros);
+				} else {
+					this.errosUsuarios.push(null);
+				}
+			}
+
+			if(algumErro) {
+				if(this.etapaAtual > this.telaEtapas.indexOf("importarUsuarios")) {
+					this.mudarTela("importarUsuarios");
+				}
+			}
+			else this.errosUsuarios = [];
 		},
 
 		validarVinculos() {
+			let algumErro = false;
 			this.errosVinculos = [];
+			for (let linha of this.listaVinculos) {
+				let erros = {
+					nome: this.validaString("Nome", linha.nome, this.REGEX_NO_SYMBOLS),
+					matricula: this.validaString("Matrícula", linha.matricula, this.REGEX_ALPHANUMERIC),
+					turma: this.validaString("Turma", linha.turma, this.REGEX_NO_SYMBOLS),
+					disciplina: this.validaString("Disciplina", linha.disciplina, this.REGEX_NO_SYMBOLS),
+					papel: this.validaString("Papel", linha.papel, this.REGEX_NO_SYMBOLS),
+					inicio: this.validaDate("Data de Início", linha.inicio),
+					termino: this.validaDate("Data de Término", linha.termino),
+					obs: linha.obs ? this.validaString("Observações", linha.obs) : null,
+				};
+
+				let temErros = false;
+				for (const [k, v] of Object.entries(erros)) {
+					if(v) {
+						algumErro = true;
+						temErros = true;
+						break;
+					}
+				}
+
+				if (temErros) {
+					this.errosVinculos.push(erros);
+				} else {
+					this.errosVinculos.push(null);
+				}
+			}
+
+			if(algumErro) {
+				if(this.etapaAtual > this.telaEtapas.indexOf("importarVinculos")) {
+					this.mudarTela("importarVinculos");
+				}
+			}
+			else this.errosVinculos = [];
 		},
 
 		// null = sem erros

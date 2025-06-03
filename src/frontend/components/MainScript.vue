@@ -149,16 +149,16 @@
 
 						<tbody>
 							<tr v-for="(disciplina, index) in limiteDePagina(listaDisciplinas)" :key="index" :class="{'error-row': (erro = errosDisciplinas[index + paginaAtual * 5])}" >
-								<td :class="{'error-cell': erro?.periodo}">{{ disciplina.periodo }}</td>
-								<td :class="{'error-cell': erro?.disciplina}">{{ disciplina.disciplina }}</td>
-								<td :class="{'error-cell': erro?.codigo}">{{ disciplina.codigo }}</td>
-								<td :class="{'error-cell': erro?.inicio}">{{ formatarData(disciplina.inicio) }}</td>
-								<td :class="{'error-cell': erro?.termino}">{{ formatarData(disciplina.termino) }}</td>
-								<td :class="{'error-cell': erro?.categoria}">{{ disciplina.categoria }}</td>
-								<td :class="{'error-cell': erro?.periodoCurricular}">{{ disciplina.periodoCurricular }}</td>
-								<td :class="{'error-cell': erro?.estado}">{{ disciplina.estado }}</td>
-								<td :class="{'error-cell': erro?.campus}">{{ disciplina.campus }}</td>
-								<td><span class="status" :class="disciplina.status ? disciplina.status.toLowerCase() : 'null'">{{ disciplina.status }}</span></td>
+								<td :class="{'error-cell': erro?.periodo}" class="tooltip">{{ disciplina.periodo }}<span v-if="erro?.periodo" class="tooltip-text">{{ erro.periodo }}</span></td>
+								<td :class="{'error-cell': erro?.disciplina}" class="tooltip">{{ disciplina.disciplina }}<span v-if="erro?.disciplina" class="tooltip-text">{{ erro.disciplina }}</span></td>
+								<td :class="{'error-cell': erro?.codigo}" class="tooltip">{{ disciplina.codigo }}<span v-if="erro?.codigo" class="tooltip-text">{{ erro.codigo }}</span></td>
+								<td :class="{'error-cell': erro?.inicio}" class="tooltip">{{ formatarData(disciplina.inicio) }}<span v-if="erro?.inicio" class="tooltip-text">{{ erro.inicio }}</span></td>
+								<td :class="{'error-cell': erro?.termino}" class="tooltip">{{ formatarData(disciplina.termino) }}<span v-if="erro?.termino" class="tooltip-text">{{ erro.termino }}</span></td>
+								<td :class="{'error-cell': erro?.categoria}" class="tooltip">{{ disciplina.categoria }}<span v-if="erro?.categoria" class="tooltip-text">{{ erro.categoria }}</span></td>
+								<td :class="{'error-cell': erro?.periodoCurricular}" class="tooltip">{{ disciplina.periodoCurricular }}<span v-if="erro?.periodoCurricular" class="tooltip-text">{{ erro.periodoCurricular }}</span></td>
+								<td :class="{'error-cell': erro?.estado}" class="tooltip">{{ disciplina.estado }}<span v-if="erro?.estado" class="tooltip-text">{{ erro.estado }}</span></td>
+								<td :class="{'error-cell': erro?.campus}" class="tooltip">{{ disciplina.campus }}<span v-if="erro?.campus" class="tooltip-text">{{ erro.campus }}</span></td>
+								<td><span class="status" :class="disciplina.status ? disciplina.status.toLowerCase() : 'null'">{{ disciplina.status || 'Sem status' }}</span></td>
 							</tr>
 						</tbody>
 					</table>
@@ -180,16 +180,16 @@
 						</thead>
 
 						<tbody>
-							<tr v-for="(turma, index) in limiteDePagina(listaTurmas)" :key="index">
-								<td>{{ turma.turma }}</td>
-								<td>{{ turma.codigo }}</td>
-								<td>{{ turma.disciplina }}</td>
-								<td>{{ turma.turno }}</td>
-								<td>{{ turma.capacidade }}</td>
-								<td>{{ formatarData(turma.inicio) }}</td>
-								<td>{{ formatarData(turma.termino) }}</td>
-								<td>{{ turma.professor }}</td>
-								<td><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
+							<tr v-for="(turma, index) in limiteDePagina(listaTurmas)" :key="index" :class="{'error-row': (erro = errosTurmas[index + paginaAtual * 5])}">
+								<td :class="{'error-cell': erro?.turma}" class="tooltip">{{ turma.turma }}<span v-if="erro?.turma" class="tooltip-text">{{ erro.turma }}</span></td>
+								<td :class="{'error-cell': erro?.codigo}" class="tooltip">{{ turma.codigo }}<span v-if="erro?.codigo" class="tooltip-text">{{ erro.codigo }}</span></td>
+								<td :class="{'error-cell': erro?.disciplina}" class="tooltip">{{ turma.disciplina }}<span v-if="erro?.disciplina" class="tooltip-text">{{ erro.disciplina }}</span></td>
+								<td :class="{'error-cell': erro?.turno}" class="tooltip">{{ turma.turno }}<span v-if="erro?.turno" class="tooltip-text">{{ erro.turno }}</span></td>
+								<td :class="{'error-cell': erro?.capacidade}" class="tooltip">{{ turma.capacidade }}<span v-if="erro?.capacidade" class="tooltip-text">{{ erro.capacidade }}</span></td>
+								<td :class="{'error-cell': erro?.inicio}" class="tooltip">{{ formatarData(turma.inicio) }}<span v-if="erro?.inicio" class="tooltip-text">{{ erro.inicio }}</span></td>
+								<td :class="{'error-cell': erro?.termino}" class="tooltip">{{ formatarData(turma.termino) }}<span v-if="erro?.termino" class="tooltip-text">{{ erro.termino }}</span></td>
+								<td :class="{'error-cell': erro?.professor}" class="tooltip">{{ turma.professor }}<span v-if="erro?.professor" class="tooltip-text">{{ erro.professor }}</span></td>
+								<td><span class="status" :class="turma.status ? turma.status.toLowerCase() : 'null'">{{ turma.status || 'Sem status' }}</span></td>
 							</tr>
 						</tbody>
 					</table>
@@ -211,16 +211,16 @@
 						</thead>
 
 						<tbody>
-							<tr v-for="(turma, index) in limiteDePagina(listaUsuarios)" :key="index">
-								<td>{{ turma.nome }}</td>
-								<td>{{ turma.matricula }}</td>
-								<td>{{ turma.email }}</td>
-								<td>{{ turma.tipo }}</td>
-								<td>{{ turma.curso }}</td>
-								<td>{{ formatarData(turma.nascimento) }}</td>
-								<td>{{ formatarData(turma.cadastro) }}</td>
-								<td>{{ turma.contato }}</td>
-								<td><span class="status" :class="turma.status.toLowerCase()">{{ turma.status }}</span></td>
+							<tr v-for="(turma, index) in limiteDePagina(listaUsuarios)" :key="index" :class="{'error-row': (erro = errosUsuarios[index + paginaAtual * 5])}">
+								<td :class="{'error-cell': erro?.nome}" class="tooltip">{{ turma.nome }}<span v-if="erro?.nome" class="tooltip-text">{{ erro.nome }}</span></td>
+								<td :class="{'error-cell': erro?.matricula}" class="tooltip">{{ turma.matricula }}<span v-if="erro?.matricula" class="tooltip-text">{{ erro.matricula }}</span></td>
+								<td :class="{'error-cell': erro?.email}" class="tooltip">{{ turma.email }}<span v-if="erro?.email" class="tooltip-text">{{ erro.email }}</span></td>
+								<td :class="{'error-cell': erro?.tipo}" class="tooltip">{{ turma.tipo }}<span v-if="erro?.tipo" class="tooltip-text">{{ erro.tipo }}</span></td>
+								<td :class="{'error-cell': erro?.curso}" class="tooltip">{{ turma.curso }}<span v-if="erro?.curso" class="tooltip-text">{{ erro.curso }}</span></td>
+								<td :class="{'error-cell': erro?.nascimento}" class="tooltip">{{ formatarData(turma.nascimento) }}<span v-if="erro?.nascimento" class="tooltip-text">{{ erro.nascimento }}</span></td>
+								<td :class="{'error-cell': erro?.cadastro}" class="tooltip">{{ formatarData(turma.cadastro) }}<span v-if="erro?.cadastro" class="tooltip-text">{{ erro.cadastro }}</span></td>
+								<td :class="{'error-cell': erro?.contato}" class="tooltip">{{ turma.contato }}<span v-if="erro?.contato" class="tooltip-text">{{ erro.contato }}</span></td>
+								<td><span class="status" :class="turma.status ? turma.status.toLowerCase() : 'null'">{{ turma.status || 'Sem status' }}</span></td>
 							</tr>
 						</tbody>
 					</table>
@@ -242,16 +242,16 @@
 						</thead>
 
 						<tbody>
-							<tr v-for="(vinculo, index) in limiteDePagina(listaVinculos)" :key="index">
-								<td>{{ vinculo.nome }}</td>
-								<td>{{ vinculo.matricula }}</td>
-								<td>{{ vinculo.turma }}</td>
-								<td>{{ vinculo.disciplina }}</td>
-								<td>{{ vinculo.papel }}</td>
-								<td>{{ formatarData(vinculo.inicio) }}</td>
-								<td>{{ formatarData(vinculo.termino) }}</td>
-								<td>{{ vinculo.obs }}</td>
-								<td><span class="status" :class="vinculo.status.toLowerCase()">{{ vinculo.status }}</span></td>
+							<tr v-for="(vinculo, index) in limiteDePagina(listaVinculos)" :key="index" :class="{'error-row': (erro = errosVinculos[index + paginaAtual * 5])}">
+								<td :class="{'error-cell': erro?.nome}" class="tooltip">{{ vinculo.nome }}<span v-if="erro?.nome" class="tooltip-text">{{ erro.nome }}</span></td>
+								<td :class="{'error-cell': erro?.matricula}" class="tooltip">{{ vinculo.matricula }}<span v-if="erro?.matricula" class="tooltip-text">{{ erro.matricula }}</span></td>
+								<td :class="{'error-cell': erro?.turma}" class="tooltip">{{ vinculo.turma }}<span v-if="erro?.turma" class="tooltip-text">{{ erro.turma }}</span></td>
+								<td :class="{'error-cell': erro?.disciplina}" class="tooltip">{{ vinculo.disciplina }}<span v-if="erro?.disciplina" class="tooltip-text">{{ erro.disciplina }}</span></td>
+								<td :class="{'error-cell': erro?.papel}" class="tooltip">{{ vinculo.papel }}<span v-if="erro?.papel" class="tooltip-text">{{ erro.papel }}</span></td>
+								<td :class="{'error-cell': erro?.inicio}" class="tooltip">{{ formatarData(vinculo.inicio) }}<span v-if="erro?.inicio" class="tooltip-text">{{ erro.inicio }}</span></td>
+								<td :class="{'error-cell': erro?.termino}" class="tooltip">{{ formatarData(vinculo.termino) }}<span v-if="erro?.termino" class="tooltip-text">{{ erro.termino }}</span></td>
+								<td :class="{'error-cell': erro?.obs}" class="tooltip">{{ vinculo.obs }}<span v-if="erro?.obs" class="tooltip-text">{{ erro.obs }}</span></td>
+								<td><span class="status" :class="vinculo.status ? vinculo.status.toLowerCase() : 'null'">{{ vinculo.status || 'Sem status' }}</span></td>
 							</tr>
 						</tbody>
 					</table>
