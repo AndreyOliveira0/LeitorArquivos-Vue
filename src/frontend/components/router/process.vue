@@ -17,7 +17,7 @@
 	</div>
 
 	<div style="margin-top: 50px;">
-		<div style="display: flex; justify-content: center; align-items: center;" v-if="!carregado || erro">
+		<div style="display: flex; justify-content: center; align-items: center;" v-if="!carregado || (erro != null && erro.length > 0)">
 			<!-- Tela de carregamento -->
 			<div class="loading" v-if="!carregado">
 				<p>Carregando dados do processo...</p>
@@ -26,7 +26,7 @@
 
 			<!-- Aviso/Erro -->
 			<div class="listaErro" v-else>
-				<div class="caixaErro" v-if="erro">
+				<div class="caixaErro" v-if="erro != null">
 					<p>⚠︎ Erro ao carregar processo:<br>{{ erro }}</p>
 				</div>
 			</div>

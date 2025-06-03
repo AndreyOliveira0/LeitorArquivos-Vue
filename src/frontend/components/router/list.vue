@@ -27,7 +27,7 @@
 			</div>
 
 			<!-- Aviso/Erro -->
-			<div class="listaErro" v-else-if="erro || processos.length == 0">
+			<div class="listaErro" v-else-if="(erro != null && erro.length > 0) || processos.length == 0">
 				<div class="caixaErro" v-if="erro">
 					<p>⚠︎ Erro ao carregar processos:<br>{{ erro }}</p>
 				</div>

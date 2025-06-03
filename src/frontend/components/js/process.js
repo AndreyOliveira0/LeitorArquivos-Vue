@@ -102,9 +102,9 @@ export default {
 							console.log(`Dados recebidos (schemaKey: ${schemaKey}): `, response.data?.length ?? 0);
 							return response.data ?? [];
 						} catch (error) {
-							let erro = this.errorHandler(error?.message ?? error);
-							console.error(`Erro ao receber dados (schemaKey: ${schemaKey}): ` + erro);
-							this.popup("Erro: " + erro, "erro");
+							let err = this.errorHandler(error?.message ?? error);
+							console.error(`Erro ao receber dados (schemaKey: ${schemaKey}): ` + err);
+							this.popup("Erro: " + err, "erro");
 							return [];
 						}
 					}
@@ -259,9 +259,9 @@ export default {
 						console.log(`Enviado com sucesso (schemaKey: ${schemaKey})`);
 					})
 					.catch(error => {
-						let erro = this.errorHandler(error?.message ?? error);
-						console.error(`Erro no PostBulk (schemaKey: ${schemaKey}): ${erro}`);
-						this.popup("Erro: " + erro, "erro");
+						let err = this.errorHandler(error?.message ?? error);
+						console.error(`Erro no PostBulk (schemaKey: ${schemaKey}): ${err}`);
+						this.popup("Erro: " + err, "erro");
 						semErros = false;
 					});
 				}
@@ -285,9 +285,9 @@ export default {
 						this.rota("/list");
 					})
 					.catch(error => {
-						let erro = this.errorHandler(error?.message ?? error);
-						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): ${erro}`);
-						this.popup("Erro: " + erro, "erro");
+						let err = this.errorHandler(error?.message ?? error);
+						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): ${err}`);
+						this.popup("Erro: " + err, "erro");
 					});
 					return true;
 				}
@@ -298,9 +298,9 @@ export default {
 							console.log(`Foram deletados ${response.data.deletedCount} dados (schemaKey: ${schemaKey})`);
 						})
 						.catch(error => {
-							let erro = this.errorHandler(error?.message ?? error);
-							console.error(`Erro ao apagar dados do processo (ID: ${this.processoAtual._id}, schemaKey: ${schemaKey}): ${erro}`);
-							this.popup("Erro: " + erro, "erro");
+							let err = this.errorHandler(error?.message ?? error);
+							console.error(`Erro ao apagar dados do processo (ID: ${this.processoAtual._id}, schemaKey: ${schemaKey}): ${err}`);
+							this.popup("Erro: " + err, "erro");
 						});
 					}
 
