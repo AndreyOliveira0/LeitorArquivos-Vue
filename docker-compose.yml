@@ -1,19 +1,44 @@
 version: '3.8'
-
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: 
+      - .env.production
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
   mysql:
     image: mysql:8.0
-    restart: always
+    container_name: mysql_container
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: bonsaeSQL
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: bonsae123
+      MYSQL_ROOT_PASSWORD: rootPassword
+      MYSQL_DATABASE: residencia00003_prod
+      MYSQL_USER: prodUser
+      MYSQL_PASSWORD: secureProdPass
     ports:
-      - '3307:3306'
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
 
 volumes:
   mysql_data:

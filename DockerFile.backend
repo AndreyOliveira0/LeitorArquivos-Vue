@@ -1,0 +1,25 @@
+FROM node:latest
+
+# Define diretório de trabalho para backend
+WORKDIR /usr/src/api
+
+# Copia package.json e package-lock.json antes para aproveitar cache
+COPY package*.json ./
+
+# Instala dependências (modo silencioso e limpo)
+RUN npm install --quiet --no-optional --no-fund --loglevel=error
+
+# Copia o restante dos arquivos (código e configs)
+COPY . .
+
+# Copia o arquivo de variáveis de ambiente de produção
+COPY ./.env.production ./.env
+
+# Build da aplicação (ex: transpilar TS para JS)
+RUN npm run build
+
+# Expõe a porta que sua API escuta (exemplo 8080)
+EXPOSE 8080
+
+# Comando padrão para iniciar o backend
+CMD ["npm", "run", "start:backend"]
