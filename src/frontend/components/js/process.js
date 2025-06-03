@@ -127,11 +127,12 @@ export default {
 			this.erro = this.errorHandler(error?.message ?? error);
 			this.carregado = true;
 			console.error(`Erro ao carregar processo (ID: ${id}): ` + this.erro);
-			this.popup("Erro: " + this.erro, "erro");
+			//this.popup("Erro: " + this.erro, "erro");
 		});
 	},
 	watch: {
 		etapaAtual() {
+			this.paginaAtual = 0;
 			this.atualizarPaginacao();
 		}
 	},

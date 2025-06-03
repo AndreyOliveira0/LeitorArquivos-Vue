@@ -48,7 +48,7 @@ export default {
 				this.carregado = true;
 				this.erro = this.errorHandler(error?.message ?? error);
 				console.error("Erro ao atualizar processos: " + this.erro);
-				this.popup("Erro: " + this.erro, "erro");
+				//this.popup("Erro: " + this.erro, "erro");
 			})
 		},
 
