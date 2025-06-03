@@ -13,6 +13,11 @@
 		<button @click="iniciarProcesso">+ Novo Processo</button>
 	</div>
 
+	<div :class="['popup', popupClasse, {'popup-animation-start': popupAnim == 'popup-animation-start'}, {'popup-animation-end': popupAnim == 'popup-animation-end'}]" @click="popupClick" v-if="popupMensagem">
+		<p>{{ popupMensagem }}</p>
+		<div class="popup-barra" :class="{'popup-barra-anim': popupBarraAnim}"></div>
+	</div>
+
 	<div style="margin-top: 50px;">
 		<div style="display: flex; justify-content: center; align-items: center;">
 			<!-- Tela de carregamento -->

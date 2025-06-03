@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { routerSetup } from './routing.js'
 import { dateFunctionsSetup } from './date.js'
-import { createProcessSetup } from './createProcess.js'
+import { errorHandlerSetup } from './errorHandler.js'
 import { useRoute } from 'vue-router'
 import * as XLSX from "xlsx"; // Usado para o suporte a arquivos do Excel
 import "../sheets/styles.css";  // Importação do CSS externo
@@ -23,6 +23,14 @@ export default {
 			nomeEtapas: ["Período Letivo", "Disciplinas", "Turmas", "Usuários", "Vínculos"],
 			etapaAtual: 0,
 			paginaAtual: 0, //Para a paginação
+
+			/* popup */
+			popupMensagem: "Popup Teste",
+			popupClasse: "",
+			popupClicavel: false,
+			popupAnim: "",
+			popupBarraAnim: "",
+			popupTimeout: null,
 
 			// Etapa 1 - Ano Letivo
 			periodoInicio: null,
@@ -94,7 +102,9 @@ export default {
 							console.log(`Dados recebidos (schemaKey: ${schemaKey}): `, response.data?.length ?? 0);
 							return response.data ?? [];
 						} catch (error) {
-							console.error(`Erro ao receber dados (schemaKey: ${schemaKey}):`, error?.message ?? error);
+							let erro = this.errorHandler(error?.message ?? error);
+							console.error(`Erro ao receber dados (schemaKey: ${schemaKey}): ` + erro);
+							this.popup("Erro: " + erro, "erro");
 							return [];
 						}
 					}
@@ -107,13 +117,17 @@ export default {
 				}
 				this.etapaAtual = etapa;
 			}
-			else console.error(`Erro ao carregar processo (ID: ${id}): Dado vazio.`);
+			else {
+				console.error(`Erro ao carregar processo (ID: ${id}): Dado vazio.`);
+				this.popup("Erro: Resposta vazia");
+			}
 			this.carregado = true;
 		})
 		.catch(error => {
-			this.erro = error?.message ?? error;
+			this.erro = this.errorHandler(error?.message ?? error);
 			this.carregado = true;
 			console.error(`Erro ao carregar processo (ID: ${id}): ` + this.erro);
+			this.popup("Erro: " + this.erro, "erro");
 		});
 	},
 	watch: {
@@ -157,6 +171,7 @@ export default {
 		
 			if (!this.formatos.includes("." + fileExtension)) {
 				console.log(`Formato inválido! Permitidos: ${this.formatos.join(", ")}`);
+				this.popup("Formato de planilha enviada é inválida!", "erro");
 				return;
 			}
 
@@ -214,7 +229,8 @@ export default {
 								maiorEtapa = Math.max(4, maiorEtapa);
 								break;
 							default:
-								console.error(`Planilha desconhecida no arquivo: "${planilhaNome}"`);
+								console.log(`Planilha desconhecida no arquivo: "${planilhaNome}"`);
+								this.popup(`Planilha desconhecida no arquivo: "${planilhaNome}"`);
 						}
 					}
 					break;
@@ -231,7 +247,7 @@ export default {
 
 		// Envio do Processo
 		async enviarProcesso() {
-			console.log("Enviando para o banco de dados...");
+			this.popup("Enviando processo, aguarde...");
 			if (this.arquivoSelecionado) {
 				let semErros = true;
 				async function enviarBulk(data, schemaKey) {
@@ -242,7 +258,9 @@ export default {
 						console.log(`Enviado com sucesso (schemaKey: ${schemaKey})`);
 					})
 					.catch(error => {
-						console.error(`Erro no PostBulk (schemaKey: ${schemaKey}): `, error?.message ?? error);
+						let erro = this.errorHandler(error?.message ?? error);
+						console.error(`Erro no PostBulk (schemaKey: ${schemaKey}): ${erro}`);
+						this.popup("Erro: " + erro, "erro");
 						semErros = false;
 					});
 				}
@@ -251,7 +269,8 @@ export default {
 				await enviarBulk(this.listaTurmas, "Class");
 				await enviarBulk(this.listaUsuarios, "User");
 				await enviarBulk(this.listaVinculos, "Bond");
-				console.log(`Upload de dados realizado com sucesso, criando processo!`);
+				console.log(`Upload de dados realizado com sucesso, atualizando processo!`);
+				this.popup("Dados do processo enviados!");
 
 				if(semErros) {
 					const processo = await axios.put(`http://localhost:8080/Process/${this.processoAtual._id}`, {
@@ -263,10 +282,11 @@ export default {
 					.then(response => {
 						console.log("Processo enviado! Voltando a tela de Controle de Importações...");
 						this.rota("/list");
-						this.processoAtual = null;
 					})
 					.catch(error => {
-						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): `, error?.message ?? error);
+						let erro = this.errorHandler(error?.message ?? error);
+						console.error(`Erro ao atualizar processo (ID: ${this.processoAtual._id}): ${erro}`);
+						this.popup("Erro: " + erro, "erro");
 					});
 					return true;
 				}
@@ -277,7 +297,9 @@ export default {
 							console.log(`Foram deletados ${response.data.deletedCount} dados (schemaKey: ${schemaKey})`);
 						})
 						.catch(error => {
-							console.error(`Erro ao apagar dados do processo (ID: ${this.processoAtual._id}, schemaKey: ${schemaKey}): ` + error?.message ?? error);
+							let erro = this.errorHandler(error?.message ?? error);
+							console.error(`Erro ao apagar dados do processo (ID: ${this.processoAtual._id}, schemaKey: ${schemaKey}): ${erro}`);
+							this.popup("Erro: " + erro, "erro");
 						});
 					}
 
@@ -542,6 +564,27 @@ export default {
 					return this.errosVinculos.length > 0;
 			}
 			return false;
+		},
+		
+		/* Popup */
+		popupClick() {
+			if(!this.popupClicavel) return;
+
+			this.popupAnim = "popup-animation-end";
+			clearTimeout(this.popupTimeout);
+			this.popupClicavel = false;
+		},
+		popup(mensagem, tipo = "") {
+			this.popupMensagem = mensagem;
+			this.popupClasse = tipo;
+			this.popupBarraAnim = "";
+			this.popupClicavel = true;
+			this.popupAnim = "";
+			setTimeout(() => {this.popupAnim = "popup-animation-start"}, 5);
+
+			if(this.popupTimeout) clearTimeout(this.popupTimeout);
+			this.popupTimeout = setTimeout(this.popupClick, 10000);
+			setTimeout(() => {this.popupBarraAnim = "popup-barra-anim"}, 5);
 		}
 	},
 	created() {
@@ -553,14 +596,7 @@ export default {
 		this.formatarDataHora = formatarDataHora;
 		this.dateYMD = dateYMD;
 
-		const { iniciarProcesso } = createProcessSetup();
-		this.iniciarProcesso = async() => {
-			iniciarProcesso((response) => {
-				const processo = response.data;
-				this.abrirProcesso(processo._id);
-			}, (error) => {
-				console.error(`Erro ao iniciar processo:`, error?.message ?? error);
-			});
-		}
+		const { errorHandler } = errorHandlerSetup();
+		this.errorHandler = errorHandler;
 	}
 }

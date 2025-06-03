@@ -5,9 +5,9 @@
 }
 
 :root {
-	--azul-bonsae: #0D469D;
-	--azul-bonsae-hover: #002761;
-	--azul-bonsae-click: #001a41;
+	--azul-errorHandler: #0D469D;
+	--azul-errorHandler-hover: #002761;
+	--azul-errorHandler-click: #001a41;
 }
 
 /* Corpo da página */
@@ -67,7 +67,7 @@ body {
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
-	color: var(--azul-bonsae);
+	color: var(--azul-errorHandler);
 }
 
 /* Header */
@@ -165,7 +165,7 @@ body {
 }
 
 .tabelaDados thead th {
-	background-color: var(--azul-bonsae);
+	background-color: var(--azul-errorHandler);
 	color: white;
 	font-weight: 500;
 }
@@ -206,7 +206,7 @@ body {
 /* Botões */
 button {
 	border-radius: 15px;
-	background-color: var(--azul-bonsae);
+	background-color: var(--azul-errorHandler);
 	color: white;
 	border: none;
 	transition: background-color 0.1s, color 0.1s;
@@ -217,12 +217,12 @@ button {
 
 button:hover {
 	cursor: pointer;
-	background-color: var(--azul-bonsae-hover);
+	background-color: var(--azul-errorHandler-hover);
 	/*text-decoration: underline;*/
 }
 
 button:active {
-	background-color: var(--azul-bonsae-click);
+	background-color: var(--azul-errorHandler-click);
 	color:#DFDFDF;
 }
 
@@ -299,16 +299,16 @@ button:disabled {
 }
 
 .etapaAtiva .numero {
-	background-color: var(--azul-bonsae);
+	background-color: var(--azul-errorHandler);
 	color: white;
 }
 
 .etapaBrilho .numero {
-	box-shadow: 0px 0px 8px var(--azul-bonsae);
+	box-shadow: 0px 0px 8px var(--azul-errorHandler);
 }
 
 .etapaAtiva {
-	color: var(--azul-bonsae);
+	color: var(--azul-errorHandler);
 }
 
 .etapa::after {
@@ -322,7 +322,7 @@ button:disabled {
 }
 
 .etapaAtiva:after {
-	background-color: var(--azul-bonsae);
+	background-color: var(--azul-errorHandler);
 }
 
 .etapaBrilho:after {
@@ -413,7 +413,7 @@ button:disabled {
 	width: 300px; /* Maior largura */
 	height: 60px; /* Maior altura */
 	font-size: 22px; /* Fonte maior */
-	background-color: var(--azul-bonsae);
+	background-color: var(--azul-errorHandler);
 	color: white;
 	border: none;
 	border-radius: 8px;
@@ -422,11 +422,11 @@ button:disabled {
 }
 
 .botao-avancar:hover {
-	background-color: var(--azul-bonsae-hover);
+	background-color: var(--azul-errorHandler-hover);
 }
 
 .botao-avancar:active {
-	background-color: var(--azul-bonsae-click);
+	background-color: var(--azul-errorHandler-click);
 }
 
 /* Importação de Disciplinas */
@@ -447,7 +447,7 @@ button:disabled {
 }
 
 .upload-texto {
-	color: var(--azul-bonsae);
+	color: var(--azul-errorHandler);
 }
 
 .upload-icone {
@@ -519,23 +519,23 @@ button:disabled {
 /* Paginação */
 .paginacao {
 	background-color:rgba(0, 0, 0, 0);
-	color: var(--azul-bonsae);
+	color: var(--azul-errorHandler);
 	font-weight: bold;
 }
 .paginacao:hover {
 	background-color:rgba(0, 0, 0, 0);
-	color: var(--azul-bonsae-hover);
+	color: var(--azul-errorHandler-hover);
 }
 .paginacao:active {
 	background-color:rgba(0, 0, 0, 0);
-	color: var(--azul-bonsae-click);
+	color: var(--azul-errorHandler-click);
 }
 
 .paginacaoAtual {
 	background-color:rgba(0, 0, 0, 0);
 	color: white;
 	font-weight: bold;
-	text-shadow: -1px -1px 0 var(--azul-bonsae), 1px -1px 0 var(--azul-bonsae), -1px  1px 0 var(--azul-bonsae), 1px  1px 0 var(--azul-bonsae), -2px -2px 0 var(--azul-bonsae), 2px -2px 0 var(--azul-bonsae), -2px  2px 0 var(--azul-bonsae), 2px  2px 0 var(--azul-bonsae);
+	text-shadow: -1px -1px 0 var(--azul-errorHandler), 1px -1px 0 var(--azul-errorHandler), -1px  1px 0 var(--azul-errorHandler), 1px  1px 0 var(--azul-errorHandler), -2px -2px 0 var(--azul-errorHandler), 2px -2px 0 var(--azul-errorHandler), -2px  2px 0 var(--azul-errorHandler), 2px  2px 0 var(--azul-errorHandler);
 }
 .paginacaoAtual:hover {
 	background-color:rgba(0, 0, 0, 0);
@@ -543,7 +543,7 @@ button:disabled {
 }
 .paginacaoAtual:active {
 	background-color:rgba(0, 0, 0, 0);
-	color: var(--azul-bonsae-click);
+	color: var(--azul-errorHandler-click);
 	color: rgb(200, 200, 200);
 }
 
@@ -554,11 +554,11 @@ button:disabled {
 	margin: 0 4px;
 	border-radius: 6px;
 	cursor: pointer;
-	color: var(--azul-bonsae);
+	color: var(--azul-errorHandler);
 }
 
 .pagina .ativo {
-	background-color: var(--azul-bonsae);
+	background-color: var(--azul-errorHandler);
 	color: white;
 	font-weight: bold;
 }
@@ -637,7 +637,7 @@ button:disabled {
 	height: 50px;
 	border-radius: 50%;
 	border: 5px solid #ffffff;
-	border-top: 5px solid var(--azul-bonsae);
+	border-top: 5px solid var(--azul-errorHandler);
 	animation: loading-spin 1s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
 }
 
@@ -664,4 +664,71 @@ button:disabled {
 .caixaErro .listaErro p,
 .caixaErro p {
 	color: rgb(175, 0, 0);
+}
+
+/* Popup*/
+.popup {
+	position: fixed;
+	top: calc(100% - 50px);
+	left: calc(100% - 40px);
+	transform: translate(100%, -100%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-width: 200px;
+	padding: 1vh 1vw;
+	background-color: #d0f2ff;
+	border: 1px #a0c9ff solid;
+	border-radius: 5px;
+	user-select: none;
+	color: #0049b8;
+	z-index: 999;
+}
+.popup.erro {
+	background-color: #ffd0d0;
+	border: 1px #ffa0a0 solid;
+	color: #610000;
+}
+
+.popup-animation-start {
+	animation: popup-slide 0.5s ease-out forwards;
+}
+.popup-animation-end {
+	animation: popup-slide-reverse 0.5s ease-out forwards;
+}
+
+.popup:hover {
+	cursor: pointer;
+}
+
+.popup-barra {
+	background-color: #7fa1df;
+	width: 0%;
+	position: absolute;
+	height: 5px;
+	left: 0%;
+	top: calc(100% - 5px);
+}
+.popup.erro .popup-barra {
+	background-color: #df7f7f;
+}
+
+.popup-barra-anim {
+	animation: popup-barra-anim 10s linear forwards;
+}
+
+@keyframes popup-slide {
+	0% { transform: translate(100%, -100%); }
+	100% {transform: translate(-100%, -100%); }
+}
+
+@keyframes popup-slide-reverse {
+	100% { transform: translate(100%, -100%); }
+	0% {transform: translate(-100%, -100%); }
+}
+
+@keyframes popup-barra-anim {
+	0% { width: 0%; }
+	100% { width: 100% }
 }
