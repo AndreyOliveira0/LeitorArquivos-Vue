@@ -16,7 +16,7 @@ COPY . .
 COPY ./.env.production ./.env
 
 # Build da aplicação (ex: transpilar TS para JS)
-RUN npm run build
+RUN npm run build:backend
 
 # Expõe a porta que sua API escuta (exemplo 8080)
 EXPOSE 8080

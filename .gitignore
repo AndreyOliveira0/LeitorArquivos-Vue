@@ -14,6 +14,8 @@ dist-ssr
 coverage
 *.local
 
+mysql_data/mysql.sock
+
 /cypress/videos/
 /cypress/screenshots/
 
