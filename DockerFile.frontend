@@ -1,4 +1,4 @@
-# Etapa 1: build da aplicação Vue.js
+# Etapa 1: Build da aplicação Vite
 FROM node:latest AS build
 
 WORKDIR /usr/src/front
@@ -6,26 +6,26 @@ WORKDIR /usr/src/front
 COPY package*.json ./
 RUN npm install --quiet --no-optional --no-fund --loglevel=error
 
-COPY . .
+COPY . ./
 
-# Builda os arquivos estáticos
+# Builda os arquivos estáticos usando Vite
 RUN npm run build
 
-# Etapa 2: servidor Node.js com Express para servir os arquivos buildados
+# Etapa 2: Servidor Node.js para servir os arquivos estáticos
 FROM node:latest
 
 WORKDIR /usr/src/front
 
-# Copia só o package.json e package-lock para instalar dependências necessárias para o servidor
+# Apenas instala as dependências necessárias para o servidor
 COPY package*.json ./
 RUN npm install express --quiet --no-optional --no-fund --loglevel=error
 
-# Copia a build da etapa anterior
+# Copia os arquivos estáticos gerados na etapa anterior
 COPY --from=build /usr/src/front/dist ./dist
 
-# Copia o servidor Express (você deve criar este arquivo na raiz do frontend)
-COPY server.js .
+# Copia o servidor Express (server.js)
+COPY server.js ./
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:frontend"]
+CMD ["node", "server.js"]

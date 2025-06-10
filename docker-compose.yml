@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: DockerFile.backend
     env_file: 
       - .env.production
     ports:
@@ -11,17 +11,24 @@ services:
       - mysql
     networks:
       - app_network
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: testUser
+      DB_PASS: cad@45
+      DB_NAME: residencia00003
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: DockerFile.frontend
     ports:
-      - "3000:3000"
+      - "3000:5173" # Alteração para refletir a porta padrão do Vite
     environment:
       - VITE_API_BASE_URL=http://localhost:8080
     networks:
       - app_network
+
 
   mysql:
     image: mysql:5.7
