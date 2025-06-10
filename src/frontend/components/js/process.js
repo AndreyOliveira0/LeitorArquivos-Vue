@@ -14,7 +14,7 @@ export default {
 
 			REGEX_ALPHANUMERIC: /^[A-Za-z0-9]+$/,
 			REGEX_NO_SYMBOLS: /^[\p{L}0-9 ]+$/u,
-			formatos: [".csv", ".xlsx", ".json"],
+			formatos: [".csv", ".xlsx"],
 			arquivoSelecionado: null,
 
 			processoAtual: null, //Processo carregado para edição
@@ -236,7 +236,131 @@ export default {
 					}
 					break;
 				case "csv":
-					break;
+					maiorEtapa = this.etapaAtual;
+					const tabelaNomes = [];
+					for (const child of document.getElementById("tabelaNomes").children) {
+						tabelaNomes.push(child.textContent);
+					}
+					//console.log(tabelaNomes);
+
+					try {
+						const planilha = await this.converterArquivoParaTexto(file);
+						const linhas = planilha.replace(/\r/g, "").split("\n");
+						const colunas = linhas.shift().split(";");
+
+						let i = 0;
+						for (const coluna of tabelaNomes) {
+							if(formatacao(coluna) == formatacao(colunas[i])) {
+								console.log("Encontrada: " + coluna);
+								i++;
+							}
+							else throw (`Coluna desconhecida (${coluna})`);
+						}
+
+						const dados = [];
+						for (const linha of linhas) {
+							const dadosSplit = linha.split(";");
+							let algumDado = false;
+
+							const linhaDados = [];
+							for(const dado of dadosSplit) {
+								if(dado.trim().length > 0) algumDado = true;
+								linhaDados.push(dado);
+							}
+
+							if(algumDado) {
+								dados.push(linhaDados);
+							}
+						}
+
+						function criarLista(func) {
+							const lista = [];
+							for (const linha of dados) {
+								lista.push(func(linha));
+							}
+							return lista;
+						}
+
+						function toDate(str) {
+							const [dia, mes, ano] = str.split("/").map(Number);
+							return new Date(ano, mes - 1, dia); // mês começa do 0 no JS
+						}
+
+						const processId = this.processoAtual._id;
+						switch(this.etapaAtual) {
+							case 1: //Disciplinas
+								this.arquivoDisciplinas = file;
+								this.listaDisciplinas = criarLista((linha) => ({
+									periodo: linha[0],
+									disciplina: linha[1],
+									codigo: linha[2],
+									inicio: toDate(linha[3]),
+									termino: toDate(linha[4]),
+									categoria: linha[5],
+									periodoCurricular: parseInt(linha[6]),
+									estado: linha[7],
+									campus: linha[8],
+									status: linha[9],
+									processId: processId
+								}));
+								this.validarDisciplinas();
+								break;
+							case 2: //Turmas
+								this.arquivoTurmas = file;
+								this.listaTurmas = criarLista((linha) => ({
+									turma: linha[0],
+									codigo: linha[1],
+									disciplina: linha[2],
+									turno: linha[3],
+									capacidade: parseInt(linha[4]),
+									inicio: toDate(linha[5]),
+									termino: toDate(linha[6]),
+									professor: linha[7],
+									status: linha[8],
+									processId: processId
+								}));
+								this.validarTurmas();
+								break;
+							case 3: //Usuários
+								this.arquivoUsuarios = file;
+								this.listaUsuarios = criarLista((linha) => ({
+									nome: linha[0],
+									matricula: linha[1],
+									email: linha[2],
+									tipo: linha[3],
+									curso: linha[4],
+									nascimento: toDate(linha[5]),
+									cadastro: toDate(linha[6]),
+									contato: linha[7],
+									status: linha[8],
+									processId: processId
+								}))
+								this.validarUsuarios();
+								break;
+							case 4: //Vínculos
+								this.arquivoVinculos = file;
+								this.listaVinculos = criarLista((linha) => ({
+									nome: linha[0],
+									matricula: linha[1],
+									turma: linha[2],
+									disciplina: linha[3],
+									papel: linha[4],
+									inicio: toDate(linha[5]),
+									termino: toDate(linha[6]),
+									obs: linha[7],
+									status: linha[8],
+									processId: processId
+								}))
+								this.validarVinculos();
+								break;
+						}
+						break;
+					}
+					catch(error) {
+						let err = this.errorHandler(error?.message ?? error);
+						this.popup("Erro: " + err, "erro");
+						console.log(error);
+					}
 			}
 
 			if(this.etapaAtual > maiorEtapa) {
@@ -244,7 +368,20 @@ export default {
 			}
 			this.atualizarPaginacao();
 		},
-		
+
+		async converterArquivoParaTexto(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+
+				reader.onload = () => {
+				resolve(reader.result);
+				};
+
+				reader.onerror = reject;
+
+				reader.readAsText(file);
+			});
+		},
 
 		// Envio do Processo
 		async enviarProcesso() {
@@ -392,6 +529,7 @@ export default {
 				if(this.etapaAtual > 1) {
 					this.etapaAtual = 1;
 				}
+				this.popup("Erro(s) encontrado(s) em Disciplinas!", "erro");
 			}
 			else this.errosDisciplinas = [];
 		},
@@ -431,6 +569,7 @@ export default {
 				if(this.etapaAtual > 2) {
 					this.etapaAtual = 2;
 				}
+				this.popup("Erro(s) encontrado(s) em Turmas!", "erro");
 			}
 			else this.errosTurmas = [];
 		},
@@ -470,6 +609,7 @@ export default {
 				if(this.etapaAtual > 3) {
 					this.etapaAtual = 3;
 				}
+				this.popup("Erro(s) encontrado(s) em Usuários!", "erro");
 			}
 			else this.errosUsuarios = [];
 		},
@@ -509,6 +649,7 @@ export default {
 				if(this.etapaAtual > 4) {
 					this.etapaAtual = 4;
 				}
+				this.popup("Erro(s) encontrado(s) em Vínculos!", "erro");
 			}
 			else this.errosVinculos = [];
 		},

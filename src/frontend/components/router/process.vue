@@ -95,7 +95,7 @@
 				<!-- Etapa 2 - Disciplinas -->
 				<table v-if="etapaAtual == 1">
 					<thead>
-						<tr>
+						<tr id="tabelaNomes">
 							<th>Período Letivo</th>
 							<th>Disciplina</th>
 							<th>Código</th>
@@ -128,7 +128,7 @@
 				<!-- Etapa 3 - Turmas -->
 				<table v-else-if="etapaAtual == 2">
 					<thead>
-						<tr>
+						<tr id="tabelaNomes">
 							<th>Nome da Turma</th>
 							<th>Código</th>
 							<th>Disciplina Associada</th>
@@ -159,7 +159,7 @@
 				<!-- Etapa 4 - Usuários -->
 				<table v-else-if="etapaAtual == 3">
 					<thead>
-						<tr>
+						<tr id="tabelaNomes">
 							<th>Nome Completo</th>
 							<th>Matrícula</th>
 							<th>E-mail</th>
@@ -190,7 +190,7 @@
 				<!-- Etapa 5 - Vínculos -->
 				<table v-else-if="etapaAtual == 4">
 					<thead>
-						<tr>
+						<tr id="tabelaNomes">
 							<th>Nome de Usuário</th>
 							<th>Matrícula</th>
 							<th>Turma</th>
