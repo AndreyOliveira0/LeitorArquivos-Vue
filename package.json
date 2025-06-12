@@ -63,8 +63,12 @@
     "ncp": "^2.0.0",
     "nodemon": "^3.1.10",
     "prettier": "3.5.3",
+    "rollup": "^4.43.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-vue-devtools": "^7.7.6"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.43.0"
   }
 }

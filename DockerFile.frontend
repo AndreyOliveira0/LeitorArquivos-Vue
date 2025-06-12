@@ -9,7 +9,7 @@ RUN npm install --quiet --no-optional --no-fund --loglevel=error
 COPY . ./
 
 # Builda os arquivos estáticos usando Vite
-RUN npm run build
+RUN npm run build:frontend
 
 # Etapa 2: Servidor Node.js para servir os arquivos estáticos
 FROM node:latest

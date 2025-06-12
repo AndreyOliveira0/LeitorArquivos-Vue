@@ -4,30 +4,31 @@ import path from 'path';
 
 export default defineConfig({
   root: path.resolve(__dirname, 'src/frontend'),
-  plugins: [vue()],  // Adiciona o plugin Vue
+  plugins: [vue()],
   server: {
-    port: 3000,  // Define a porta que o frontend (Vue) irá rodar
+    port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',  // Proxy para o backend
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       },
     },
-    
   },
   resolve: {
     extensions: ['.js', '.ts', '.vue', '.html'],
     alias: {
-      '@': path.resolve(__dirname, 'src/frontend'),  // Ajustado para o diretório de frontend
-    }    
-    
+      '@': path.resolve(__dirname, 'src/frontend'),
+      // Substitui o módulo nativo por um módulo vazio
+      //'@rollup/rollup-linux-x64-gnu': path.resolve(__dirname, 'src/frontend/empty-module.js'),
+    },
   },
   build: {
     outDir: path.resolve(__dirname, 'dist/frontend'),
-    emptyOutDir: true,  // Adiciona essa linha para limpar o diretório de saída 
+    emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, 'src/frontend/main.js')  // Verifique se o caminho está correto
-    }  
-  }
+      input: path.resolve(__dirname, 'src/frontend/main.js'),
+      //external: (id) => id.includes('@rollup'),
+    },
+  },
 });
