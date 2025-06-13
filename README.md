@@ -1,182 +1,148 @@
-README do MVP
-Este guia descreve as etapas necessárias para baixar, instalar e configurar o MVP. 
+# 📘 README do MVP
 
-1. Baixar o MVP
-Acesse o repositório no GitHub.
+> Este guia descreve as etapas para baixar, instalar, configurar e executar o MVP localmente.
 
+---
 
-Na branch main, baixe todos os arquivos disponíveis.
+## 1. 🔽 Baixando o Projeto
 
+Acesse o repositório no GitHub e, na branch `main`, baixe todos os arquivos do projeto.
 
+---
 
-2. Instalação do Node.js
-Se você ainda não possui o Node.js instalado:
-Acesse nodejs.org.
+## 2. 🧩 Instalando o Node.js
 
+> Se ainda não possui o Node.js instalado, [acesse o site oficial](https://nodejs.org) e baixe a versão recomendada para sua máquina.
 
-Baixe a versão recomendada para sua máquina.
+Siga as instruções fornecidas no site para concluir a instalação.
 
+---
 
-Siga as instruções de instalação fornecidas no site.
+## 3. ⚙️ Configuração das Variáveis de Ambiente do Sistema (Windows)
 
+Para garantir o funcionamento adequado dos comandos `npm`:
 
+1. Pressione `Win + R`, digite `sysdm.cpl` e pressione Enter.
+2. Vá até a aba **Avançado** e clique em **Variáveis de Ambiente**.
+3. Em **Variáveis do sistema**:
+   - Crie uma nova variável chamada `NODE_PATH` com o caminho para a pasta de instalação do npm (geralmente:  
+     `C:\Program Files\nodejs\npm`).
+4. Em **Variáveis de usuário**, edite a variável `Path` e adicione esse mesmo caminho.
 
+---
 
+## 4. 📦 Instalando e Configurando o Projeto
 
+1. Abra o terminal na IDE de sua preferência.
+2. Execute:
 
+```bash
+npm install
+npm run build
+```
 
+Esses comandos instalarão as dependências e compilarão os arquivos do diretório `src` para a pasta `dist`.
 
+---
 
-3. Configuração para execução de comandos npm
-Para garantir que os comandos npm funcionem corretamente:
-Pressione Windows + R, digite sysdm.cpl e pressione Enter para abrir as Propriedades do Sistema.
+## 5. 🛢️ Configuração do Banco de Dados
 
+### 🔹 MongoDB
 
-Vá até a aba Avançado e clique em Variáveis de Ambiente.
+1. Localize o arquivo `.env` na raiz do projeto.
+2. Preencha as variáveis:
 
-
-Nas variáveis de sistema:
-
-
-Crie uma nova variável com o nome NODE_PATH e insira o caminho para a pasta npm (geralmente C:\Program Files\nodejs\npm).
-
-
-Se necessário, edite a variável Path nas variáveis de usuário, adicione um novo valor e insira o mesmo caminho.
-
-
-
-4. Instalação e configuração do projeto
-Abra o terminal na IDE de sua preferência, execute o comando:
- npm install.
- Para instalar todas as dependências, compile os arquivos do projeto com:           npm run build.
- Isso garantirá que os arquivos do diretório src sejam transferidos para a pasta dist.
-
-
-
-5. Configuração do Banco de Dados
-5.1 MongoDB
-Localize o arquivo .env na raiz do projeto e preencha as variáveis:
-
- MONGO_URI = <URL do driver MongoDB>
+```env
+MONGO_URI = <URL do driver MongoDB>
 MONGO_DB_NAME = <Nome do banco MongoDB>
+```
 
-5.2 MySQL
-No MySQL Workbench, crie um novo schema SQL.
+---
 
+### 🔸 MySQL
 
-Crie um usuário navegando em Server > Users and Privileges.
+1. No **MySQL Workbench**, crie um novo *schema*.
+2. Navegue até `Server > Users and Privileges` para criar um novo usuário.
+3. Execute:
 
-
-Execute os comandos abaixo no Workbench:
-
- GRANT ALL PRI V ILEGES ON nome_do_banco.* TO 'nome_usuario'@'host';
+```sql
+GRANT ALL PRIVILEGES ON nome_do_banco.* TO 'nome_usuario'@'host';
 FLUSH PRIVILEGES;
-Preencha o arquivo .env com as informações do banco:
- MYSQL_USER = <Nome do usuário>
+```
+
+4. No arquivo `.env`, preencha:
+
+```env
+MYSQL_USER = <Nome do usuário>
 MYSQL_PASSWORD = <Senha do usuário>
 MYSQL_DATABASE = <Nome do banco>
+```
 
+---
 
-6. Inicialização do Projeto
-Após a configuração:
-Execute o comando: npm run dev
-Certifique-se de que o banco de dados MySQL contém as tabelas necessárias para a aplicação.
+## 6. ▶️ Inicializando o Projeto
 
+Após todas as configurações, execute:
 
+```bash
+npm run dev
+```
 
-7. Configuração com Docker
-No arquivo .env.production, atualize as variáveis do banco de dados conforme configurado nas etapas anteriores.
+> Certifique-se de que o banco de dados MySQL esteja populado com as tabelas necessárias.
 
+---
 
-No arquivo docker-compose.yml, edite as seções:
+## 7. 🐳 Configuração com Docker
 
+1. No arquivo `.env.production`, atualize as variáveis de banco conforme necessário.
+2. No `docker-compose.yml`, edite os serviços:
 
-Service backend: Ajuste DB_USER, DB_PASS e DB_NAME.
+- **`backend`**:
+  - Variáveis: `DB_USER`, `DB_PASS`, `DB_NAME`
+- **`mysql`**:
+  - Propriedades: `image`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_ROOT_PASSWORD`
 
+3. Gere um dump do banco local:
 
-Service mysql: Ajuste image, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE e MYSQL_ROOT_PASSWORD.
+```bash
+mysqldump -u [usuario] -p [nome_do_banco] > ./database/nomeBanco.sql
+```
 
+4. No `docker-compose.yml`, adicione:
 
-Na pasta ‘database’, gere um dump do banco de dados local:
+```yaml
+volumes:
+  - ./database/nomeBanco.sql:/docker-entrypoint-initdb.d/nomeBanco.sql
+```
 
- mysqldump -u [usuário] -p [nome_do_banco] > arquivo.sql
+---
 
-Atualize o arquivo docker-compose.yml para incluir o dump no volume do MySQL:
- volumes:
-  - ./database/<nomeBanco.sql>:/docker-entrypoint-initdb.d/<nomeBanco.sql>
+## 8. ⚙️ Personalização de Portas
 
+### 🔧 Back-end
+Verifique e, se necessário, edite as seguintes linhas:
 
+- `.env` → Linhas **17 e 33**
+- `.env.production` → Linha **17**
+- `docker-compose.yml` → Linha **9**
+- `Dockerfile.backend` → Linha **22**
+- `vite.config.js` → Linha **12**
+- `src/backend/main.ts` → Linha **41**
+- `src/config/app.config.js` → Linha **9**
+- `src/frontend/components/js/createProcess` → Linha **11**
+- `src/frontend/components/js/list` → Linhas **32, 64, 82**
+- `src/frontend/components/js/process` → Linhas **81, 101, 144, 394, 414, 433**
 
+### 🎨 Front-end
+- `.env` → Linha **36**
+- `.env.production` → Linha **32**
+- `docker-compose.yml` → Linha **26**
+- `Dockerfile.frontend` → Linha **29**
+- `server.js` → Linha **14**
+- `vite.config.js` → Linha **9**
+- `src/backend/main.ts` → Linha **20**
 
-
-
-
-8. Personalização das Portas
-Caso precise alterar as portas utilizadas, modifique as referências nos seguintes arquivos:
-Back-end
-.env (linhas 17 e 33)
-
-
-.env.production (linha 17)
-
-
-docker-compose.yml (linha 9)
-
-
-DockerFile.backend (linha 22)
-
-
-vite.config.js (linha 12)
-
-
-src/backend/main.ts (linha 41)
-
-
-src/config/app.config.js (linha 9)
-
-src/frontend/components/js/createProcess (linha 11)
-
-src/frontend/components/js/list (linha 32, 64 e 82)
-
-src/frontend/components/js/process (linha 81, 101, 144, 394, 414 e 433)
-
-
-
-
-
-
-
-
-
-Front-end
-.env (linha 36)
-
-
-.env.production (linha 32)
-
-
-docker-compose.yml (linha 26)
-
-
-DockerFile.frontend (linha 29)
-
-
-server.js (linha 14)
-
-
-vite.config.js (linha 9)
-
-src/backend/main.ts (linha 20)
-
-
-Banco SQL
-.env (linha 11)
-
-
-.env.production (linha 11)
-
-
-docker-compose.yml (linhas 16 e 43)
-
-
-
+### 🗄️ Banco SQL
+- `.env` → Linha **11**
+- `.env.production` → Linha **11**
+- `docker-compose.yml` → Linhas **16 e 43**
