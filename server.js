@@ -3,11 +3,11 @@ const path = require('path');
 const app = express();
 
 // Servindo os arquivos estáticos gerados pelo Vite
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'dist', 'frontend')));
 
 // Serve o index.html para qualquer rota não encontrada
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'frontend', 'index.html'));
 });
 
 // Porta padrão (3000 ou o valor configurado no ambiente)
