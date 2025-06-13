@@ -22,10 +22,10 @@ export default defineConfig({
     },
   },
   build: {
-  outDir: path.resolve(__dirname, 'dist/frontend'),
-  emptyOutDir: true,
-  rollupOptions: {
-    input: path.resolve(__dirname, 'src/frontend/index.html'),
+    outDir: path.resolve(__dirname, 'dist/frontend'),
+    emptyOutDir: true,
+    rollupOptions: {
+      input: path.resolve(__dirname, 'src/frontend/index.html'),
+    },
   },
-},
 });
