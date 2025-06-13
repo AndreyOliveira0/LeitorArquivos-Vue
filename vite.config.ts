@@ -19,16 +19,13 @@ export default defineConfig({
     extensions: ['.js', '.ts', '.vue', '.html'],
     alias: {
       '@': path.resolve(__dirname, 'src/frontend'),
-      // Substitui o módulo nativo por um módulo vazio
-      //'@rollup/rollup-linux-x64-gnu': path.resolve(__dirname, 'src/frontend/empty-module.js'),
     },
   },
   build: {
-    outDir: path.resolve(__dirname, 'dist/frontend'),
-    emptyOutDir: true,
-    rollupOptions: {
-      input: path.resolve(__dirname, 'src/frontend/main.js'),
-      //external: (id) => id.includes('@rollup'),
-    },
+  outDir: path.resolve(__dirname, 'dist/frontend'),
+  emptyOutDir: true,
+  rollupOptions: {
+    input: path.resolve(__dirname, 'src/frontend/main.js'),
   },
+},
 });

@@ -26,8 +26,10 @@ services:
       - "3000:3000" 
     environment:
       - VITE_API_BASE_URL=http://localhost:8080
+      - NPM_CONFIG_OPTIONAL=true
     networks:
       - app_network
+
 
 
   mysql:

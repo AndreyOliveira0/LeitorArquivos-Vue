@@ -3,9 +3,13 @@ FROM node:latest AS build
 
 WORKDIR /usr/src/front
 
+# Copia os arquivos de dependência
 COPY package*.json ./
-RUN npm install --quiet --no-optional --no-fund --loglevel=error
 
+# Instala as dependências, forçando a resolução de dependências com `--legacy-peer-deps`
+RUN npm install --quiet --no-fund --loglevel=error --legacy-peer-deps
+
+# Copia o restante dos arquivos do projeto
 COPY . ./
 
 # Builda os arquivos estáticos usando Vite
@@ -16,16 +20,28 @@ FROM node:latest
 
 WORKDIR /usr/src/front
 
-# Apenas instala as dependências necessárias para o servidor
+# Copia os arquivos de dependência
 COPY package*.json ./
-RUN npm install express --quiet --no-optional --no-fund --loglevel=error
+
+# Instala apenas as dependências necessárias para o servidor
+RUN npm install express --quiet --no-fund --loglevel=error --legacy-peer-deps
+
+# Aplica o fix no node_modules depois da instalação
+COPY ./fixes/index.js /usr/src/front/node_modules/path-to-regexp/dist/index.js
+
+# Verifica se o fix foi aplicado corretamente
+RUN ls /usr/src/front/node_modules/path-to-regexp/dist/ && \
+    cat /usr/src/front/node_modules/path-to-regexp/dist/index.js | grep "Missing parameter name"
 
 # Copia os arquivos estáticos gerados na etapa anterior
-COPY --from=build /usr/src/front/dist ./dist
+COPY --from=build /usr/src/front/dist/frontend ./dist/frontend
+
 
 # Copia o servidor Express (server.js)
 COPY server.js ./
 
+# Expondo a porta 3000
 EXPOSE 3000
 
+# Comando para iniciar o servidor
 CMD ["node", "server.js"]
